@@ -769,20 +769,43 @@ export class ChatbotService {
    * Tìm 1 trường theo `entities.university_name` (ưu tiên ILIKE),
    * fallback loop `msg.includes()` nếu Ollama không bắt được tên.
    */
+  /** Một token trường (NEU, FTU, …) — ưu tiên khớp chính xác short_name. */
+  private async resolveUniversityByNameToken(
+    token: string,
+  ): Promise<University | null> {
+    const name = token.trim();
+    if (name.length < 2) return null;
+
+    const byShort = await this.univRepo.findOne({
+      where: { short_name: ILike(name) },
+    });
+    if (byShort) return byShort;
+
+    return this.univRepo.findOne({
+      where: [{ name: ILike(`%${name}%`) }, { short_name: ILike(`%${name}%`) }],
+    });
+  }
+
   private async findUniversityByEntities(
     entities: ChatEntities,
     msg: string,
   ): Promise<University | null> {
     const msgLower = msg.toLowerCase();
 
+    if (entities.university_name) {
+      const tokens = entities.university_name
+        .split(/[,;/]/)
+        .map((t) => t.trim())
+        .filter((t) => t.length >= 2);
+      for (const token of tokens) {
+        const found = await this.resolveUniversityByNameToken(token);
+        if (found) return found;
+      }
+    }
+
     const acronym = extractParentheticalAcronym(msg);
     if (acronym) {
-      const byAcronym = await this.univRepo.findOne({
-        where: [
-          { short_name: ILike(acronym) },
-          { name: ILike(`%${acronym}%`) },
-        ],
-      });
+      const byAcronym = await this.resolveUniversityByNameToken(acronym);
       if (byAcronym) return byAcronym;
     }
 
@@ -798,29 +821,8 @@ export class ChatbotService {
 
     const explicit = extractExplicitUniversityFromMessage(msg);
     if (explicit) {
-      const byExplicit = await this.univRepo.findOne({
-        where: [
-          { short_name: ILike(explicit) },
-          { name: ILike(`%${explicit}%`) },
-        ],
-      });
+      const byExplicit = await this.resolveUniversityByNameToken(explicit);
       if (byExplicit) return byExplicit;
-    }
-
-    if (entities.university_name) {
-      const tokens = entities.university_name
-        .split(/[,;/]/)
-        .map((t) => t.trim())
-        .filter((t) => t.length >= 2);
-      for (const name of tokens) {
-        const found = await this.univRepo.findOne({
-          where: [
-            { name: ILike(`%${name}%`) },
-            { short_name: ILike(`%${name}%`) },
-          ],
-        });
-        if (found) return found;
-      }
     }
 
     return (
