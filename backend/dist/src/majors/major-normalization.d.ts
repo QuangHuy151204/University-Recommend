@@ -1,0 +1,10 @@
+export { MAJOR_GROUPS, MAJOR_GROUP_BY_ID } from './major-groups-catalog';
+export { classifyMajor, majorBelongsToGroup, type MajorClassification, } from './major-classification';
+export declare function normalizeGroupSlug(slug: string): string;
+export declare function groupToSlug(groupName: string): string;
+export declare function resolveGroupSlug(slug: string): string | null;
+export declare function canonicalFieldGroup(majorName: string, rawFieldGroup?: string | null): string;
+export declare function majorMatchesGroupSlug(majorName: string, rawFieldGroup: string | null | undefined, slug: string, storedGroupIds?: string[] | null): boolean;
+export declare function canonicalMajorName(name: string): string;
+export declare function resolveMajorGroups(majorName: string, rawFieldGroup?: string | null): string[];
+export declare function resolveMajorTags(majorName: string, rawFieldGroup?: string | null): string[];

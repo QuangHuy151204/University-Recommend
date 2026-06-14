@@ -1,0 +1,72 @@
+---
+description: Global working rules for the AI assistant in this project
+alwaysApply: true
+---
+
+# Global AI Working Rules
+
+## Always understand context first
+
+Before creating or modifying code, read the relevant existing files and `README.md`.
+
+Do not guess:
+
+- project architecture
+- database structure
+- API routes
+- folder paths
+- business rules
+- naming conventions
+
+If the context is unclear, ask the user before editing code.
+
+## Do not exceed scope
+
+Only do what the user explicitly asks.
+
+Do not:
+
+- add unrelated features
+- refactor unrelated code
+- change project structure without approval
+- change the selected tech stack
+- delete existing code without explaining why
+- create fake APIs or fake database fields
+
+## Required project stack
+
+| Layer | Technology |
+|-------|------------|
+| Frontend | Next.js (planned) |
+| Backend | NestJS |
+| Database | PostgreSQL |
+| Chatbot | Self-built + **local Ollama** |
+
+**Forbidden:** OpenAI / Gemini / Claude / paid AI APIs; MySQL; MongoDB; SQLite.
+
+## Small change rule
+
+Keep changes small. If a task requires modifying **more than 5 files**, stop and show an implementation plan; wait for approval unless the user explicitly requested a large change (e.g. full rules + README).
+
+## Before editing files
+
+Explain planned changes:
+
+```text
+Planned changes:
+- path/to/file1: reason
+- path/to/file2: reason
+```
+
+## Source of truth
+
+1. **Running code** in `backend/` and scripts at repo root
+2. **`README.md`** for commands and setup
+3. **`.cursor/rules/*.mdc`** for conventions
+4. **`UNIVERSITY_RECOMMEND_CURSOR_CONTEXT.md`** — long-term target; may ahead of current implementation
+
+When spec and code conflict, follow code unless the user asks to align code to spec.
+
+## Documentation
+
+Prefer updating `README.md` when adding new scripts, env vars, or npm commands.

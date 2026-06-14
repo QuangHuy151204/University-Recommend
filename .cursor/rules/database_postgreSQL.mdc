@@ -1,0 +1,82 @@
+---
+description: PostgreSQL schema, naming, and data rules
+globs:
+  - "database/**/*.sql"
+  - "backend/**/*.entity.ts"
+  - "backend/**/migrations/**/*.ts"
+  - "backend/src/import-excel.ts"
+alwaysApply: false
+---
+
+# Database Rules — PostgreSQL
+
+## Technology
+
+Use **PostgreSQL only**. Do not use MySQL, MongoDB, or SQLite.
+
+Default database name: `university_recommend`.
+
+## Naming
+
+- Tables and columns: **snake_case**
+- TypeORM entity properties may be camelCase; map to snake_case columns with `@Column({ name: '...' })` when needed
+
+## Current tables (implemented)
+
+| Table | Purpose |
+|-------|---------|
+| `universities` | Schools (`short_name` e.g. HUST, location, tuition range) |
+| `majors` | Major catalog (`field_group`, career orientation) |
+| `university_majors` | Program at a school (training program, duration, tuition) |
+| `cutoff_scores` | Scores by `university_major_id`, `year`, `subject_combination`, `admission_method` |
+| `admission_methods` | Method codes (THPT, HOC_BA, DGNL, …) — imported from Excel |
+| `users` | Accounts (`student` / `admin`) |
+| `student_profiles` | Scores, interests, budget, goals |
+| `recommendations` | Saved suggestion rows per user |
+| `chat_history` | Q&A pairs with `session_id` (target: split into `chat_sessions` + `chat_messages`) |
+
+## Relationships
+
+```text
+universities 1—* university_majors *—1 majors
+university_majors 1—* cutoff_scores
+users 1—1 student_profiles
+users 1—* recommendations, chat_history
+```
+
+## Cutoff scores
+
+- FK: `university_major_id` → `university_majors.id`
+- `admission_method` and `subject_combination` are **varchar** today (not FK to lookup tables)
+- Always filter by `year` when showing “latest” cutoffs
+
+## Data pipeline
+
+1. Edit or scrape into `mau_du_lieu_truong_dai_hoc_5_sheets.xlsx`
+2. Run `npm run import:excel` in `backend/`
+
+**Import behavior:** TRUNCATE and reload `universities`, `majors`, `university_majors`, `cutoff_scores`, `admission_methods`. **Does not delete** `users`, `student_profiles`, `recommendations`, `chat_history`.
+
+## Adding data
+
+| Need | Method |
+|------|--------|
+| Bulk update cutoffs / schools | Excel + `import:excel` |
+| Single cutoff (link exists) | `POST /api/cutoff-scores` (admin JWT) |
+| New university–major link | Excel/SQL today; API planned |
+| User data | Auth + profile APIs |
+
+## IDs
+
+- PostgreSQL `universities.id` ≠ tuyensinh247 `school_id` from scrape API
+- Map via `short_name` / Excel `university_short_name`
+
+## Dev vs production
+
+- `synchronize: true` in `app.module.ts` is for **development only**
+- Prefer TypeORM migrations before production deploy
+
+## Do not
+
+- Invent columns not present in entities
+- Mix ORM with a second DB technology

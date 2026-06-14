@@ -1,0 +1,90 @@
+---
+description: Rules for the Next.js frontend
+globs:
+  - "frontend/**/*.ts"
+  - "frontend/**/*.tsx"
+  - "frontend/**/*.css"
+alwaysApply: false
+---
+
+# Frontend Rules — Next.js
+
+## Status
+
+The `frontend/` folder has an **MVP**: home, universities (list + detail with cutoff method filter), majors (paginated), recommend, login/register, profile, chatbot. **Not yet:** admin dashboard, favorites, compare universities. Follow these rules for new pages. Do not use another frontend framework.
+
+## Technology
+
+- Next.js 16 (App Router)
+- TypeScript (strict)
+- React Server Components by default; mark Client Components with `'use client'`
+- Tailwind CSS 4 (via `@import "tailwindcss"` in `globals.css`)
+- Environment variables for API base URL (`NEXT_PUBLIC_API_URL`)
+
+## Environment
+
+```text
+NEXT_PUBLIC_API_URL=http://localhost:3001/api
+```
+
+Never hardcode university/cutoff data in components. All lists and details come from the NestJS API.
+
+## Folder structure (target)
+
+```text
+frontend/
+├── app/
+│   ├── page.tsx                 # home
+│   ├── login/
+│   ├── register/
+│   ├── universities/
+│   │   ├── page.tsx
+│   │   └── [id]/page.tsx
+│   ├── majors/
+│   │   ├── page.tsx
+│   │   └── [id]/page.tsx
+│   ├── recommend/
+│   │   ├── page.tsx             # form
+│   │   └── results/page.tsx
+│   ├── chatbot/
+│   ├── profile/
+│   └── admin/                   # admin-only routes
+├── components/
+│   ├── ui/
+│   ├── universities/
+│   ├── majors/
+│   └── chatbot/
+├── services/                    # fetch wrappers to backend
+├── types/                       # shared TS types matching API DTOs
+├── lib/                         # auth token, api client helpers
+└── styles/
+```
+
+## API integration
+
+- Store JWT in httpOnly cookie or secure client storage (match backend auth design).
+- Send `Authorization: Bearer <token>` for protected routes.
+- Handle loading and error states on every data fetch.
+- Use pagination query params where the backend supports `page` and `limit`.
+
+## Pages (minimum MVP)
+
+1. **Home** — intro + links to search, recommend, chatbot
+2. **Universities** — list with search/filter; detail with majors and cutoff table by year
+3. **Majors** — list and detail
+4. **Recommend** — form (`expected_score`, `subject_combination`, interests, location, budget, career goal) → results page
+5. **Chatbot** — message UI calling `POST /api/chatbot/chat` (later `/ask` if renamed)
+6. **Auth** — login / register
+7. **Profile** — student profile edit via `PUT /api/users/me/profile`
+
+## UX rules
+
+- Display cutoff scores in tables (year, subject combination, method, score).
+- Vietnamese UI labels are fine; code and types stay in English.
+- Do not call Ollama from the browser; only the backend talks to Ollama.
+
+## Do not
+
+- Use OpenAI / Gemini / Claude SDKs in the frontend
+- Duplicate recommendation logic in the client
+- Embed scraped Excel data in the bundle

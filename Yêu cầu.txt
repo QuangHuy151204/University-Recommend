@@ -1,0 +1,693 @@
+1. Định hình đề tài cho rõ ngay từ đầu
+
+Hiện tại ý tưởng của bạn là:
+
+Xây dựng một website hỗ trợ học sinh lớp 12 tìm hiểu và lựa chọn trường đại học, kết hợp AI chatbot để tư vấn trường/ngành phù hợp dựa trên nhu cầu cá nhân.
+
+Đây là ý tưởng tốt vì có:
+
+bài toán thực tế
+
+có dữ liệu
+
+có người dùng rõ ràng
+
+có thể tích hợp AI để tăng điểm mới
+
+Tên đề tài gợi ý
+
+Xây dựng website hỗ trợ học sinh THPT tra cứu và lựa chọn trường đại học tích hợp AI chatbot tư vấn
+
+Thiết kế và phát triển hệ thống tư vấn chọn trường đại học cho học sinh lớp 12 sử dụng AI chatbot
+
+Phát triển nền tảng định hướng chọn trường/ngành cho học sinh THPT dựa trên dữ liệu và chatbot AI
+
+2. Mục tiêu đồ án
+
+Bạn nên viết mục tiêu theo 2 tầng:
+
+Mục tiêu tổng quát
+
+Xây dựng một hệ thống web giúp học sinh THPT:
+
+tìm kiếm thông tin trường đại học
+
+xem thông tin ngành học, điểm chuẩn, phương thức xét tuyển
+
+so sánh các trường/ngành
+
+nhận gợi ý trường/ngành phù hợp thông qua chatbot AI
+
+Mục tiêu cụ thể
+
+Hệ thống cần có khả năng:
+
+quản lý thông tin trường đại học
+
+quản lý thông tin ngành học
+
+quản lý điểm chuẩn theo năm
+
+hỗ trợ tra cứu, lọc, tìm kiếm
+
+cho phép người dùng nhập nguyện vọng/sở thích/năng lực học tập
+
+AI chatbot đưa ra tư vấn sơ bộ
+
+hệ thống gợi ý danh sách trường/ngành phù hợp
+
+3. Phạm vi đề tài
+
+Cái này rất quan trọng, vì nếu không chốt phạm vi bạn sẽ bị làm quá rộng.
+
+Phạm vi nên làm cho đồ án
+
+Nên giới hạn ở:
+
+Đối tượng người dùng
+
+Học sinh THPT, chủ yếu lớp 12
+
+Quản trị viên hệ thống
+
+Dữ liệu
+
+Một số trường đại học tiêu biểu
+
+Một số ngành phổ biến
+
+Điểm chuẩn 2–4 năm gần đây
+
+Phương thức xét tuyển cơ bản
+
+Thông tin mô tả ngành/trường
+
+AI chatbot
+
+Tư vấn ở mức gợi ý, không thay thế tư vấn tuyển sinh chính thức
+
+Dựa trên dữ liệu hệ thống + câu hỏi về sở thích, học lực, khu vực, tài chính, mục tiêu nghề nghiệp
+
+Những gì chưa cần làm
+
+Không cần phủ toàn bộ tất cả trường đại học ở Việt Nam ngay từ đầu
+
+Không cần chatbot quá “thông minh” như người thật
+
+
+4. Các chức năng nên có
+
+Bạn đang hơi mơ hồ “sẽ có những gì”, nên tôi giúp bạn chốt luôn thành bộ chức năng hợp lý.
+
+4.1. Chức năng cho học sinh/người dùng
+Trang chủ
+
+giới thiệu website
+
+ô tìm kiếm trường/ngành
+
+các trường nổi bật
+
+các ngành nổi bật
+
+chatbot tư vấn nhanh
+
+Tra cứu trường đại học
+
+danh sách trường
+
+tìm kiếm theo tên
+
+lọc theo:
+
+khu vực
+
+loại trường (công lập/tư thục)
+
+học phí
+
+khối/ngành đào tạo
+
+Xem chi tiết trường
+
+tên trường
+
+mô tả
+
+địa chỉ
+
+website chính thức
+
+học phí tham khảo
+
+phương thức xét tuyển
+
+các ngành đào tạo
+
+điểm chuẩn các năm
+
+cơ hội việc làm / thông tin nổi bật
+
+Tra cứu ngành học
+
+danh sách ngành
+
+mô tả ngành
+
+kỹ năng phù hợp
+
+tổ hợp xét tuyển
+
+danh sách trường đào tạo ngành đó
+
+Xem điểm chuẩn
+
+theo trường
+
+theo ngành
+
+theo năm
+
+theo phương thức xét tuyển
+
+So sánh trường / ngành
+
+Ví dụ:
+
+học phí
+
+điểm chuẩn
+
+khu vực
+
+phương thức xét tuyển
+
+loại hình đào tạo
+
+Gợi ý trường/ngành phù hợp
+
+Người dùng nhập:
+
+điểm học tập dự kiến
+
+tổ hợp môn mạnh
+
+sở thích
+
+khu vực muốn học
+
+tài chính gia đình
+
+định hướng nghề nghiệp
+
+Hệ thống trả về:
+
+danh sách ngành phù hợp
+
+danh sách trường phù hợp
+
+mức độ phù hợp tương đối
+
+Chatbot AI
+
+Chatbot có thể trả lời các câu như:
+
+Em thích CNTT, học lực khá thì nên chọn trường nào?
+
+Em ở miền Bắc, muốn học gần nhà, học phí vừa phải thì sao?
+
+Ngành Marketing và Kinh doanh quốc tế khác nhau thế nào?
+
+Với điểm khoảng 24 khối A00 thì nên cân nhắc trường nào?
+
+4.2. Chức năng cho admin
+
+đăng nhập quản trị
+
+quản lý trường
+
+quản lý ngành
+
+quản lý điểm chuẩn
+
+quản lý phương thức xét tuyển
+
+quản lý FAQ hoặc tri thức cho chatbot
+
+quản lý người dùng nếu cần
+
+5. Phần AI nên làm thế nào để vừa đủ sức, vừa dễ bảo vệ
+
+Đây là phần dễ bị “tham”. Bạn nên chọn hướng vừa đủ thông minh, dễ demo, dễ giải thích.
+
+Cách làm AI phù hợp cho đồ án
+
+Có 3 mức:
+
+Mức 1: Rule-based recommendation
+
+Hệ thống hỏi:
+
+em thích ngành gì?
+
+điểm dự kiến bao nhiêu?
+
+thích học khu vực nào?
+
+tài chính thế nào?
+
+Sau đó dùng luật để recommend.
+
+Ví dụ:
+
+điểm 20–22, thích CNTT, học Hà Nội, học phí trung bình → gợi ý nhóm trường A
+
+điểm 24+, thích kinh tế → gợi ý nhóm trường B
+
+Ưu điểm:
+
+dễ làm
+
+dễ giải thích
+
+dễ bảo vệ
+
+Mức 2: Chatbot AI + dữ liệu nội bộ
+
+Dùng LLM để trả lời bằng ngôn ngữ tự nhiên, nhưng chatbot chỉ dựa trên dữ liệu website.
+
+Ví dụ:
+
+bạn lưu thông tin trường/ngành/điểm chuẩn vào database
+
+chatbot đọc dữ liệu này
+
+trả lời theo ngữ cảnh
+
+Cách này đẹp hơn mức 1 rất nhiều.
+
+Mức 3: Recommendation + AI chatbot
+
+Kết hợp:
+
+recommendation engine để gợi ý trường/ngành
+
+chatbot để trò chuyện và giải thích vì sao gợi ý như vậy
+
+Đây là hướng đẹp nhất cho đồ án.
+
+Lời khuyên thực tế
+
+Với đồ án tốt nghiệp, bạn nên làm:
+
+core system ổn
+
+recommendation logic rõ ràng
+
+chatbot AI ở mức hỗ trợ hỏi đáp + giải thích gợi ý
+
+Tức là:
+
+recommendation là trái tim
+
+chatbot là lớp giao tiếp thông minh
+
+Như vậy vừa chắc, vừa có điểm mới.
+
+6. Kiến trúc hệ thống gợi ý
+
+Bạn có thể xây theo cấu trúc này:
+
+Frontend
+
+giao diện web cho học sinh và admin
+
+công nghệ gợi ý:
+
+ReactJS / Next.js
+
+hoặc HTML/CSS/JS nếu đồ án yêu cầu đơn giản hơn
+
+Backend
+
+xử lý API
+
+xác thực người dùng
+
+logic recommend
+
+tích hợp chatbot
+
+Công nghệ gợi ý:
+
+Node.js + Express
+
+hoặc Java Spring Boot
+
+hoặc Python Flask / FastAPI
+
+Database
+
+MySQL / PostgreSQL
+
+AI Chatbot
+
+tích hợp API LLM
+
+hoặc chatbot nội bộ theo FAQ/rule-based
+
+hoặc RAG đơn giản nếu bạn muốn nâng cấp
+
+7. Cơ sở dữ liệu nên có những bảng gì
+
+Dưới đây là bộ bảng hợp lý.
+
+Bảng universities
+
+id
+
+name
+
+short_name
+
+type
+
+location
+
+address
+
+website
+
+description
+
+tuition_fee_range
+
+logo_url
+
+Bảng majors
+
+id
+
+major_name
+
+description
+
+career_orientation
+
+required_skills
+
+Bảng university_majors
+
+id
+
+university_id
+
+major_id
+
+training_program
+
+admission_methods
+
+tuition_fee
+
+duration
+
+Bảng cutoff_scores
+
+id
+
+university_major_id
+
+year
+
+score
+
+admission_method
+
+subject_combination
+
+Bảng admission_methods
+
+id
+
+method_name
+
+description
+
+Bảng users
+
+id
+
+name
+
+email
+
+password
+
+role
+
+Bảng student_profiles
+
+id
+
+user_id
+
+expected_score
+
+favorite_subjects
+
+interests
+
+preferred_location
+
+budget_range
+
+career_goal
+
+Bảng recommendations
+
+id
+
+user_id
+
+university_major_id
+
+match_score
+
+reason
+
+Bảng chat_history
+
+id
+
+user_id
+
+question
+
+answer
+
+created_at
+
+8. Luồng hoạt động chính của hệ thống
+Luồng 1: Tra cứu thông tin
+
+Người dùng:
+
+vào trang web
+
+tìm trường hoặc ngành
+
+xem chi tiết
+
+xem điểm chuẩn
+
+Luồng 2: Nhận gợi ý
+
+Người dùng:
+
+điền hồ sơ cơ bản
+
+hệ thống phân tích
+
+trả về danh sách trường/ngành phù hợp
+
+Luồng 3: Chatbot hỗ trợ
+
+Người dùng:
+
+hỏi chatbot
+
+chatbot đọc dữ liệu
+
+chatbot trả lời và giải thích
+
+9. Logic recommend nên thiết kế ra sao
+
+Bạn cần có tiêu chí chấm điểm phù hợp.
+
+Đầu vào
+
+điểm dự kiến
+
+tổ hợp môn
+
+sở thích lĩnh vực
+
+khu vực mong muốn
+
+mức học phí
+
+định hướng nghề nghiệp
+
+Công thức chấm điểm tham khảo
+
+Mỗi trường/ngành được chấm theo:
+
+phù hợp điểm số: 35%
+
+phù hợp sở thích/ngành: 30%
+
+phù hợp khu vực: 15%
+
+phù hợp tài chính: 10%
+
+phù hợp nghề nghiệp mong muốn: 10%
+
+Ví dụ
+
+Nếu học sinh:
+
+điểm dự kiến: 24
+
+thích CNTT
+
+muốn học Hà Nội
+
+tài chính trung bình
+
+Thì hệ thống sẽ:
+
+lọc các ngành CNTT
+
+xem điểm chuẩn 2–3 năm
+
+loại các trường quá cao hoặc quá thấp không hợp lý
+
+ưu tiên các trường ở Hà Nội
+
+sắp xếp theo match score
+
+Kết quả hiển thị
+
+trường A: 88%
+
+trường B: 82%
+
+trường C: 77%
+
+Kèm giải thích:
+
+phù hợp với mức điểm
+
+ngành đúng sở thích
+
+vị trí phù hợp
+
+học phí nằm trong mức chấp nhận
+
+10. Chatbot AI nên trả lời những gì
+
+Bạn nên giới hạn rõ phạm vi chatbot để dễ kiểm soát.
+
+Nhóm câu hỏi chatbot có thể xử lý
+
+hỏi về trường
+
+hỏi về ngành
+
+hỏi về điểm chuẩn
+
+hỏi về phương thức xét tuyển
+
+hỏi so sánh trường/ngành
+
+hỏi tư vấn chọn trường theo hồ sơ cá nhân
+
+Ví dụ hội thoại
+
+“Em thích thiết kế đồ họa thì nên học ngành gì?”
+
+“Ngành công nghệ thông tin trường nào học phí vừa phải?”
+
+“Điểm 22 thì có thể xét những trường nào ở TP.HCM?”
+
+“Ngành logistics phù hợp với người như thế nào?”
+
+Cách trả lời tốt
+
+ngắn gọn
+
+có dẫn theo dữ liệu hệ thống
+
+không khẳng định tuyệt đối
+
+có câu kiểu:
+
+“Đây là gợi ý tham khảo”
+
+“Bạn nên kiểm tra thêm thông tin tuyển sinh chính thức”
+
+11. Công nghệ đề xuất
+
+Frontend: Nextjs
+
+Backend: Nest.js + Express
+
+Database: PostreSQL
+
+AI: OpenAI API hoặc chatbot rule-based kết hợp dữ liệu DB
+
+
+
+
+
+
+
+
+
+Summarize current project status in less than 1000 tokens. Include:
+- Project goal
+- Tech stack
+- Files created/modified
+- Database design decisions
+- Current errors/issues
+- Next steps
+
+Ưu tiên cao (giá trị lớn, không quá phức tạp)
+Phân tầng an toàn (Reach / Match / Safety)
+Hiện chỉ có % phù hợp chung. Nên gắn nhãn kiểu: có thể trúng, vừa sức, an toàn theo expected_score - điểm_chuẩn (vd. < -1, -1→+2, >+2). Học sinh hiểu nhanh hơn một con số 78%.
+
+Xử lý “0 kết quả” (vd. khối B01 ít trong DB)
+Trả [] đúng về mặt logic nhưng UX khó hiểu. Nên trả thêm message + gợi ý: đổi khối gần (B00), nới ngành, hoặc “chưa có dữ liệu B01 cho HN”.
+
+Phương thức xét tuyển (method_code)
+Đã lọc khi tính điểm chuẩn nhưng frontend có thể không ép chọn. Nên mặc định THPT (hoặc PT user hay dùng) và lọc cứng khi user chọn PT — tránh so điểm học bạ với chuẩn THPT.
+
+Giới hạn trùng trường trong top 15
+Top 15 toàn ngành một trường → ít đa dạng. Có thể: tối đa 2–3 ngành / trường trong top N.
+
+Ưu tiên trung bình
+Đồng nghĩa sở thích — CNTT ↔ công nghệ thông tin, y ↔ y khoa (map nhỏ hoặc từ field_group).
+Xu hướng điểm chuẩn — so sánh 2023–2025 (tăng/giảm) trong reason hoặc badge.
+Lưu “bộ lọc gợi ý” — tái dùng từ profile, không chỉ prefill form.
+Calibration — vài case test cố định (25 điểm B01 HN + CNTT) để regression khi đổi trọng số.
+
+
+
+
+
+28/5:
+Chatbot: coverage intent chưa đủ; rewrite Ollama rủi ro nếu context trống; intent.txt chưa tích hợp.
+Auth: JWT localStorage (chưa httpOnly); email chưa rate-limit prod.
+Gợi ý: ngân sách API vẫn enum low/medium/high (slider VNĐ chỉ map phía FE); 0 kết quả nếu ít ngành theo khối.
+So sánh trong chat: chỉ deeplink UI, chưa so sánh thật trong handler.

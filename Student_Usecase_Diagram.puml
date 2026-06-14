@@ -1,0 +1,60 @@
+@startuml Student_Usecase_Diagram
+title University Recommendation
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam usecase {
+  BackgroundColor White
+  BorderColor Black
+  ArrowColor Black
+  ActorBorderColor Black
+  ActorBackgroundColor White
+}
+
+actor Student
+
+rectangle "University Recommendation" {
+
+  usecase "Browse Information"          as UC_Browse
+  usecase "View Majors"                 as UC_Majors
+  usecase "View Universities"           as UC_Universities
+  usecase "View Cut-off Scores"         as UC_Cutoff
+
+  usecase "Chat with AI"                as UC_Chat
+  usecase "View Chat History"           as UC_ChatHistory
+
+  usecase "Login"                       as UC_Login
+  usecase "View Recommendation History" as UC_RecHistory
+
+  usecase "Get Recommendations"         as UC_GetRec
+
+  usecase "Register"                    as UC_Register
+  usecase "Manage Profile"              as UC_Profile
+}
+
+' ── Actor associations ──────────────────────────────────────
+Student --> UC_Browse
+Student --> UC_Chat
+Student --> UC_Login
+Student --> UC_GetRec
+Student --> UC_Register
+Student --> UC_Profile
+
+' ── Extend relationships ────────────────────────────────────
+UC_Majors        ..> UC_Browse   : <<extend>>
+UC_Universities  ..> UC_Browse   : <<extend>>
+UC_Cutoff        ..> UC_Browse   : <<extend>>
+
+UC_ChatHistory   ..> UC_Chat     : <<extend>>
+
+UC_RecHistory    ..> UC_Login    : <<extend>>
+
+' ── Include relationships ───────────────────────────────────
+UC_Login ..> UC_RecHistory  : <<include>>
+UC_Login ..> UC_GetRec      : <<include>>
+
+UC_GetRec ..> UC_RecHistory : <<extend>>
+UC_GetRec ..> UC_Login      : <<include>>
+UC_GetRec ..> UC_Register   : <<include>>
+
+@enduml

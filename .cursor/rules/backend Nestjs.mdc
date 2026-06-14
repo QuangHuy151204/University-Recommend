@@ -1,0 +1,91 @@
+---
+description: Rules for the NestJS backend
+globs:
+  - "backend/**/*.ts"
+alwaysApply: false
+---
+
+# Backend Rules — NestJS
+
+## Technology
+
+- NestJS + TypeScript
+- TypeORM + PostgreSQL (keep TypeORM; do not migrate to Prisma unless user explicitly requests)
+- `class-validator` DTOs on inputs
+- Business logic in **services**, not controllers
+- Global prefix: `/api`
+- Default port: `3001` (see `main.ts`)
+
+## Implemented modules (`backend/src/`)
+
+```text
+auth/                 # register, login, JWT
+users/                # profile, student_profiles
+universities/         # CRUD + search
+majors/               # CRUD; university-major entity lives here
+cutoff-scores/        # query by university/major (+ method filter); POST/PATCH/DELETE
+admission-methods/    # GET catalog (PT xét tuyển — tra cứu, không CRUD admin)
+university-majors/    # CRUD liên kết ngành–trường
+recommendations/      # POST recommend, GET my history
+chatbot/              # POST chat, GET history + Ollama pipeline
+ollama/               # OllamaService (classify, extract, generate)
+import-excel.ts       # Excel → PostgreSQL; `--merge` / IMPORT_MERGE
+```
+
+## Planned (when asked)
+
+```text
+admin-guard/          # role-based guard for write endpoints
+migrations/           # replace synchronize: true for production
+```
+
+## Controller conventions
+
+- Use `@ApiTags`, `@ApiBearerAuth('JWT')` for Swagger where applicable.
+- Public read endpoints: universities, majors, cutoff list by university/major.
+- Protected write/admin: POST/PUT/DELETE on master data; recommendations with save; chat history.
+- Return consistent error messages; use NestJS exceptions (`NotFoundException`, etc.).
+
+## DTO and validation
+
+- Every POST/PUT body has a DTO class with validation decorators.
+- Whitelist is enabled globally; unknown fields are stripped.
+
+## Database access
+
+- Use TypeORM repositories or query builder in services.
+- Do not use `synchronize: true` in production; plan migrations when going to prod.
+- Import script may use raw SQL via `DataSource` for bulk load (`import-excel.ts`).
+
+## CORS
+
+Allowed origins: `http://localhost:3000`, `http://localhost:3001` (Next.js dev).
+
+## Environment variables (`backend/.env`)
+
+```text
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=...
+DB_NAME=university_recommend
+JWT_SECRET=...
+JWT_EXPIRES_IN=7d
+PORT=3001
+
+# Planned for Ollama
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=llama3.1
+```
+
+## Key npm scripts
+
+- `npm run start:dev` — development API
+- `npm run import:excel` — reload master data from Excel (TRUNCATE master tables)
+- `npm run build` / `npm run start:prod` — production
+
+## Do not
+
+- Put business rules only in controllers
+- Add fake entities or endpoints not backed by PostgreSQL
+- Call external paid LLM APIs

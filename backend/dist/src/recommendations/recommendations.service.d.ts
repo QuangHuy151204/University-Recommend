@@ -1,0 +1,30 @@
+import { Repository } from 'typeorm';
+import { Recommendation } from './recommendation.entity';
+import { RecommendRequestDto } from './recommendation.dto';
+import { RecommendResponse } from './recommendation.response';
+import { UniversityMajor } from '../majors/university-major.entity';
+import { CutoffScore } from '../cutoff-scores/cutoff-score.entity';
+import { AdmissionMethodsService } from '../admission-methods/admission-methods.service';
+export declare class RecommendationsService {
+    private readonly recommendRepo;
+    private readonly uniMajorRepo;
+    private readonly cutoffRepo;
+    private readonly admissionMethodsService;
+    constructor(recommendRepo: Repository<Recommendation>, uniMajorRepo: Repository<UniversityMajor>, cutoffRepo: Repository<CutoffScore>, admissionMethodsService: AdmissionMethodsService);
+    recommend(dto: RecommendRequestDto, userId?: number): Promise<RecommendResponse>;
+    private emptyResponse;
+    private mapMajorGroups;
+    private toResultItem;
+    private dedupeEquivalentResults;
+    private normalizeComparableText;
+    private calculateMatchScore;
+    private cutoffMatchesMethod;
+    private filterCutoffsByMethod;
+    private pickDisplayCutoffs;
+    private getLatestCutoff;
+    private isPlaceholderInterest;
+    private normalizeCombo;
+    private cutoffHasSubjectCombination;
+    private majorAcceptsCombination;
+    getMyRecommendations(userId: number): Promise<Recommendation[]>;
+}

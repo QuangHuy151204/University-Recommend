@@ -1,0 +1,104 @@
+---
+description: Core project context for University Recommend
+alwaysApply: true
+---
+
+# Project Overview
+
+**Project name:** University Recommend
+
+University Recommend is a full-stack web application that helps high school students find suitable universities and majors based on:
+
+- student score and subject combination
+- preferred major and career interests
+- preferred location and university type
+- tuition budget
+- admission methods and historical cutoff scores
+
+A **local Ollama chatbot** (target) explains results in natural language. Factual data always comes from **PostgreSQL**, not from the LLM alone.
+
+## Main users
+
+- Student
+- Parent
+- Admin
+- Career advisor / teacher
+
+## Main features
+
+### Student (target)
+
+- register and login
+- create student profile
+- search universities and majors
+- view university / major detail and cutoff tables
+- submit preferences and receive recommendations
+- save favorites (planned)
+- use chatbot for guidance
+
+### Admin (target)
+
+- manage universities, majors, university–major links, cutoff scores, admission methods
+- manage users
+- review chat data if needed
+
+## Main modules
+
+| Module | Status |
+|--------|--------|
+| Authentication (JWT) | Implemented |
+| User profile | Implemented |
+| Universities / majors / cutoff scores | Implemented |
+| Recommendation engine | Implemented (weighted score) |
+| Chatbot | **Partial** — rule-based today; Ollama integration planned |
+| Excel scrape + import pipeline | Implemented |
+| Next.js frontend | **Not started** (folder `frontend/` planned) |
+| Admin dashboard | Planned |
+
+## Architecture
+
+```text
+[ tuyensinh247 API ] --> scrape_and_fill_excel.py --> Excel (.xlsx)
+                              |
+                              v
+                    import-excel.ts (npm run import:excel)
+                              |
+                              v
+                         PostgreSQL
+                              |
+                              v
+                    NestJS REST API (/api, port 3001)
+                              |
+                              v
+                    Next.js frontend (port 3000, planned)
+                              |
+                              v
+                    Ollama (localhost:11434, planned)
+```
+
+## Repository layout (current)
+
+```text
+UniversityRecommend/
+├── backend/              # NestJS + TypeORM
+├── frontend/             # planned — not in repo yet
+├── .cursor/rules/        # AI rules for Cursor
+├── mau_du_lieu_truong_dai_hoc_5_sheets.xlsx
+├── scrape_and_fill_excel.py
+├── README.md
+└── UNIVERSITY_RECOMMEND_CURSOR_CONTEXT.md  # long-term spec (may differ from current code)
+```
+
+## Important rules
+
+1. **Chatbot must not replace the recommendation engine.** For recommendation questions: extract intent → query DB → call `recommendations` service → use Ollama only to explain results.
+2. **Do not invent** university names, scores, tuition, or admission methods in chat answers.
+3. **Current schema** uses `university_majors` and `chat_history` (not the full 17-table spec in `UNIVERSITY_RECOMMEND_CURSOR_CONTEXT.md`). When extending DB, prefer migrations over guessing columns.
+4. **Data scope:** primary dataset is **Hanoi universities** with cutoff scores **2023–2025** from Excel/import.
+
+## API entry points
+
+- Base URL: `http://localhost:3001/api`
+- Swagger: `http://localhost:3001/api/docs`
+
+See `README.md` for setup and commands.

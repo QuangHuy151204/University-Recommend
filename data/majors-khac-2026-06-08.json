@@ -1,0 +1,420 @@
+{
+  "generated_at": "2026-06-08T06:57:29.096Z",
+  "total_majors": 1613,
+  "uncategorized_count": 148,
+  "raw_uncategorized_count": 148,
+  "frequent_name_tokens": [
+    {
+      "token": "thong",
+      "count": 23
+    },
+    {
+      "token": "quan",
+      "count": 21
+    },
+    {
+      "token": "nghe",
+      "count": 17
+    },
+    {
+      "token": "nghiep",
+      "count": 17
+    },
+    {
+      "token": "cong",
+      "count": 15
+    },
+    {
+      "token": "nganh",
+      "count": 15
+    },
+    {
+      "token": "đien",
+      "count": 14
+    },
+    {
+      "token": "sinh",
+      "count": 13
+    },
+    {
+      "token": "ninh",
+      "count": 12
+    },
+    {
+      "token": "minh",
+      "count": 11
+    },
+    {
+      "token": "vien",
+      "count": 11
+    },
+    {
+      "token": "vung",
+      "count": 11
+    },
+    {
+      "token": "đong",
+      "count": 9
+    },
+    {
+      "token": "tien",
+      "count": 9
+    },
+    {
+      "token": "toan",
+      "count": 8
+    },
+    {
+      "token": "đieu",
+      "count": 8
+    },
+    {
+      "token": "phat",
+      "count": 7
+    },
+    {
+      "token": "nhat",
+      "count": 6
+    },
+    {
+      "token": "xuat",
+      "count": 6
+    },
+    {
+      "token": "trien",
+      "count": 6
+    },
+    {
+      "token": "chay",
+      "count": 6
+    },
+    {
+      "token": "đinh",
+      "count": 5
+    },
+    {
+      "token": "chat",
+      "count": 5
+    },
+    {
+      "token": "luong",
+      "count": 5
+    },
+    {
+      "token": "leibniz",
+      "count": 4
+    },
+    {
+      "token": "hannover",
+      "count": 4
+    },
+    {
+      "token": "theo",
+      "count": 4
+    },
+    {
+      "token": "phuong",
+      "count": 4
+    },
+    {
+      "token": "thuat",
+      "count": 4
+    },
+    {
+      "token": "duong",
+      "count": 4
+    },
+    {
+      "token": "quoc",
+      "count": 4
+    },
+    {
+      "token": "phong",
+      "count": 4
+    },
+    {
+      "token": "doanh",
+      "count": 4
+    },
+    {
+      "token": "chuong",
+      "count": 3
+    },
+    {
+      "token": "trinh",
+      "count": 3
+    },
+    {
+      "token": "gioi",
+      "count": 3
+    },
+    {
+      "token": "giao",
+      "count": 3
+    },
+    {
+      "token": "chua",
+      "count": 3
+    },
+    {
+      "token": "qtkd",
+      "count": 3
+    },
+    {
+      "token": "hanh",
+      "count": 3
+    }
+  ],
+  "sample": [
+    {
+      "id": 57,
+      "name": "An toàn, Vệ sinh lao động",
+      "field_group": "Khác"
+    },
+    {
+      "id": 84,
+      "name": "Bảo hộ lao động",
+      "field_group": "Khác"
+    },
+    {
+      "id": 441,
+      "name": "Cơ điện tử - hợp tác với ĐH Công nghệ Nagaoka (Nhật Bản)",
+      "field_group": "Khác"
+    },
+    {
+      "id": 442,
+      "name": "Cơ điện tử - hợp tác với ĐH Leibniz Hannover (CHLB Đức)",
+      "field_group": "Khác"
+    },
+    {
+      "id": 443,
+      "name": "Cơ điện tử - hợp tác với ĐH Leibniz Hannover (Đức)",
+      "field_group": "Khác"
+    },
+    {
+      "id": 444,
+      "name": "Cơ điện tử - hợp tác với ĐHCN Nagaoka (Nhật Bản)",
+      "field_group": "Khác"
+    },
+    {
+      "id": 445,
+      "name": "Cơ điện tử thông minh và sản xuất theo phương thức Nhật Bản",
+      "field_group": "Khác"
+    },
+    {
+      "id": 446,
+      "name": "Cơ điện tử thông minh và sản xuất theo phương thức Nhật Bản – EMJM",
+      "field_group": "Khác"
+    },
+    {
+      "id": 427,
+      "name": "Công nghệ đa phương tiện (Liên kết với Đại học Canberra, Australia)",
+      "field_group": "Khác"
+    },
+    {
+      "id": 212,
+      "name": "Công nghệ Dệt - May",
+      "field_group": "Khác"
+    },
+    {
+      "id": 257,
+      "name": "Công nghệ dệt, may",
+      "field_group": "Khác"
+    },
+    {
+      "id": 258,
+      "name": "Công nghệ dệt, may (CS Hà Nội)",
+      "field_group": "Khác"
+    },
+    {
+      "id": 259,
+      "name": "Công nghệ dệt, may (CS Nam Định)",
+      "field_group": "Khác"
+    },
+    {
+      "id": 260,
+      "name": "Công nghệ dệt; may",
+      "field_group": "Khác"
+    },
+    {
+      "id": 1838,
+      "name": "Công nghệ Điện, Điện tử",
+      "field_group": "Khác"
+    },
+    {
+      "id": 216,
+      "name": "Công nghệ KT điện tử – viễn thông",
+      "field_group": "Khác"
+    },
+    {
+      "id": 1804,
+      "name": "Đá quý Đá mỹ nghệ",
+      "field_group": "Khác"
+    },
+    {
+      "id": 1805,
+      "name": "Đá quý, đá mỹ nghệ",
+      "field_group": "Khác"
+    },
+    {
+      "id": 1816,
+      "name": "Địa chất học",
+      "field_group": "Khác"
+    },
+    {
+      "id": 1887,
+      "name": "Địa lý tự nhiên",
+      "field_group": "Khác"
+    },
+    {
+      "id": 1818,
+      "name": "Địa tin học",
+      "field_group": "Khác"
+    },
+    {
+      "id": 1801,
+      "name": "Điện ảnh và Nghệ thuật đại chúng",
+      "field_group": "Khác"
+    },
+    {
+      "id": 1800,
+      "name": "Điện tử - Viễn thông - ĐH Leibniz Hannover (CHLB Đức)",
+      "field_group": "Khác"
+    },
+    {
+      "id": 1799,
+      "name": "Điện tử - Viễn thông - hợp tác với ĐH Leibniz Hannover (Đức)",
+      "field_group": "Khác"
+    },
+    {
+      "id": 1795,
+      "name": "Điều dưỡng  chương trình tiên tiến kết hợp chứng chỉ ngoại ngữ quốc tế",
+      "field_group": "Khác"
+    },
+    {
+      "id": 1797,
+      "name": "Điều dưỡng chương trình tiên tiến",
+      "field_group": "Khác"
+    },
+    {
+      "id": 1796,
+      "name": "Điều dưỡng Phân hiệu Thanh Hóa",
+      "field_group": "Khác"
+    },
+    {
+      "id": 1793,
+      "name": "Điêu khắc",
+      "field_group": "Khác"
+    },
+    {
+      "id": 1798,
+      "name": "Điều khiển thông minh và Tự động hóa – BICA",
+      "field_group": "Khác"
+    },
+    {
+      "id": 1821,
+      "name": "Đồ họa",
+      "field_group": "Khác"
+    },
+    {
+      "id": 1823,
+      "name": "Đồ họa game",
+      "field_group": "Khác"
+    },
+    {
+      "id": 1824,
+      "name": "Đổi mới và Phát triển toàn cầu – BGDI",
+      "field_group": "Khác"
+    },
+    {
+      "id": 1806,
+      "name": "Đông Nam Á học",
+      "field_group": "Khác"
+    },
+    {
+      "id": 1808,
+      "name": "Đông phương học",
+      "field_group": "Khác"
+    },
+    {
+      "id": 1809,
+      "name": "Đường sắt tốc độ cao",
+      "field_group": "Khác"
+    },
+    {
+      "id": 490,
+      "name": "Giới và Phát triển",
+      "field_group": "Khác"
+    },
+    {
+      "id": 492,
+      "name": "Giới và Phát triển (Hà Nội)",
+      "field_group": "Khác"
+    },
+    {
+      "id": 491,
+      "name": "Giới và Phát triển (HCM)",
+      "field_group": "Khác"
+    },
+    {
+      "id": 494,
+      "name": "Gốm",
+      "field_group": "Khác"
+    },
+    {
+      "id": 509,
+      "name": "Hạ tầng giao thông đô thị thông minh",
+      "field_group": "Khác"
+    },
+    {
+      "id": 510,
+      "name": "Hải dương học",
+      "field_group": "Khác"
+    },
+    {
+      "id": 500,
+      "name": "Hán Nôm",
+      "field_group": "Khác"
+    },
+    {
+      "id": 498,
+      "name": "Hàn Quốc",
+      "field_group": "Khác"
+    },
+    {
+      "id": 499,
+      "name": "Hàn Quốc học",
+      "field_group": "Khác"
+    },
+    {
+      "id": 532,
+      "name": "Hệ thống điện và năng lượng tái tạo (CT tiên tiến)",
+      "field_group": "Khác"
+    },
+    {
+      "id": 521,
+      "name": "Hệ thống giao thông thông minh",
+      "field_group": "Khác"
+    },
+    {
+      "id": 522,
+      "name": "Hệ thống nhúng thông minh và IoT (CT tiên tiến)",
+      "field_group": "Khác"
+    },
+    {
+      "id": 534,
+      "name": "Hộ sinh",
+      "field_group": "Khác"
+    },
+    {
+      "id": 495,
+      "name": "Hoa Kỳ học",
+      "field_group": "Khác"
+    },
+    {
+      "id": 535,
+      "name": "Hội họa",
+      "field_group": "Khác"
+    }
+  ]
+}

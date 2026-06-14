@@ -1,0 +1,75 @@
+---
+description: Testing, verification, and change reporting rules
+alwaysApply: true
+---
+
+# Testing and Reporting Rules
+
+## After every code change
+
+Provide **verification steps** the user can run. State what success looks like (HTTP status, row counts, UI behavior).
+
+## Backend changes
+
+```bash
+cd backend
+npm run lint
+npm run build
+npm run start:dev
+```
+
+Then verify:
+
+- Health: `GET http://localhost:3001/api` (or app root)
+- Swagger: open `http://localhost:3001/api/docs`
+- For API changes: one example request (curl or PowerShell `Invoke-RestMethod`) with expected JSON shape
+
+If entities or import logic changed:
+
+```bash
+npm run import:excel
+```
+
+Confirm console counts match expectations (universities, majors, cutoff_scores).
+
+## Frontend changes (when `frontend/` exists)
+
+```bash
+cd frontend
+npm run lint
+npm run build
+npm run dev
+```
+
+Open `http://localhost:3000` and test the affected route.
+
+## Data / scrape changes
+
+```bash
+# from repo root
+pip install pandas openpyxl requests beautifulsoup4 lxml
+python scrape_and_fill_excel.py
+cd backend && npm run import:excel
+```
+
+Compare Excel row counts with `SELECT COUNT(*)` on `cutoff_scores` in PostgreSQL.
+
+## Database checks (optional SQL)
+
+```sql
+SELECT COUNT(*) FROM universities;
+SELECT COUNT(*) FROM cutoff_scores;
+```
+
+## Report format for the user
+
+When finishing a task, include:
+
+1. **What changed** (files / behavior)
+2. **How to verify** (commands above)
+3. **Known limits** (e.g. import TRUNCATE, missing frontend, chatbot not on Ollama yet)
+
+## Do not
+
+- Claim a feature works without running or describing a concrete check
+- Skip reporting when import or auth flows are touched
