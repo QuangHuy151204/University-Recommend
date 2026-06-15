@@ -9,7 +9,7 @@ import {
     PageShell,
 } from '@/components/ui/PageLayout';
 import { ApiClientError } from '@/lib/api';
-import { MajorProgramCard } from '@/components/majors/MajorProgramCard';
+import { MajorProgramsSection } from '@/components/majors/MajorProgramsSection';
 import type { MajorDetail } from '@/types';
 
 interface PageProps {
@@ -58,7 +58,9 @@ export default async function MajorDetailPage({ params }: PageProps) {
     if (errorMessage) {
         return (
             <PageShell>
-                <BackLink href="/majors" label="Danh sách ngành" />
+                <div className="mb-5">
+                    <BackLink href="/majors" label="Danh sách ngành" />
+                </div>
                 <AlertBox variant="error">{errorMessage}</AlertBox>
             </PageShell>
         );
@@ -73,7 +75,9 @@ export default async function MajorDetailPage({ params }: PageProps) {
 
     return (
         <PageShell>
-            <BackLink href="/majors" label="Danh sách ngành" />
+            <div className="mb-5">
+                <BackLink href="/majors" label="Danh sách ngành" />
+            </div>
 
             <PageHeader
                 eyebrow="Chi tiết ngành"
@@ -157,26 +161,7 @@ export default async function MajorDetailPage({ params }: PageProps) {
                     Chọn trường để xem điểm chuẩn và chương trình đào tạo chi tiết
                 </p>
 
-                {programs.length === 0 ? (
-                    <div className="card mt-5 p-8 text-center text-sm text-slate-500">
-                        Chưa có trường nào liên kết với ngành này trong CSDL.
-                    </div>
-                ) : (
-                    <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                        {programs.map((p) => (
-                            <MajorProgramCard
-                                key={p.id}
-                                programId={p.id}
-                                universityId={p.university.id}
-                                universityName={p.university.name}
-                                universityShortName={p.university.short_name}
-                                universityLocation={p.university.location}
-                                trainingProgram={p.training_program}
-                                tuitionFee={p.tuition_fee}
-                            />
-                        ))}
-                    </div>
-                )}
+                <MajorProgramsSection programs={programs} />
             </section>
 
             <p className="mt-8 flex items-center justify-center gap-2 text-center text-xs text-slate-500">

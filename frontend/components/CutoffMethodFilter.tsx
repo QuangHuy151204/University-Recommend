@@ -8,6 +8,7 @@ import {
     groupCutoffScores,
 } from '@/lib/cutoff-display';
 import { FavoriteProgramButton } from '@/components/universities/FavoriteProgramButton';
+import { SearchField } from '@/components/ui/SearchField';
 
 interface ProgramCutoff {
     programId: number;
@@ -45,14 +46,32 @@ export function CutoffMethodFilter({
     programs,
 }: CutoffMethodFilterProps) {
     const [methodCode, setMethodCode] = useState<string>('');
+    const [majorQuery, setMajorQuery] = useState('');
 
     const selected = useMemo(
         () => methods.find((m) => m.method_code === methodCode) ?? null,
         [methods, methodCode],
     );
 
+    const queryFilteredPrograms = useMemo(() => {
+        const q = majorQuery.trim().toLowerCase();
+        if (!q) return programs;
+        return programs.filter((p) => {
+            const haystack = [
+                p.majorName,
+                p.majorCode,
+                p.fieldGroup,
+                p.trainingProgram,
+            ]
+                .filter(Boolean)
+                .join(' ')
+                .toLowerCase();
+            return haystack.includes(q);
+        });
+    }, [programs, majorQuery]);
+
     const sortedPrograms = useMemo(() => {
-        return programs
+        return queryFilteredPrograms
             .map((p) => {
                 const filtered = p.cutoffs
                     .filter((c) => matchesMethod(c.admission_method, selected))
@@ -62,10 +81,19 @@ export function CutoffMethodFilter({
                 return { ...p, filtered, grouped, latest };
             })
             .sort((a, b) => b.latest - a.latest);
-    }, [programs, selected]);
+    }, [queryFilteredPrograms, selected]);
 
     return (
         <div>
+            <div className="mb-4 flex flex-wrap items-center justify-end gap-3">
+                <SearchField
+                    value={majorQuery}
+                    onChange={setMajorQuery}
+                    placeholder="Tìm ngành..."
+                    className="sm:max-w-sm"
+                />
+            </div>
+
             {methods.length > 0 && (
                 <div className="mb-4 flex flex-wrap items-center gap-3">
                     <label
@@ -91,7 +119,14 @@ export function CutoffMethodFilter({
             )}
 
             <div className="space-y-4">
-                {sortedPrograms.map((p) => (
+                {sortedPrograms.length === 0 ? (
+                    <div className="card p-8 text-center text-sm text-slate-600">
+                        {majorQuery.trim()
+                            ? `Không tìm thấy ngành nào cho "${majorQuery.trim()}".`
+                            : 'Chưa có dữ liệu ngành.'}
+                    </div>
+                ) : (
+                    sortedPrograms.map((p) => (
                     <article key={p.programId} className="card p-5 sm:p-6">
                         <div className="flex flex-wrap items-start justify-between gap-3">
                             <div className="min-w-0">
@@ -197,7 +232,8 @@ export function CutoffMethodFilter({
                             </p>
                         )}
                     </article>
-                ))}
+                    ))
+                )}
             </div>
         </div>
     );

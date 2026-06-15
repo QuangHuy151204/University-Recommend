@@ -50,7 +50,9 @@ export default async function UniversityDetailPage({ params }: PageProps) {
     if (errorMessage) {
         return (
             <PageShell>
-                <BackLink href="/universities" label="Danh sách trường" />
+                <div className="mb-5">
+                    <BackLink href="/universities" label="Danh sách trường" />
+                </div>
                 <AlertBox variant="error">{errorMessage}</AlertBox>
             </PageShell>
         );
@@ -72,7 +74,9 @@ export default async function UniversityDetailPage({ params }: PageProps) {
 
     return (
         <PageShell>
-            <BackLink href="/universities" label="Danh sách trường" />
+            <div className="mb-5">
+                <BackLink href="/universities" label="Danh sách trường" />
+            </div>
 
             <PageHeader
                 eyebrow="Chi tiết trường"

@@ -1,8 +1,12 @@
+'use client';
+
 import Link from 'next/link';
+import { useLocale } from '@/lib/i18n/locale';
 
 type FooterVariant = 'public' | 'app';
 
 export function Footer({ variant = 'app' }: { variant?: FooterVariant }) {
+    const { t } = useLocale();
     const isPublic = variant === 'public';
 
     return (
@@ -12,26 +16,24 @@ export function Footer({ variant = 'app' }: { variant?: FooterVariant }) {
                     <div>
                         <p className="font-display text-xl font-bold">UniGuide AI</p>
                         <p className="mt-3 max-w-xs text-sm leading-relaxed text-slate-300">
-                            Giúp học sinh THPT tại Hà Nội tra cứu trường, ngành và điểm
-                            chuẩn — nhận gợi ý phù hợp năng lực, sở thích và ngân sách học
-                            phí.
+                            {t('footer.tagline')}
                         </p>
                     </div>
                     <div>
                         <p className="text-xs font-semibold tracking-wider text-secondary">
-                            {isPublic ? 'BẮT ĐẦU' : 'KHÁM PHÁ'}
+                            {isPublic ? t('footer.start') : t('footer.explore')}
                         </p>
                         <ul className="mt-3 space-y-2 text-sm text-slate-300">
                             {isPublic ? (
                                 <>
                                     <li>
                                         <Link href="/register" className="hover:text-white">
-                                            Đăng ký tài khoản
+                                            {t('footer.register')}
                                         </Link>
                                     </li>
                                     <li>
                                         <Link href="/login" className="hover:text-white">
-                                            Đăng nhập
+                                            {t('nav.login')}
                                         </Link>
                                     </li>
                                 </>
@@ -39,17 +41,17 @@ export function Footer({ variant = 'app' }: { variant?: FooterVariant }) {
                                 <>
                                     <li>
                                         <Link href="/universities" className="hover:text-white">
-                                            Tra cứu trường
+                                            {t('footer.searchUnis')}
                                         </Link>
                                     </li>
                                     <li>
                                         <Link href="/majors" className="hover:text-white">
-                                            Khám phá ngành
+                                            {t('footer.exploreMajors')}
                                         </Link>
                                     </li>
                                     <li>
                                         <Link href="/cutoff-scores" className="hover:text-white">
-                                            Điểm chuẩn 2023–2025
+                                            {t('footer.cutoff')}
                                         </Link>
                                     </li>
                                 </>
@@ -58,27 +60,27 @@ export function Footer({ variant = 'app' }: { variant?: FooterVariant }) {
                     </div>
                     <div>
                         <p className="text-xs font-semibold tracking-wider text-secondary">
-                            HỖ TRỢ
+                            {t('footer.support')}
                         </p>
                         <ul className="mt-3 space-y-2 text-sm text-slate-300">
-                            <li>Phạm vi: Hà Nội</li>
-                            <li>Điểm chuẩn 2023–2025</li>
+                            <li>{t('footer.scope')}</li>
+                            <li>{t('footer.cutoffYears')}</li>
                         </ul>
                     </div>
                     <div>
                         <p className="text-xs font-semibold tracking-wider text-secondary">
-                            TÍNH NĂNG
+                            {t('footer.features')}
                         </p>
                         <ul className="mt-3 space-y-2 text-sm text-slate-300">
-                            <li>Tra cứu trường & ngành</li>
-                            <li>Tra điểm chuẩn theo trường</li>
-                            <li>Chatbot tư vấn AI</li>
-                            <li>So sánh trường</li>
+                            <li>{t('footer.featureSearch')}</li>
+                            <li>{t('footer.featureCutoff')}</li>
+                            <li>{t('footer.featureChatbot')}</li>
+                            <li>{t('footer.featureCompare')}</li>
                         </ul>
                     </div>
                 </div>
                 <div className="mt-10 border-t border-white/10 pt-6 text-center text-xs text-slate-400">
-                    © {new Date().getFullYear()} UniGuide AI. Gợi ý đại học minh bạch cho Gen Z.
+                    {t('footer.copyright', { year: new Date().getFullYear() })}
                 </div>
             </div>
         </footer>

@@ -46,6 +46,9 @@ venv/
 # ─── Data pipeline artifacts (regenerable) ──────────────────
 _scrape_log.json
 
+# ─── Local docs / diagrams (not for repo) ───────────────────
+docs/
+
 # ─── Misc ───────────────────────────────────────────────────
 .vercel
 *.pem

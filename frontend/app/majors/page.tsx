@@ -1,7 +1,5 @@
 import Link from 'next/link';
 
-import { Search } from 'lucide-react';
-
 import { listMajorGroups, listMajors } from '@/services/majors';
 
 import { ApiClientError } from '@/lib/api';
@@ -11,6 +9,8 @@ import type { Major, MajorGroupSummary, Paginated } from '@/types';
 import MajorGroupGrid from '@/components/majors/MajorGroupGrid';
 
 import MajorListGrid from '@/components/majors/MajorListGrid';
+
+import { PageSearchBar } from '@/components/ui/PageLayout';
 
 
 
@@ -121,33 +121,12 @@ export default async function MajorsPage({ searchParams }: PageProps) {
 
                     </div>
 
-                    <form className="flex gap-2" action="/majors">
-
-                        <div className="relative">
-
-                            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-
-                            <input
-
-                                name="search"
-
-                                defaultValue={search}
-
-                                placeholder="Tìm ngành..."
-
-                                className="input-field !w-64 !pl-10"
-
-                            />
-
-                        </div>
-
-                        <button type="submit" className="btn-primary">
-
-                            Tìm
-
-                        </button>
-
-                    </form>
+                    <PageSearchBar
+                        action="/majors"
+                        placeholder="Tìm ngành..."
+                        defaultValue={search}
+                        className="sm:max-w-sm"
+                    />
 
                 </div>
 

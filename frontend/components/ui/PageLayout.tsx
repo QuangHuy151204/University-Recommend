@@ -1,6 +1,9 @@
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+const backControlClassName =
+    'inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-sm transition-colors hover:bg-primary-dark';
 
 export function PageShell({
     children,
@@ -18,15 +21,128 @@ export function PageShell({
     );
 }
 
-export function BackLink({ href, label }: { href: string; label: string }) {
+export function BackLink({
+    href,
+    label,
+    className,
+}: {
+    href: string;
+    /** Nhãn cho screen reader / tooltip — không hiển thị trên UI. */
+    label: string;
+    className?: string;
+}) {
     return (
         <Link
             href={href}
-            className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-tertiary transition-colors hover:text-primary"
+            aria-label={label}
+            title={label}
+            className={cn(backControlClassName, className)}
         >
             <ArrowLeft className="size-4 shrink-0" aria-hidden />
-            {label}
         </Link>
+    );
+}
+
+export function BackButton({
+    onClick,
+    label,
+    className,
+}: {
+    onClick: () => void;
+    label: string;
+    className?: string;
+}) {
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            aria-label={label}
+            title={label}
+            className={cn(backControlClassName, className)}
+        >
+            <ArrowLeft className="size-4 shrink-0" aria-hidden />
+        </button>
+    );
+}
+
+export function PageSearchBar({
+    action,
+    placeholder = 'Tìm kiếm...',
+    defaultValue,
+    hiddenFields,
+    className,
+    submitLabel = 'Tìm',
+}: {
+    action: string;
+    placeholder?: string;
+    defaultValue?: string;
+    hiddenFields?: Record<string, string>;
+    className?: string;
+    submitLabel?: string;
+}) {
+    return (
+        <form
+            className={cn('flex min-w-0 gap-2', className)}
+            action={action}
+        >
+            {hiddenFields &&
+                Object.entries(hiddenFields).map(([name, value]) => (
+                    <input key={name} type="hidden" name={name} value={value} />
+                ))}
+            <div className="relative min-w-0 flex-1">
+                <Search
+                    className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400"
+                    aria-hidden
+                />
+                <input
+                    name="search"
+                    type="search"
+                    defaultValue={defaultValue}
+                    placeholder={placeholder}
+                    className="input-field !w-full !pl-10"
+                />
+            </div>
+            <button type="submit" className="btn-primary shrink-0">
+                {submitLabel}
+            </button>
+        </form>
+    );
+}
+
+export function SubpageToolbar({
+    backHref,
+    backLabel,
+    search,
+    className,
+}: {
+    backHref: string;
+    backLabel: string;
+    search?: {
+        action: string;
+        placeholder?: string;
+        defaultValue?: string;
+        hiddenFields?: Record<string, string>;
+    };
+    className?: string;
+}) {
+    return (
+        <div
+            className={cn(
+                'mb-5 flex flex-wrap items-center justify-between gap-3',
+                className,
+            )}
+        >
+            <BackLink href={backHref} label={backLabel} />
+            {search && (
+                <PageSearchBar
+                    action={search.action}
+                    placeholder={search.placeholder}
+                    defaultValue={search.defaultValue}
+                    hiddenFields={search.hiddenFields}
+                    className="w-full sm:ml-auto sm:w-auto sm:max-w-sm"
+                />
+            )}
+        </div>
     );
 }
 

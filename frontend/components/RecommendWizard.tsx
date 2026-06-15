@@ -24,7 +24,7 @@ import type {
 const STEPS = [
     { id: 1, label: 'Điểm & khối' },
     { id: 2, label: 'Sở thích' },
-    { id: 3, label: 'Ngân sách & PT' },
+    { id: 3, label: 'Ngân sách & xét tuyển' },
     { id: 4, label: 'Kết quả' },
 ];
 
@@ -65,6 +65,17 @@ function profileToForm(p: StudentProfile | null | undefined): RecommendRequest {
     };
 }
 
+function resolveMethodLabel(
+    code: string | undefined,
+    methods: AdmissionMethod[],
+    fallback?: string | null,
+): string {
+    const method = methods.find((m) => m.method_code === code);
+    if (method) return `${method.method_name} (${method.method_code})`;
+    if (fallback) return fallback;
+    return code?.trim() || 'THPT';
+}
+
 export function RecommendWizard() {
     const { token } = useAuth();
     const [step, setStep] = useState(1);
@@ -75,8 +86,6 @@ export function RecommendWizard() {
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [response, setResponse] = useState<RecommendResponse | null>(null);
-    const [profileSynced, setProfileSynced] = useState(false);
-
     useEffect(() => {
         listAdmissionMethods()
             .then(setMethods)
@@ -146,7 +155,6 @@ export function RecommendWizard() {
         try {
             const res = await recommend(payload, token ?? undefined);
             setResponse(res);
-            setProfileSynced(false);
             if (token) {
                 try {
                     await updateProfile(
@@ -162,9 +170,8 @@ export function RecommendWizard() {
                         },
                         token,
                     );
-                    setProfileSynced(true);
                 } catch {
-                    setProfileSynced(false);
+                    // Profile sync is best-effort; results still shown.
                 }
             }
             setStep(4);
@@ -193,11 +200,11 @@ export function RecommendWizard() {
         <PageShell maxWidth="max-w-3xl">
             <PageHeader
                 eyebrow="Gợi ý"
-                title="Wizard gợi ý trường – ngành"
+                title="Gợi ý trường – ngành"
                 subtitle={
                     token
-                        ? 'Đã điền sẵn từ hồ sơ của bạn. Bạn có thể chỉnh trước khi chạy gợi ý.'
-                        : 'Điền tiêu chí để nhận danh sách Safety / Match / Reach.'
+                        ? 'Đã điền sẵn từ hồ sơ của bạn. Bạn có thể chỉnh trước khi xem gợi ý.'
+                        : 'Điền tiêu chí để nhận danh sách trường và ngành phù hợp (An toàn / Vừa sức / Cân nhắc).'
                 }
             />
 
@@ -331,7 +338,8 @@ export function RecommendWizard() {
                                 )}
                             </select>
                             <p className="mt-1 text-xs text-slate-500">
-                                Điểm chuẩn so sánh theo PT bạn chọn (mặc định THPT).
+                                Điểm chuẩn được so sánh theo phương thức xét tuyển bạn
+                                chọn (mặc định THPT Quốc gia).
                             </p>
                         </div>
                     </>
@@ -339,18 +347,25 @@ export function RecommendWizard() {
 
                 {step === 4 && response && (
                     <>
-                        {token && profileSynced && (
-                            <AlertBox variant="success">
-                                Đã lưu bộ lọc vào hồ sơ — lần sau wizard sẽ
-                                điền sẵn các giá trị này.
-                            </AlertBox>
-                        )}
                         {response.results.length === 0 && response.meta ? (
                             <RecommendEmptyState meta={response.meta} />
                         ) : (
                             <RecommendResults
                                 results={response.results}
                                 diversified={response.meta.diversified}
+                                filters={{
+                                    expectedScore: form.expected_score,
+                                    subjectCombination: form.subject_combination,
+                                    interests: form.interests,
+                                    careerGoal: form.career_goal,
+                                    budgetMaxYearly: budgetAmount,
+                                    methodLabel: resolveMethodLabel(
+                                        form.method_code,
+                                        methods,
+                                        response.meta.filtersApplied.method_label,
+                                    ),
+                                    location: APP_SCOPE_LOCATION,
+                                }}
                             />
                         )}
                     </>

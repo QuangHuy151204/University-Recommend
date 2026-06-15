@@ -10,13 +10,7 @@ export const MAJOR_GROUPS: MajorGroupDef[] = [
     group_id: 'cong-nghe-thong-tin',
     group_name: 'Công nghệ thông tin',
     description:
-      'Lập trình, phần mềm, khoa học máy tính, AI, dữ liệu, mạng máy tính, điện tử viễn thông số.',
-  },
-  {
-    group_id: 'an-toan-thong-tin',
-    group_name: 'An toàn thông tin',
-    description:
-      'Cybersecurity, bảo mật hệ thống, an ninh mạng IT, kiểm thử bảo mật — không bao gồm cảnh sát/quân đội.',
+      'Lập trình, phần mềm, khoa học máy tính, AI, dữ liệu, mạng máy tính, an toàn thông tin, cybersecurity, điện tử viễn thông số.',
   },
   {
     group_id: 'kinh-te-kinh-doanh',

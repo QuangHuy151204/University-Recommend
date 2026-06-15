@@ -87,7 +87,7 @@ const DISAMBIGUATION_RULES: DisambiguationRule[] = [
       'an toan du lieu va an ninh mang',
     ],
     exclusive: true,
-    group_ids: ['an-toan-thong-tin', 'cong-nghe-thong-tin'],
+    group_ids: ['cong-nghe-thong-tin'],
     tags: [
       'cybersecurity',
       'security',
@@ -102,7 +102,7 @@ const DISAMBIGUATION_RULES: DisambiguationRule[] = [
     patterns: ['an ninh mang'],
     match: 'exact',
     exclusive: true,
-    group_ids: ['an-toan-thong-tin', 'cong-nghe-thong-tin'],
+    group_ids: ['cong-nghe-thong-tin'],
     tags: ['cybersecurity', 'network security', 'an ninh mạng', 'IT security'],
   },
   {
@@ -216,11 +216,6 @@ const DOMAIN_RULES: DomainRule[] = [
     tags: ['aerospace', 'satellite', 'space science', 'vũ trụ', 'vệ tinh'],
   },
   {
-    group_id: 'an-toan-thong-tin',
-    patterns: ['bao mat', 'pentest', 'forensic it'],
-    tags: ['cybersecurity', 'security', 'bảo mật'],
-  },
-  {
     group_id: 'cong-nghe-thong-tin',
     patterns: [
       'cong nghe thong tin',
@@ -242,6 +237,9 @@ const DOMAIN_RULES: DomainRule[] = [
       'do hoa game',
       'iot',
       'he thong nhung',
+      'bao mat',
+      'pentest',
+      'forensic it',
     ],
     tags: [
       'programming',
@@ -252,6 +250,9 @@ const DOMAIN_RULES: DomainRule[] = [
       'lập trình',
       'phần mềm',
       'máy tính',
+      'cybersecurity',
+      'security',
+      'bảo mật',
     ],
   },
   {
@@ -590,7 +591,7 @@ const LEGACY_FIELD_GROUP_MAP: Record<string, string> = {
   'kien truc - thiet ke': 'kien-truc-thiet-ke',
   'hoa hoc - sinh hoc': 'hoa-hoc-sinh-hoc',
   'quan ly - hanh chinh': 'quan-ly-hanh-chinh',
-  'an toan thong tin': 'an-toan-thong-tin',
+  'an toan thong tin': 'cong-nghe-thong-tin',
   'an ninh - quoc phong': 'an-ninh-quoc-phong',
   'khoa hoc vu tru - hang khong': 'khoa-hoc-vu-tru-hang-khong',
 };

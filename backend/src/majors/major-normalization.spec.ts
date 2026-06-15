@@ -9,11 +9,13 @@ import {
 import { classifyMajor } from './major-classification';
 
 describe('major-normalization', () => {
-  it('canonicalFieldGroup maps An toàn thông tin before CNTT', () => {
+  it('canonicalFieldGroup maps IT security majors into CNTT', () => {
     expect(canonicalFieldGroup('An toàn thông tin', null)).toBe(
-      'An toàn thông tin',
+      'Công nghệ thông tin',
     );
-    expect(canonicalFieldGroup('An ninh mạng', null)).toBe('An toàn thông tin');
+    expect(canonicalFieldGroup('An ninh mạng', null)).toBe(
+      'Công nghệ thông tin',
+    );
     expect(canonicalFieldGroup('Công nghệ thông tin', null)).toBe(
       'Công nghệ thông tin',
     );
@@ -22,7 +24,7 @@ describe('major-normalization', () => {
 
   it('classifyMajor separates IT security from law enforcement', () => {
     const cyber = classifyMajor('An toàn thông tin', null);
-    expect(cyber.group_ids).toContain('an-toan-thong-tin');
+    expect(cyber.group_ids).toContain('cong-nghe-thong-tin');
     expect(cyber.group_ids).not.toContain('an-ninh-quoc-phong');
 
     const police = classifyMajor(
@@ -30,7 +32,7 @@ describe('major-normalization', () => {
       null,
     );
     expect(police.group_ids).toContain('an-ninh-quoc-phong');
-    expect(police.group_ids).not.toContain('an-toan-thong-tin');
+    expect(police.group_ids).not.toContain('cong-nghe-thong-tin');
 
     const border = classifyMajor('Biên phòng (Quân khu 4)', null);
     expect(border.group_ids).toEqual(['an-ninh-quoc-phong']);
@@ -42,9 +44,10 @@ describe('major-normalization', () => {
   });
 
   it('groupToSlug and resolveGroupSlug round-trip', () => {
-    expect(groupToSlug('An toàn thông tin')).toBe('an-toan-thong-tin');
+    expect(groupToSlug('An toàn thông tin')).toBe('cong-nghe-thong-tin');
+    expect(groupToSlug('Công nghệ thông tin')).toBe('cong-nghe-thong-tin');
     expect(groupToSlug('Du lịch - Dịch vụ')).toBe('du-lich-dich-vu');
-    expect(resolveGroupSlug('an-toan-thong-tin')).toBe('An toàn thông tin');
+    expect(resolveGroupSlug('an-toan-thong-tin')).toBe('Công nghệ thông tin');
     expect(resolveGroupSlug('du-lich-dich-vu')).toBe('Du lịch - Dịch vụ');
     expect(resolveGroupSlug('unknown-slug')).toBeNull();
   });

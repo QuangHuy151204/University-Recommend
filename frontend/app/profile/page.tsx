@@ -180,7 +180,7 @@ export default function ProfilePage() {
             <PageHeader
                 eyebrow="Tài khoản"
                 title="Hồ sơ học sinh"
-                subtitle="Thông tin này được dùng để điền sẵn wizard gợi ý và tư vấn qua chatbot."
+                subtitle="Thông tin này được dùng để điền sẵn form gợi ý và tư vấn qua chatbot."
             />
 
             {me && (
@@ -327,7 +327,7 @@ export default function ProfilePage() {
                         )}
                     </select>
                     <p className="mt-1 text-xs text-slate-500">
-                        Dùng làm mặc định cho wizard gợi ý và tra cứu điểm chuẩn.
+                        Dùng làm mặc định cho trang gợi ý và tra cứu điểm chuẩn.
                     </p>
                 </div>
 
@@ -354,7 +354,7 @@ export default function ProfilePage() {
                         {saving ? 'Đang lưu…' : 'Lưu hồ sơ'}
                     </button>
                     <Link href="/recommend" className="btn-secondary">
-                        Chạy wizard gợi ý
+                        Gợi ý trường – ngành
                     </Link>
                     <Link href="/chatbot" className="btn-secondary">
                         Tư vấn AI

@@ -22,7 +22,9 @@ export default async function UniversityComparePage({ searchParams }: PageProps)
     if (ids.length < 2) {
         return (
             <PageShell maxWidth="max-w-3xl">
-                <BackLink href="/universities" label="Danh sách trường" />
+                <div className="mb-5">
+                    <BackLink href="/universities" label="Danh sách trường" />
+                </div>
                 <PageHeader
                     eyebrow="So sánh trường"
                     title="Chọn ít nhất 2 trường"
@@ -56,7 +58,9 @@ export default async function UniversityComparePage({ searchParams }: PageProps)
     if (errorMessage) {
         return (
             <PageShell>
-                <BackLink href="/universities" label="Danh sách trường" />
+                <div className="mb-5">
+                    <BackLink href="/universities" label="Danh sách trường" />
+                </div>
                 <AlertBox variant="error">{errorMessage}</AlertBox>
             </PageShell>
         );
@@ -82,7 +86,9 @@ export default async function UniversityComparePage({ searchParams }: PageProps)
 
     return (
         <PageShell maxWidth="max-w-6xl">
-            <BackLink href="/universities" label="Danh sách trường" />
+            <div className="mb-5">
+                <BackLink href="/universities" label="Danh sách trường" />
+            </div>
             <PageHeader
                 eyebrow="So sánh trường"
                 title={`Đang so sánh ${universities.length} trường`}

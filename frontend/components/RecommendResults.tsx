@@ -3,21 +3,22 @@ import Link from 'next/link';
 import type { AdmissionTier, RecommendationItem } from '@/types';
 
 import {
-
     formatSubjectCombinations,
-
     groupCutoffScores,
-
 } from '@/lib/cutoff-display';
+
+import {
+    RecommendFilterSummary,
+    type RecommendFilterSummaryData,
+} from '@/components/RecommendFilterSummary';
 
 import { formatTuitionVnd } from '@/lib/utils';
 
 
-
 const TIER_LABELS: Record<AdmissionTier, string> = {
-    safety: 'Safety (An toàn)',
-    match: 'Match (Vừa sức)',
-    reach: 'Reach (Cân nhắc)',
+    safety: 'An toàn',
+    match: 'Vừa sức',
+    reach: 'Cân nhắc',
 };
 
 
@@ -44,18 +45,6 @@ const TIER_STYLES: Record<AdmissionTier, string> = {
 
 
 const TIER_ORDER: AdmissionTier[] = ['safety', 'match', 'reach'];
-
-
-
-function matchBadge(score: number) {
-
-    if (score >= 80) return 'bg-secondary/25 text-primary';
-
-    if (score >= 60) return 'bg-amber-100 text-amber-800';
-
-    return 'bg-slate-100 text-slate-700';
-
-}
 
 
 
@@ -185,16 +174,6 @@ function ResultCard({ r }: { r: RecommendationItem }) {
 
                     {tierBadge(r.admissionTier)}
 
-                    <span
-
-                        className={`rounded-full px-4 py-1.5 text-sm font-bold ${matchBadge(r.matchScore)}`}
-
-                    >
-
-                        {r.matchScore}% phù hợp
-
-                    </span>
-
                 </div>
 
             </div>
@@ -292,19 +271,14 @@ function ResultCard({ r }: { r: RecommendationItem }) {
 
 
 export function RecommendResults({
-
     results,
-
     diversified,
-
+    filters,
 }: {
-
     results: RecommendationItem[];
-
     diversified?: boolean;
-
+    filters?: RecommendFilterSummaryData;
 }) {
-
     const tierCounts = TIER_ORDER.reduce(
 
         (acc, tier) => {
@@ -336,68 +310,49 @@ export function RecommendResults({
 
 
     return (
+        <div className="space-y-6">
+            <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(240px,280px)] lg:items-start">
+                <div className="space-y-3">
+                    <div>
+                        <h2 className="font-display text-xl font-bold text-primary sm:text-2xl">
+                            Top {results.length} gợi ý phù hợp
+                        </h2>
+                        {diversified && (
+                            <p className="mt-1 text-sm text-slate-500">
+                                Tối đa 3 ngành / trường để danh sách đa dạng hơn.
+                            </p>
+                        )}
+                    </div>
 
-        <div className="mt-10 space-y-6">
-
-            <div>
-
-                <h2 className="font-display text-lg font-bold text-primary">
-
-                    Top {results.length} gợi ý phù hợp
-
-                </h2>
-
-                {diversified && (
-
-                    <p className="mt-1 text-xs text-slate-500">
-
-                        Tối đa 3 ngành / trường để danh sách đa dạng hơn.
-
-                    </p>
-
-                )}
-
-                <div className="mt-3 flex flex-wrap gap-2 text-xs">
-
-                    {TIER_ORDER.map((tier) =>
-
-                        tierCounts[tier] > 0 ? (
-
-                            <span
-
-                                key={tier}
-
-                                className={`rounded-full px-3 py-1 font-medium ${TIER_STYLES[tier]}`}
-
-                                title={TIER_LEGEND[tier]}
-
-                            >
-
-                                {TIER_LABELS[tier]}: {tierCounts[tier]}
-
-                            </span>
-
-                        ) : null,
-
-                    )}
-
-                    {untiered > 0 && (
-
-                        <span className="rounded-full bg-slate-100 px-3 py-1 font-medium text-slate-600">
-
-                            Chưa có chuẩn: {untiered}
-
-                        </span>
-
-                    )}
+                    <div className="rounded-xl border border-slate-100 bg-slate-50/60 px-4 py-3">
+                        <div className="flex flex-wrap gap-2 text-xs">
+                            {TIER_ORDER.map((tier) =>
+                                tierCounts[tier] > 0 ? (
+                                    <span
+                                        key={tier}
+                                        className={`rounded-full px-3 py-1 font-medium ${TIER_STYLES[tier]}`}
+                                        title={TIER_LEGEND[tier]}
+                                    >
+                                        {TIER_LABELS[tier]}: {tierCounts[tier]}
+                                    </span>
+                                ) : null,
+                            )}
+                            {untiered > 0 && (
+                                <span className="rounded-full bg-slate-100 px-3 py-1 font-medium text-slate-600">
+                                    Chưa có chuẩn: {untiered}
+                                </span>
+                            )}
+                        </div>
+                        <p className="mt-2.5 text-xs leading-relaxed text-slate-500">
+                            Phân tầng dựa trên chênh lệch giữa điểm dự kiến và điểm
+                            chuẩn gần nhất: An toàn {'\u2265'} 0, Vừa sức từ -1.0 đến{' '}
+                            {'<'} 0, Cân nhắc {'<'} -1.0.
+                        </p>
+                    </div>
                 </div>
-                <p className="mt-2 text-xs text-slate-500">
-                    Phân tầng được tính từ chênh lệch giữa điểm dự kiến và điểm chuẩn gần nhất:
-                    Safety {'\u2265'} 0, Match từ -1.0 đến {'<'} 0, Reach {'<'} -1.0.
-                </p>
 
+                {filters ? <RecommendFilterSummary {...filters} /> : null}
             </div>
-
 
 
             {grouped.map(({ tier, items }) => (

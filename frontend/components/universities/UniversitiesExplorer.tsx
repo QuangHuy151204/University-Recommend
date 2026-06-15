@@ -7,13 +7,13 @@ import {
     Filter,
     MapPin,
     Banknote,
-    Star,
     Bot,
     Search,
     X,
     Plus,
 } from 'lucide-react';
 import type { Paginated, University } from '@/types';
+import { useLocale } from '@/lib/i18n/locale';
 import { formatTuitionVnd } from '@/lib/utils';
 import {
     buildComparePath,
@@ -53,6 +53,7 @@ export function UniversitiesExplorer({
     majorName,
     maxTuition,
 }: Props) {
+    const { t } = useLocale();
     const router = useRouter();
     const compare = useCompareEntries();
     const majorPickerRef = useRef<MajorSearchPickerHandle>(null);
@@ -69,7 +70,6 @@ export function UniversitiesExplorer({
     const [tuitionMax, setTuitionMax] = useState(
         maxTuition ?? 30_000_000,
     );
-    const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
     const [applyingFilters, setApplyingFilters] = useState(false);
 
     const data = initial.data;
@@ -84,12 +84,15 @@ export function UniversitiesExplorer({
         <>
             <SubjectCombinationPicker
                 id="filter-subject"
+                label={t('universities.subjectLabel')}
                 value={subjectCombo}
                 onChange={setSubjectCombo}
             />
             <MajorSearchPicker
                 ref={majorPickerRef}
                 id="filter-major"
+                label={t('universities.majorLabel')}
+                hint=""
                 value={selectedMajorId}
                 onChange={setSelectedMajorId}
             />
@@ -98,7 +101,7 @@ export function UniversitiesExplorer({
                     htmlFor="filter-score"
                     className="text-xs font-semibold uppercase text-slate-500"
                 >
-                    Mức điểm
+                    {t('universities.scoreLabel')}
                 </label>
                 <input
                     id="filter-score"
@@ -106,14 +109,13 @@ export function UniversitiesExplorer({
                     min={0}
                     max={30}
                     step={0.05}
-                    placeholder="VD: 24"
+                    placeholder={t('universities.scorePlaceholder')}
                     value={scoreInput}
                     onChange={(e) => setScoreInput(e.target.value)}
                     className="input-field mt-2"
                 />
                 <p className="mt-1.5 text-xs text-slate-500">
-                    Điểm dự kiến của bạn (0–30). Lọc trường có ngành khớp tổ
-                    hợp với điểm chuẩn năm mới nhất (2023–2025) ≤ mức này.
+                    {t('universities.scoreHint')}
                 </p>
             </div>
             <div>
@@ -124,7 +126,7 @@ export function UniversitiesExplorer({
                         onChange={(e) => setTuitionEnabled(e.target.checked)}
                         className="rounded text-primary"
                     />
-                    Học phí (tuỳ chọn)
+                    {t('universities.tuitionOptional')}
                 </label>
                 {tuitionEnabled && (
                     <>
@@ -140,17 +142,19 @@ export function UniversitiesExplorer({
                             className="mt-3 w-full accent-primary"
                         />
                         <div className="mt-1 flex justify-between text-xs text-slate-500">
-                            <span>5 triệu</span>
+                            <span>{t('universities.tuitionMin')}</span>
                             <span className="font-semibold text-primary">
-                                Tối đa: {formatTuitionSlider(tuitionMax)}
+                                {t('universities.tuitionMaxLabel', {
+                                    value: formatTuitionSlider(tuitionMax),
+                                })}
                             </span>
-                            <span>80 triệu</span>
+                            <span>{t('universities.tuitionMax')}</span>
                         </div>
                     </>
                 )}
             </div>
             <p className="rounded-lg bg-neutral px-3 py-2 text-xs text-slate-600">
-                Hiện đang là khu vực Hà Nội.
+                {t('universities.scopeNote')}
             </p>
         </>
     );
@@ -183,7 +187,6 @@ export function UniversitiesExplorer({
             if (resolved.blocked) return;
             const resolvedMajorId = resolved.majorId;
 
-            setMobileFiltersOpen(false);
             const q = new URLSearchParams();
             if (search) q.set('search', search);
             if (subjectCombo) q.set('subject_combination', subjectCombo);
@@ -217,18 +220,20 @@ export function UniversitiesExplorer({
     };
 
     function formatTuitionSlider(value: number): string {
-        return `${Math.round(value / 1_000_000)} triệu/năm`;
+        return t('universities.tuitionPerYear', {
+            value: Math.round(value / 1_000_000),
+        });
     }
 
     return (
         <div className="bg-neutral pb-28">
-            <div className="mx-auto flex max-w-7xl gap-8 px-6 py-8">
+            <div className="mx-auto flex max-w-7xl flex-col gap-8 px-6 py-8 lg:flex-row">
                 {/* Sidebar filters */}
-                <aside className="hidden w-64 shrink-0 lg:block">
-                    <div className="card sticky top-24 p-5">
+                <aside className="w-full shrink-0 lg:w-64">
+                    <div className="card lg:sticky lg:top-24 p-5">
                         <div className="flex items-center gap-2 font-semibold text-primary">
                             <Filter className="size-4" />
-                            Bộ lọc tìm kiếm
+                            {t('universities.filtersTitle')}
                         </div>
                         <form onSubmit={applyFilters} className="mt-5 space-y-5">
                             {filterFields}
@@ -239,8 +244,8 @@ export function UniversitiesExplorer({
                             >
                                 <Search className="size-4" />
                                 {applyingFilters
-                                    ? 'Đang áp dụng…'
-                                    : 'Áp dụng bộ lọc'}
+                                    ? t('universities.applying')
+                                    : t('universities.applyFilters')}
                             </button>
                         </form>
                     </div>
@@ -251,52 +256,57 @@ export function UniversitiesExplorer({
                     <div className="flex flex-wrap items-end justify-between gap-4">
                         <div className="min-w-0 flex-1">
                             <h1 className="font-display text-2xl font-bold text-primary">
-                                Kết quả tìm kiếm
+                                {t('universities.resultsTitle')}
                             </h1>
                             <p className="mt-1 text-sm text-slate-600">
-                                Tìm thấy {initial.total} trường đại học
-                                {search ? ` cho "${search}"` : ''} · trang{' '}
-                                {initial.page}/{initial.totalPages}
+                                {t('universities.found', {
+                                    total: initial.total,
+                                    searchPart: search
+                                        ? t('universities.foundSearchPart', {
+                                              search,
+                                          })
+                                        : '',
+                                    page: initial.page,
+                                    totalPages: initial.totalPages,
+                                })}
                             </p>
                             {hasActiveCutoffFilters && (
                                 <div className="mt-2 flex flex-wrap gap-2">
                                     {subjectCombination && (
                                         <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
-                                            Khối {subjectCombination}
+                                            {t('universities.filterCombo', {
+                                                combo: subjectCombination,
+                                            })}
                                         </span>
                                     )}
                                     {minScore != null && (
                                         <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
-                                            Điểm ≤ {minScore}
+                                            {t('universities.filterScore', {
+                                                score: minScore,
+                                            })}
                                         </span>
                                     )}
                                     {majorId != null && (
                                         <span className="rounded-full bg-secondary/15 px-2.5 py-0.5 text-xs font-medium text-primary">
-                                            Ngành:{' '}
-                                            {majorName ?? `#${majorId}`}
+                                            {t('universities.filterMajor', {
+                                                name: majorName ?? `#${majorId}`,
+                                            })}
                                         </span>
                                     )}
                                     {maxTuition != null && (
                                         <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-700">
-                                            Học phí ≤{' '}
-                                            {formatTuitionSlider(maxTuition)}
+                                            {t('universities.filterTuition', {
+                                                value: formatTuitionSlider(maxTuition),
+                                            })}
                                         </span>
                                     )}
                                 </div>
                             )}
                         </div>
-                        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
-                            <button
-                                type="button"
-                                onClick={() => setMobileFiltersOpen(true)}
-                                className="btn-secondary lg:hidden"
-                            >
-                                <Filter className="size-4" />
-                                Bộ lọc
-                            </button>
+                        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:justify-end">
                             <select className="input-field !w-auto flex-1 text-sm sm:flex-none">
-                                <option>Sắp xếp: Phù hợp nhất</option>
-                                <option>Tên A–Z</option>
+                                <option>{t('universities.sortBest')}</option>
+                                <option>{t('universities.sortAz')}</option>
                             </select>
                         </div>
                     </div>
@@ -319,7 +329,7 @@ export function UniversitiesExplorer({
                                                 </h2>
                                                 <p className="mt-1 flex items-center gap-1 text-xs text-slate-500">
                                                     <MapPin className="size-3.5" />
-                                                    {u.location ?? 'Hà Nội'}
+                                                    {u.location ?? t('universities.hanoi')}
                                                 </p>
                                                 <p className="mt-0.5 flex items-center gap-1 text-xs text-slate-600">
                                                     <Banknote className="size-3.5" />
@@ -331,10 +341,6 @@ export function UniversitiesExplorer({
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-3">
-                                            <span className="flex items-center gap-1 text-xs text-slate-500">
-                                                <Star className="size-3.5 fill-amber-400 text-amber-400" />
-                                                4.8
-                                            </span>
                                             <label className="flex cursor-pointer items-center gap-1.5 text-xs text-slate-600">
                                                 <input
                                                     type="checkbox"
@@ -342,7 +348,7 @@ export function UniversitiesExplorer({
                                                     onChange={() => toggleCompare(u)}
                                                     className="rounded text-primary"
                                                 />
-                                                So sánh
+                                                {t('universities.compare')}
                                             </label>
                                         </div>
                                     </div>
@@ -354,7 +360,7 @@ export function UniversitiesExplorer({
                                             href={`/cutoff-scores?university=${u.id}`}
                                             className="badge-score transition-colors hover:bg-primary/15"
                                         >
-                                            Xem điểm chuẩn
+                                            {t('universities.viewCutoff')}
                                         </Link>
                                     </div>
                                     <div className="mt-4 flex gap-2">
@@ -362,14 +368,14 @@ export function UniversitiesExplorer({
                                             href={`/universities/${u.id}`}
                                             className="btn-secondary flex-1 text-center sm:flex-none"
                                         >
-                                            Chi tiết
+                                            {t('universities.details')}
                                         </Link>
                                         <Link
                                             href={`/chatbot?uni=${encodeURIComponent(u.short_name || u.name)}`}
                                             className="btn-primary flex-1 sm:flex-none"
                                         >
                                             <Bot className="size-4" />
-                                            Hỏi AI
+                                            {t('universities.askAi')}
                                         </Link>
                                     </div>
                                 </article>
@@ -381,7 +387,7 @@ export function UniversitiesExplorer({
                         <nav className="mt-8 flex justify-center gap-2">
                             {page > 1 && (
                                 <Link href={buildPageHref(page - 1)} className="btn-secondary">
-                                    ← Trước
+                                    {t('universities.prev')}
                                 </Link>
                             )}
                             <span className="flex items-center px-3 text-sm text-slate-600">
@@ -389,7 +395,7 @@ export function UniversitiesExplorer({
                             </span>
                             {page < initial.totalPages && (
                                 <Link href={buildPageHref(page + 1)} className="btn-secondary">
-                                    Sau →
+                                    {t('universities.next')}
                                 </Link>
                             )}
                         </nav>
@@ -398,77 +404,27 @@ export function UniversitiesExplorer({
                     {/* AI banner */}
                     <div className="card mt-8 overflow-hidden bg-primary p-6 text-white">
                         <span className="badge-mint !bg-secondary !text-white">
-                            GỢI Ý TỪ AI
+                            {t('universities.aiBadge')}
                         </span>
                         <p className="mt-3 max-w-xl text-sm text-slate-200">
-                            Chưa tìm thấy trường phù hợp? Hãy thử chatbot — mô tả điểm
-                            số và ngành bạn quan tâm để nhận gợi ý.
+                            {t('universities.aiBanner')}
                         </p>
                         <Link
                             href="/chatbot"
                             className="btn-secondary mt-4 inline-flex !border-0"
                         >
-                            Bắt đầu tư vấn ngay
+                            {t('universities.aiCta')}
                         </Link>
                     </div>
                 </div>
             </div>
-
-            {/* Mobile filter drawer */}
-            {mobileFiltersOpen && (
-                <div
-                    className="fixed inset-0 z-50 lg:hidden"
-                    role="dialog"
-                    aria-modal="true"
-                    aria-label="Bộ lọc tìm kiếm"
-                >
-                    <button
-                        type="button"
-                        className="absolute inset-0 bg-black/40"
-                        aria-label="Đóng bộ lọc"
-                        onClick={() => setMobileFiltersOpen(false)}
-                    />
-                    <div className="absolute bottom-0 left-0 right-0 max-h-[85vh] overflow-y-auto rounded-t-2xl bg-white p-5 shadow-xl">
-                        <div className="mb-4 flex items-center justify-between">
-                            <div className="flex items-center gap-2 font-semibold text-primary">
-                                <Filter className="size-4" />
-                                Bộ lọc tìm kiếm
-                            </div>
-                            <button
-                                type="button"
-                                onClick={() => setMobileFiltersOpen(false)}
-                                className="rounded-lg p-2 text-slate-500 hover:bg-neutral"
-                                aria-label="Đóng"
-                            >
-                                <X className="size-5" />
-                            </button>
-                        </div>
-                        <form
-                            onSubmit={applyFilters}
-                            className="space-y-5 pb-4"
-                        >
-                            {filterFields}
-                            <button
-                                type="submit"
-                                className="btn-accent w-full"
-                                disabled={applyingFilters}
-                            >
-                                <Search className="size-4" />
-                                {applyingFilters
-                                    ? 'Đang áp dụng…'
-                                    : 'Áp dụng bộ lọc'}
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            )}
 
             {/* Compare bar */}
             {compare.length > 0 && (
                 <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200 bg-white px-6 py-4 shadow-lg">
                     <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4">
                         <span className="text-sm font-semibold text-primary">
-                            Đang so sánh {compare.length} trường
+                            {t('universities.comparing', { count: compare.length })}
                         </span>
                         <div className="flex flex-wrap items-center gap-2">
                             {compare.map((e) => (
@@ -500,7 +456,7 @@ export function UniversitiesExplorer({
                                 onClick={clearCompare}
                                 className="text-sm text-slate-500 hover:text-primary"
                             >
-                                Xóa hết
+                                {t('universities.clearAll')}
                             </button>
                             <button
                                 type="button"
@@ -508,7 +464,7 @@ export function UniversitiesExplorer({
                                 disabled={compare.length < 2}
                                 className="btn-primary disabled:cursor-not-allowed disabled:opacity-50"
                             >
-                                So sánh ngay
+                                {t('universities.compareNow')}
                             </button>
                         </div>
                     </div>

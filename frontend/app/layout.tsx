@@ -3,6 +3,7 @@ import { Hanken_Grotesk, Inter } from 'next/font/google';
 import './globals.css';
 import { AppShell } from '@/components/AppShell';
 import { AuthProvider } from '@/lib/auth';
+import { LocaleProvider } from '@/lib/i18n/locale';
 
 const inter = Inter({
     variable: '--font-inter',
@@ -32,7 +33,9 @@ export default function RootLayout({
         >
             <body className="flex min-h-full flex-col bg-background text-foreground">
                 <AuthProvider>
-                    <AppShell>{children}</AppShell>
+                    <LocaleProvider>
+                        <AppShell>{children}</AppShell>
+                    </LocaleProvider>
                 </AuthProvider>
             </body>
         </html>

@@ -19,7 +19,7 @@ function emptyMessage(
                 body: combo
                     ? isRareCombo
                       ? `Tổ hợp ${combo} (Toán, Sinh, Anh) có ít ngành công bố điểm chuẩn trong phạm vi Hà Nội${interests ? ` liên quan "${interests}"` : ''}.`
-                      : `Trong dữ liệu hiện có, không tìm thấy ngành nào có điểm chuẩn tổ hợp ${combo}${interests ? ` liên quan "${interests}"` : ''} (PT ${method}).`
+                      : `Trong dữ liệu hiện có, không tìm thấy ngành nào có điểm chuẩn tổ hợp ${combo}${interests ? ` liên quan "${interests}"` : ''} (phương thức ${method}).`
                     : 'Không có ngành phù hợp tổ hợp môn bạn chọn.',
                 hints: isRareCombo
                     ? [
@@ -38,11 +38,11 @@ function emptyMessage(
             return {
                 title: 'Chưa đủ điểm phù hợp',
                 body: combo
-                    ? `Có ngành khớp tổ hợp ${combo} nhưng điểm dự kiến chưa đạt ngưỡng gợi ý so với điểm chuẩn (PT ${method}).`
+                    ? `Có ngành khớp tổ hợp ${combo} nhưng điểm dự kiến chưa đạt ngưỡng gợi ý so với điểm chuẩn (phương thức ${method}).`
                     : 'Có ngành khớp tiêu chí nhưng điểm dự kiến chưa đủ cao.',
                 hints: [
-                    'Nếu muốn có kết quả sớm, thử mở rộng từ khóa ngành để lấy thêm nhóm Reach (Cân nhắc).',
-                    'Kiểm tra lại điểm dự kiến và phương thức xét tuyển để cải thiện nhóm Match/Safety.',
+                    'Nếu muốn có kết quả sớm, thử mở rộng từ khóa ngành để lấy thêm nhóm Cân nhắc.',
+                    'Kiểm tra lại điểm dự kiến và phương thức xét tuyển để cải thiện nhóm Vừa sức / An toàn.',
                     'Tra cứu điểm chuẩn các năm trước trên trang trường/ngành trước khi chốt nguyện vọng.',
                 ],
             };

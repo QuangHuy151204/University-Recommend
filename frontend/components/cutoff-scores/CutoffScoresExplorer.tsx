@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Building2, Search, BarChart3, ArrowLeft } from 'lucide-react';
+import { Building2, Search, BarChart3 } from 'lucide-react';
+import { BackButton } from '@/components/ui/PageLayout';
 import { CutoffMethodFilter } from '@/components/CutoffMethodFilter';
 import type {
     AdmissionMethod,
@@ -181,22 +182,14 @@ export function CutoffScoresExplorer({
                     </div>
                 )}
 
-                {!university && !search && (
-                    <div className="card mt-6 p-8 text-center text-sm text-slate-600">
-                        Nhập tên trường ở trên để bắt đầu tra cứu điểm chuẩn.
-                    </div>
-                )}
-
                 {university && (
                     <section className="mt-8">
-                        <button
-                            type="button"
-                            onClick={clearUniversity}
-                            className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-primary"
-                        >
-                            <ArrowLeft className="size-4" aria-hidden />
-                            Chọn trường khác
-                        </button>
+                        <div className="mb-4">
+                            <BackButton
+                                onClick={clearUniversity}
+                                label="Chọn trường khác"
+                            />
+                        </div>
 
                         <header className="card p-5 sm:p-6">
                             <div className="flex items-start gap-3">

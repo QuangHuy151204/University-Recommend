@@ -3,12 +3,7 @@
     {
       "group_name": "Công nghệ thông tin",
       "group_id": "cong-nghe-thong-tin",
-      "description": "Lập trình, phần mềm, khoa học máy tính, AI, dữ liệu, mạng máy tính, điện tử viễn thông số."
-    },
-    {
-      "group_name": "An toàn thông tin",
-      "group_id": "an-toan-thong-tin",
-      "description": "Cybersecurity, bảo mật hệ thống, an ninh mạng IT, kiểm thử bảo mật — không bao gồm cảnh sát/quân đội."
+      "description": "Lập trình, phần mềm, khoa học máy tính, AI, dữ liệu, mạng máy tính, an toàn thông tin, cybersecurity, điện tử viễn thông số."
     },
     {
       "group_name": "Kinh tế - Kinh doanh",
@@ -97,6 +92,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "thong",
         "tin"
       ]
@@ -105,7 +103,6 @@
       "major_name": "An toàn thông tin",
       "major_id": 5,
       "correct_groups": [
-        "An toàn thông tin",
         "Công nghệ thông tin"
       ],
       "tags": [
@@ -137,6 +134,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -162,6 +162,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "marketing",
         "media",
         "journalism",
@@ -170,10 +173,7 @@
         "báo chí",
         "mang",
         "may",
-        "tinh",
-        "truyen",
-        "thong",
-        "lieu"
+        "tinh"
       ]
     },
     {
@@ -437,6 +437,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -445,8 +448,7 @@
         "xây dựng",
         "thuat",
         "dien",
-        "vien",
-        "thong"
+        "vien"
       ]
     },
     {
@@ -664,7 +666,6 @@
       "major_name": "An toàn dữ liệu và an ninh mạng",
       "major_id": 52,
       "correct_groups": [
-        "An toàn thông tin",
         "Công nghệ thông tin"
       ],
       "tags": [
@@ -685,7 +686,6 @@
       "major_name": "An toàn không gian số - Cyber Security (CT Tiên tiến)",
       "major_id": 53,
       "correct_groups": [
-        "An toàn thông tin",
         "Công nghệ thông tin"
       ],
       "tags": [
@@ -706,7 +706,6 @@
       "major_name": "An toàn thông tin (Một số học phần chuyên ngành học bằng tiếng Anh)",
       "major_id": 55,
       "correct_groups": [
-        "An toàn thông tin",
         "Công nghệ thông tin"
       ],
       "tags": [
@@ -726,7 +725,6 @@
       "major_name": "An toàn thông tin - Chất lượng cao",
       "major_id": 56,
       "correct_groups": [
-        "An toàn thông tin",
         "Công nghệ thông tin"
       ],
       "tags": [
@@ -1495,6 +1493,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -1522,6 +1523,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -1530,8 +1534,7 @@
         "xây dựng",
         "cntt",
         "thuat",
-        "may",
-        "tinh"
+        "may"
       ]
     },
     {
@@ -2325,6 +2328,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "business",
         "finance",
         "accounting",
@@ -2333,10 +2339,7 @@
         "kế toán",
         "tài chính",
         "engineering",
-        "mechanical",
-        "civil",
-        "kỹ thuật",
-        "cơ khí"
+        "mechanical"
       ]
     },
     {
@@ -3004,6 +3007,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -3012,10 +3018,7 @@
         "business",
         "finance",
         "accounting",
-        "economics",
-        "kinh doanh",
-        "kế toán",
-        "tài chính"
+        "economics"
       ]
     },
     {
@@ -3680,6 +3683,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -3688,10 +3694,7 @@
         "business",
         "finance",
         "accounting",
-        "economics",
-        "kinh doanh",
-        "kế toán",
-        "tài chính"
+        "economics"
       ]
     },
     {
@@ -4027,6 +4030,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -4035,9 +4041,7 @@
         "xây dựng",
         "cong",
         "nghe",
-        "dien",
-        "vien",
-        "thong"
+        "dien"
       ]
     },
     {
@@ -4146,6 +4150,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -4154,10 +4161,7 @@
         "xây dựng",
         "cong",
         "nghe",
-        "thuat",
-        "dien",
-        "vien",
-        "thong"
+        "thuat"
       ]
     },
     {
@@ -4287,6 +4291,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -4308,6 +4315,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -4329,6 +4339,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -4352,6 +4365,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -4375,6 +4391,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -4399,6 +4418,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "language",
         "law",
         "psychology",
@@ -4407,9 +4429,7 @@
         "luật",
         "cong",
         "nghe",
-        "thong",
-        "tin",
-        "day"
+        "thong"
       ]
     },
     {
@@ -4427,6 +4447,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -4450,6 +4473,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -4473,6 +4499,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -4497,6 +4526,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "language",
         "law",
         "psychology",
@@ -4505,10 +4537,7 @@
         "luật",
         "cong",
         "nghe",
-        "thong",
-        "tin",
-        "viet",
-        "nhat"
+        "thong"
       ]
     },
     {
@@ -4527,6 +4556,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "language",
         "law",
         "psychology",
@@ -4535,10 +4567,7 @@
         "luật",
         "cong",
         "nghe",
-        "thong",
-        "tin",
-        "viet",
-        "phap"
+        "thong"
       ]
     },
     {
@@ -4844,6 +4873,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "game",
@@ -4966,6 +4998,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -4974,10 +5009,7 @@
         "xây dựng",
         "cong",
         "nghe",
-        "thuat",
-        "robot",
-        "tri",
-        "tue"
+        "thuat"
       ]
     },
     {
@@ -5343,6 +5375,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -5351,9 +5386,7 @@
         "xây dựng",
         "cong",
         "nghe",
-        "thuat",
-        "may",
-        "tinh"
+        "thuat"
       ]
     },
     {
@@ -5372,6 +5405,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -5380,10 +5416,7 @@
         "xây dựng",
         "cong",
         "nghe",
-        "thuat",
-        "may",
-        "tinh",
-        "noi"
+        "thuat"
       ]
     },
     {
@@ -5402,6 +5435,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -5410,10 +5446,7 @@
         "xây dựng",
         "cong",
         "nghe",
-        "thuat",
-        "may",
-        "tinh",
-        "dinh"
+        "thuat"
       ]
     },
     {
@@ -5863,6 +5896,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "language",
         "law",
         "psychology",
@@ -5871,10 +5907,7 @@
         "luật",
         "engineering",
         "mechanical",
-        "civil",
-        "kỹ thuật",
-        "cơ khí",
-        "xây dựng"
+        "civil"
       ]
     },
     {
@@ -5894,6 +5927,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "language",
         "law",
         "psychology",
@@ -5902,10 +5938,7 @@
         "luật",
         "engineering",
         "mechanical",
-        "civil",
-        "kỹ thuật",
-        "cơ khí",
-        "xây dựng"
+        "civil"
       ]
     },
     {
@@ -6077,6 +6110,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -6085,10 +6121,7 @@
         "xây dựng",
         "cong",
         "nghe",
-        "thuat",
-        "dien",
-        "vien",
-        "thong"
+        "thuat"
       ]
     },
     {
@@ -6107,6 +6140,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -6115,10 +6151,7 @@
         "xây dựng",
         "cong",
         "nghe",
-        "thuat",
-        "dien",
-        "vien",
-        "thong"
+        "thuat"
       ]
     },
     {
@@ -6137,6 +6170,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -6145,10 +6181,7 @@
         "xây dựng",
         "cong",
         "nghe",
-        "thuat",
-        "dien",
-        "vien",
-        "thong"
+        "thuat"
       ]
     },
     {
@@ -6168,6 +6201,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "language",
         "law",
         "psychology",
@@ -6176,10 +6212,7 @@
         "luật",
         "engineering",
         "mechanical",
-        "civil",
-        "kỹ thuật",
-        "cơ khí",
-        "xây dựng"
+        "civil"
       ]
     },
     {
@@ -6198,6 +6231,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -6206,10 +6242,7 @@
         "xây dựng",
         "cong",
         "nghe",
-        "thuat",
-        "dien",
-        "vien",
-        "thong"
+        "thuat"
       ]
     },
     {
@@ -6228,6 +6261,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -6236,10 +6272,7 @@
         "xây dựng",
         "cong",
         "nghe",
-        "thuat",
-        "dien",
-        "vien",
-        "thong"
+        "thuat"
       ]
     },
     {
@@ -6277,6 +6310,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -6285,10 +6321,7 @@
         "xây dựng",
         "cong",
         "nghe",
-        "thuat",
-        "dien",
-        "vien",
-        "thong"
+        "thuat"
       ]
     },
     {
@@ -6526,6 +6559,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "trong",
@@ -6551,6 +6587,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "trong",
@@ -6576,6 +6615,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "soi",
@@ -6597,6 +6639,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -6619,6 +6664,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -6641,6 +6689,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -6663,6 +6714,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -6686,6 +6740,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "marketing",
         "media",
         "journalism",
@@ -6694,9 +6751,7 @@
         "báo chí",
         "cong",
         "nghe",
-        "thong",
-        "tin",
-        "phuong"
+        "thong"
       ]
     },
     {
@@ -6714,6 +6769,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -6735,6 +6793,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -6757,6 +6818,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -6779,6 +6843,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "language",
         "law",
         "psychology",
@@ -6787,10 +6854,7 @@
         "luật",
         "cong",
         "nghe",
-        "thong",
-        "tin",
-        "tang",
-        "cuong"
+        "thong"
       ]
     },
     {
@@ -6808,6 +6872,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -6829,6 +6896,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -6854,6 +6924,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -6879,6 +6952,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -6904,6 +6980,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -6929,6 +7008,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -6953,6 +7035,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -6975,6 +7060,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -6998,6 +7086,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -7022,6 +7113,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "language",
         "law",
         "psychology",
@@ -7030,10 +7124,7 @@
         "luật",
         "cong",
         "nghe",
-        "thong",
-        "tin",
-        "day",
-        "clc"
+        "thong"
       ]
     },
     {
@@ -7052,6 +7143,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "language",
         "law",
         "psychology",
@@ -7060,10 +7154,7 @@
         "luật",
         "cong",
         "nghe",
-        "thong",
-        "tin",
-        "day",
-        "cttt"
+        "thong"
       ]
     },
     {
@@ -7082,6 +7173,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "language",
         "law",
         "psychology",
@@ -7090,9 +7184,7 @@
         "luật",
         "cong",
         "nghe",
-        "thong",
-        "tin",
-        "day"
+        "thong"
       ]
     },
     {
@@ -7110,6 +7202,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -7135,6 +7230,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "language",
         "law",
         "psychology",
@@ -7143,10 +7241,7 @@
         "luật",
         "cong",
         "nghe",
-        "thong",
-        "tin",
-        "tang",
-        "cuong"
+        "thong"
       ]
     },
     {
@@ -7164,6 +7259,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -7185,6 +7283,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -7210,6 +7311,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -7232,6 +7336,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "marketing",
         "media",
         "journalism",
@@ -7240,9 +7347,7 @@
         "báo chí",
         "cong",
         "nghe",
-        "thong",
-        "tin",
-        "truyen"
+        "thong"
       ]
     },
     {
@@ -7261,6 +7366,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "marketing",
         "media",
         "journalism",
@@ -7269,10 +7377,7 @@
         "báo chí",
         "cong",
         "nghe",
-        "thong",
-        "tin",
-        "truyen",
-        "cac"
+        "thong"
       ]
     },
     {
@@ -7290,6 +7395,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -7312,6 +7420,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -7333,6 +7444,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -7356,6 +7470,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -7379,6 +7496,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -7401,6 +7521,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -7409,9 +7532,7 @@
         "xây dựng",
         "cong",
         "nghe",
-        "thong",
-        "tin",
-        "thuat"
+        "thong"
       ]
     },
     {
@@ -7429,6 +7550,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -7453,6 +7577,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "language",
         "law",
         "psychology",
@@ -7461,10 +7588,7 @@
         "luật",
         "cong",
         "nghe",
-        "thong",
-        "tin",
-        "dinh",
-        "huong"
+        "thong"
       ]
     },
     {
@@ -7483,6 +7607,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "marketing",
         "media",
         "journalism",
@@ -7491,9 +7618,7 @@
         "báo chí",
         "cong",
         "nghe",
-        "thong",
-        "tin",
-        "truyen"
+        "thong"
       ]
     },
     {
@@ -7511,6 +7636,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -7532,6 +7660,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -7542,7 +7673,6 @@
       "major_name": "Công nghệ thông tin/ An toàn thông tin",
       "major_id": 396,
       "correct_groups": [
-        "An toàn thông tin",
         "Công nghệ thông tin"
       ],
       "tags": [
@@ -7576,6 +7706,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "marketing",
         "media",
         "journalism",
@@ -7584,9 +7717,7 @@
         "báo chí",
         "cong",
         "nghe",
-        "thong",
-        "tin",
-        "phuong"
+        "thong"
       ]
     },
     {
@@ -7605,6 +7736,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "marketing",
         "media",
         "journalism",
@@ -7613,9 +7747,7 @@
         "báo chí",
         "cong",
         "nghe",
-        "thong",
-        "tin",
-        "phuong"
+        "thong"
       ]
     },
     {
@@ -8200,6 +8332,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "marketing",
         "media",
         "journalism",
@@ -8208,10 +8343,7 @@
         "báo chí",
         "cong",
         "nghe",
-        "phuong",
-        "cua",
-        "thong",
-        "tin"
+        "phuong"
       ]
     },
     {
@@ -9811,6 +9943,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "thong",
         "nhung",
         "minh",
@@ -9833,6 +9968,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "language",
         "law",
         "psychology",
@@ -9841,10 +9979,7 @@
         "luật",
         "thong",
         "nhung",
-        "minh",
-        "iot",
-        "tang",
-        "cuong"
+        "minh"
       ]
     },
     {
@@ -9862,6 +9997,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "thong",
         "tin",
         "cong",
@@ -9883,6 +10021,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "thong",
         "tin",
         "quan"
@@ -9903,6 +10044,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "thong",
         "tin",
         "quan",
@@ -9927,6 +10071,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "thong",
         "tin",
         "quan",
@@ -9948,6 +10095,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "thong",
         "tin",
         "quan",
@@ -9969,6 +10119,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "thong",
         "tin",
         "quan",
@@ -9990,6 +10143,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "thong",
         "tin",
         "quan",
@@ -10171,6 +10327,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -10179,10 +10338,7 @@
         "engineering",
         "mechanical",
         "civil",
-        "kỹ thuật",
-        "cơ khí",
-        "xây dựng",
-        "khoa"
+        "kỹ thuật"
       ]
     },
     {
@@ -10257,6 +10413,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -10284,6 +10443,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -10292,10 +10454,7 @@
         "language",
         "law",
         "psychology",
-        "sociology",
-        "ngôn ngữ",
-        "luật",
-        "khoa"
+        "sociology"
       ]
     },
     {
@@ -10315,6 +10474,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -10323,10 +10485,7 @@
         "language",
         "law",
         "psychology",
-        "sociology",
-        "ngôn ngữ",
-        "luật",
-        "khoa"
+        "sociology"
       ]
     },
     {
@@ -10346,6 +10505,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -10354,10 +10516,7 @@
         "language",
         "law",
         "psychology",
-        "sociology",
-        "ngôn ngữ",
-        "luật",
-        "khoa"
+        "sociology"
       ]
     },
     {
@@ -10635,6 +10794,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -10660,6 +10822,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -10686,6 +10851,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -10712,6 +10880,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -10740,6 +10911,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -10748,10 +10922,7 @@
         "business",
         "finance",
         "accounting",
-        "economics",
-        "kinh doanh",
-        "kế toán",
-        "tài chính"
+        "economics"
       ]
     },
     {
@@ -10770,6 +10941,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -10778,9 +10952,7 @@
         "khoa",
         "lieu",
         "tri",
-        "tue",
-        "nhan",
-        "tao"
+        "tue"
       ]
     },
     {
@@ -10834,6 +11006,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -10842,10 +11017,7 @@
         "language",
         "law",
         "psychology",
-        "sociology",
-        "ngôn ngữ",
-        "luật",
-        "khoa"
+        "sociology"
       ]
     },
     {
@@ -10864,6 +11036,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -10892,6 +11067,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -10900,10 +11078,7 @@
         "language",
         "law",
         "psychology",
-        "sociology",
-        "ngôn ngữ",
-        "luật",
-        "khoa"
+        "sociology"
       ]
     },
     {
@@ -10923,6 +11098,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -10931,10 +11109,7 @@
         "language",
         "law",
         "psychology",
-        "sociology",
-        "ngôn ngữ",
-        "luật",
-        "khoa"
+        "sociology"
       ]
     },
     {
@@ -10953,6 +11128,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -10980,6 +11158,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -10988,10 +11169,7 @@
         "language",
         "law",
         "psychology",
-        "sociology",
-        "ngôn ngữ",
-        "luật",
-        "khoa"
+        "sociology"
       ]
     },
     {
@@ -11010,6 +11188,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -11037,6 +11218,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -11045,10 +11229,7 @@
         "khoa",
         "may",
         "tinh",
-        "tri",
-        "tue",
-        "nhan",
-        "tao"
+        "tri"
       ]
     },
     {
@@ -11067,6 +11248,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -11075,9 +11259,7 @@
         "khoa",
         "may",
         "tinh",
-        "dinh",
-        "huong",
-        "lieu"
+        "dinh"
       ]
     },
     {
@@ -11096,6 +11278,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -11242,6 +11427,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -11250,10 +11438,7 @@
         "engineering",
         "mechanical",
         "civil",
-        "kỹ thuật",
-        "cơ khí",
-        "xây dựng",
-        "khoa"
+        "kỹ thuật"
       ]
     },
     {
@@ -14346,6 +14531,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -14419,6 +14607,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -14427,10 +14618,7 @@
         "xây dựng",
         "thuat",
         "robot",
-        "tri",
-        "tue",
-        "nhan",
-        "tao"
+        "tri"
       ]
     },
     {
@@ -15079,6 +15267,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "marketing",
         "media",
         "journalism",
@@ -15087,10 +15278,7 @@
         "báo chí",
         "engineering",
         "mechanical",
-        "civil",
-        "kỹ thuật",
-        "cơ khí",
-        "xây dựng"
+        "civil"
       ]
     },
     {
@@ -15293,6 +15481,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -15321,6 +15512,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "architecture",
         "design",
         "art",
@@ -15329,10 +15523,7 @@
         "mỹ thuật",
         "engineering",
         "mechanical",
-        "civil",
-        "kỹ thuật",
-        "cơ khí",
-        "xây dựng"
+        "civil"
       ]
     },
     {
@@ -15460,6 +15651,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "language",
         "law",
         "psychology",
@@ -15468,10 +15662,7 @@
         "luật",
         "engineering",
         "mechanical",
-        "civil",
-        "kỹ thuật",
-        "cơ khí",
-        "xây dựng"
+        "civil"
       ]
     },
     {
@@ -15490,6 +15681,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -15582,6 +15776,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -15590,10 +15787,7 @@
         "xây dựng",
         "thuat",
         "robot",
-        "tri",
-        "tue",
-        "nhan",
-        "tao"
+        "tri"
       ]
     },
     {
@@ -15613,6 +15807,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "language",
         "law",
         "psychology",
@@ -15621,10 +15818,7 @@
         "luật",
         "engineering",
         "mechanical",
-        "civil",
-        "kỹ thuật",
-        "cơ khí",
-        "xây dựng"
+        "civil"
       ]
     },
     {
@@ -15643,6 +15837,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -15651,10 +15848,7 @@
         "xây dựng",
         "thuat",
         "robot",
-        "tri",
-        "tue",
-        "nhan",
-        "tao"
+        "tri"
       ]
     },
     {
@@ -16893,6 +17087,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -16901,8 +17098,7 @@
         "xây dựng",
         "thuat",
         "dien",
-        "vien",
-        "thong"
+        "vien"
       ]
     },
     {
@@ -16921,6 +17117,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -16929,8 +17128,7 @@
         "xây dựng",
         "thuat",
         "dien",
-        "vien",
-        "thong"
+        "vien"
       ]
     },
     {
@@ -16949,6 +17147,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -16957,10 +17158,7 @@
         "xây dựng",
         "thuat",
         "dien",
-        "vien",
-        "thong",
-        "nhung",
-        "minh"
+        "vien"
       ]
     },
     {
@@ -16980,6 +17178,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "architecture",
         "design",
         "art",
@@ -16988,10 +17189,7 @@
         "mỹ thuật",
         "engineering",
         "mechanical",
-        "civil",
-        "kỹ thuật",
-        "cơ khí",
-        "xây dựng"
+        "civil"
       ]
     },
     {
@@ -17010,6 +17208,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -17018,8 +17219,7 @@
         "xây dựng",
         "thuat",
         "dien",
-        "vien",
-        "thong"
+        "vien"
       ]
     },
     {
@@ -17145,6 +17345,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -17153,10 +17356,7 @@
         "xây dựng",
         "thuat",
         "dieu",
-        "khien",
-        "dong",
-        "hoa",
-        "robot"
+        "khien"
       ]
     },
     {
@@ -17218,6 +17418,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -17226,9 +17429,7 @@
         "xây dựng",
         "thuat",
         "dien",
-        "vien",
-        "thong",
-        "tcta"
+        "vien"
       ]
     },
     {
@@ -17248,6 +17449,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "language",
         "law",
         "psychology",
@@ -17256,10 +17460,7 @@
         "luật",
         "engineering",
         "mechanical",
-        "civil",
-        "kỹ thuật",
-        "cơ khí",
-        "xây dựng"
+        "civil"
       ]
     },
     {
@@ -17278,6 +17479,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -17286,10 +17490,7 @@
         "xây dựng",
         "thuat",
         "dien",
-        "vien",
-        "thong",
-        "cong",
-        "nghe"
+        "vien"
       ]
     },
     {
@@ -17309,6 +17510,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "marketing",
         "media",
         "journalism",
@@ -17317,10 +17521,7 @@
         "báo chí",
         "engineering",
         "mechanical",
-        "civil",
-        "kỹ thuật",
-        "cơ khí",
-        "xây dựng"
+        "civil"
       ]
     },
     {
@@ -17339,6 +17540,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -17347,8 +17551,7 @@
         "xây dựng",
         "thuat",
         "dien",
-        "vien",
-        "thong"
+        "vien"
       ]
     },
     {
@@ -19470,6 +19673,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "marketing",
         "media",
         "journalism",
@@ -19478,10 +19684,7 @@
         "báo chí",
         "mang",
         "may",
-        "tinh",
-        "truyen",
-        "thong",
-        "lieu"
+        "tinh"
       ]
     },
     {
@@ -19500,6 +19703,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "marketing",
         "media",
         "journalism",
@@ -19508,10 +19714,7 @@
         "báo chí",
         "mang",
         "may",
-        "tinh",
-        "truyen",
-        "thong",
-        "lieu"
+        "tinh"
       ]
     },
     {
@@ -19530,6 +19733,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "marketing",
         "media",
         "journalism",
@@ -19538,10 +19744,7 @@
         "báo chí",
         "mang",
         "may",
-        "tinh",
-        "truyen",
-        "thong",
-        "lieu"
+        "tinh"
       ]
     },
     {
@@ -19561,6 +19764,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "marketing",
         "media",
         "journalism",
@@ -19569,10 +19775,7 @@
         "báo chí",
         "engineering",
         "mechanical",
-        "civil",
-        "kỹ thuật",
-        "cơ khí",
-        "xây dựng"
+        "civil"
       ]
     },
     {
@@ -19935,6 +20138,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -19956,6 +20162,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "cong",
         "nghe",
         "thong",
@@ -19999,6 +20208,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -21965,6 +22177,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -21993,6 +22208,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "architecture",
         "design",
         "art",
@@ -22001,10 +22219,7 @@
         "mỹ thuật",
         "engineering",
         "mechanical",
-        "civil",
-        "kỹ thuật",
-        "cơ khí",
-        "xây dựng"
+        "civil"
       ]
     },
     {
@@ -22024,6 +22239,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "architecture",
         "design",
         "art",
@@ -22032,10 +22250,7 @@
         "mỹ thuật",
         "engineering",
         "mechanical",
-        "civil",
-        "kỹ thuật",
-        "cơ khí",
-        "xây dựng"
+        "civil"
       ]
     },
     {
@@ -22053,6 +22268,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "nhom",
         "may",
         "tinh",
@@ -22199,6 +22417,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -22207,10 +22428,7 @@
         "engineering",
         "mechanical",
         "civil",
-        "kỹ thuật",
-        "cơ khí",
-        "xây dựng",
-        "nhom"
+        "kỹ thuật"
       ]
     },
     {
@@ -27283,6 +27501,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "robot",
         "tri",
         "tue",
@@ -28678,6 +28899,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "marketing",
         "media",
         "journalism",
@@ -28686,10 +28910,7 @@
         "báo chí",
         "architecture",
         "design",
-        "art",
-        "kiến trúc",
-        "thiết kế",
-        "mỹ thuật"
+        "art"
       ]
     },
     {
@@ -29876,6 +30097,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "tri",
         "tue",
         "nhan",
@@ -29898,6 +30122,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -29906,10 +30133,7 @@
         "xây dựng",
         "tri",
         "tue",
-        "nhan",
-        "tao",
-        "giao",
-        "thong"
+        "nhan"
       ]
     },
     {
@@ -29929,6 +30153,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "language",
         "law",
         "psychology",
@@ -29937,10 +30164,7 @@
         "luật",
         "engineering",
         "mechanical",
-        "civil",
-        "kỹ thuật",
-        "cơ khí",
-        "xây dựng"
+        "civil"
       ]
     },
     {
@@ -29959,6 +30183,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -29967,9 +30194,7 @@
         "tri",
         "tue",
         "nhan",
-        "tao",
-        "khoa",
-        "lieu"
+        "tao"
       ]
     },
     {
@@ -29988,6 +30213,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -29996,10 +30224,7 @@
         "xây dựng",
         "tri",
         "tue",
-        "nhan",
-        "tao",
-        "van",
-        "vat"
+        "nhan"
       ]
     },
     {
@@ -30817,6 +31042,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -30825,8 +31053,7 @@
         "tai",
         "nang",
         "khoa",
-        "may",
-        "tinh"
+        "may"
       ]
     },
     {
@@ -31394,6 +31621,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -31402,10 +31632,7 @@
         "xây dựng",
         "vat",
         "lieu",
-        "thong",
-        "minh",
-        "tri",
-        "tue"
+        "thong"
       ]
     },
     {
@@ -32161,6 +32388,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "thong",
         "tin",
         "quan"
@@ -32407,6 +32637,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -32415,10 +32648,7 @@
         "business",
         "finance",
         "accounting",
-        "economics",
-        "kinh doanh",
-        "kế toán",
-        "tài chính"
+        "economics"
       ]
     },
     {
@@ -32438,6 +32668,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -32446,10 +32679,7 @@
         "business",
         "finance",
         "accounting",
-        "economics",
-        "kinh doanh",
-        "kế toán",
-        "tài chính"
+        "economics"
       ]
     },
     {
@@ -33042,6 +33272,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "business",
         "finance",
         "accounting",
@@ -33050,10 +33283,7 @@
         "kế toán",
         "tài chính",
         "tri",
-        "tue",
-        "nhan",
-        "tao",
-        "trong"
+        "tue"
       ]
     },
     {
@@ -33307,6 +33537,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -33315,10 +33548,7 @@
         "xây dựng",
         "dien",
         "vien",
-        "thong",
-        "hop",
-        "tac",
-        "voi"
+        "thong"
       ]
     },
     {
@@ -33337,6 +33567,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -33345,10 +33578,7 @@
         "xây dựng",
         "dien",
         "vien",
-        "thong",
-        "leibniz",
-        "hannover",
-        "chlb"
+        "thong"
       ]
     },
     {
@@ -33715,6 +33945,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "architecture",
         "design",
         "art",
@@ -33742,6 +33975,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "architecture",
         "design",
         "art",
@@ -33828,7 +34064,6 @@
       "major_name": "An ninh mạng",
       "major_id": 1828,
       "correct_groups": [
-        "An toàn thông tin",
         "Công nghệ thông tin"
       ],
       "tags": [
@@ -34093,6 +34328,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "chemistry",
         "biology",
         "physics",
@@ -34101,8 +34339,7 @@
         "khoa",
         "may",
         "tinh",
-        "thong",
-        "tin"
+        "thong"
       ]
     },
     {
@@ -34252,6 +34489,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "engineering",
         "mechanical",
         "civil",
@@ -34260,8 +34500,7 @@
         "xây dựng",
         "thuat",
         "dien",
-        "vien",
-        "thong"
+        "vien"
       ]
     },
     {
@@ -34442,6 +34681,9 @@
         "lập trình",
         "phần mềm",
         "máy tính",
+        "cybersecurity",
+        "security",
+        "bảo mật",
         "architecture",
         "design",
         "art",
@@ -34450,10 +34692,7 @@
         "mỹ thuật",
         "engineering",
         "mechanical",
-        "civil",
-        "kỹ thuật",
-        "cơ khí",
-        "xây dựng"
+        "civil"
       ]
     },
     {

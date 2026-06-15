@@ -71,6 +71,16 @@ async function main(): Promise<void> {
       );
     }
 
+    const catalogIds = MAJOR_GROUPS.map((g) => g.group_id);
+    await qr.query(
+      `DELETE FROM major_groups
+       WHERE group_id <> ALL($1::text[])
+         AND NOT EXISTS (
+           SELECT 1 FROM major_group_assignments a WHERE a.group_id = major_groups.group_id
+         )`,
+      [catalogIds],
+    );
+
     for (const major of rows) {
       const before = major.field_group;
       const classification = classifyMajor(major.name, major.field_group);
