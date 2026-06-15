@@ -27,6 +27,7 @@ import {
     type MajorSearchPickerHandle,
 } from '@/components/ui/MajorSearchPicker';
 import { SubjectCombinationPicker } from '@/components/ui/SubjectCombinationPicker';
+import { WardPicker } from '@/components/ui/WardPicker';
 
 const TUITION_MIN = 5_000_000;
 const TUITION_MAX = 80_000_000;
@@ -41,6 +42,7 @@ interface Props {
     majorId?: number;
     majorName?: string;
     maxTuition?: number;
+    ward?: string;
 }
 
 export function UniversitiesExplorer({
@@ -52,6 +54,7 @@ export function UniversitiesExplorer({
     majorId,
     majorName,
     maxTuition,
+    ward,
 }: Props) {
     const { t } = useLocale();
     const router = useRouter();
@@ -70,6 +73,7 @@ export function UniversitiesExplorer({
     const [tuitionMax, setTuitionMax] = useState(
         maxTuition ?? 30_000_000,
     );
+    const [selectedWard, setSelectedWard] = useState(ward ?? '');
     const [applyingFilters, setApplyingFilters] = useState(false);
 
     const data = initial.data;
@@ -78,10 +82,11 @@ export function UniversitiesExplorer({
         Boolean(subjectCombination) ||
         minScore != null ||
         majorId != null ||
-        maxTuition != null;
+        maxTuition != null ||
+        Boolean(ward);
 
     const filterFields = (
-        <>
+        <div className="space-y-3">
             <SubjectCombinationPicker
                 id="filter-subject"
                 label={t('universities.subjectLabel')}
@@ -114,9 +119,6 @@ export function UniversitiesExplorer({
                     onChange={(e) => setScoreInput(e.target.value)}
                     className="input-field mt-2"
                 />
-                <p className="mt-1.5 text-xs text-slate-500">
-                    {t('universities.scoreHint')}
-                </p>
             </div>
             <div>
                 <label className="flex cursor-pointer items-center gap-2 text-xs font-semibold uppercase text-slate-500">
@@ -153,10 +155,15 @@ export function UniversitiesExplorer({
                     </>
                 )}
             </div>
-            <p className="rounded-lg bg-neutral px-3 py-2 text-xs text-slate-600">
-                {t('universities.scopeNote')}
-            </p>
-        </>
+            <WardPicker
+                id="filter-ward"
+                variant="filter"
+                label={t('universities.wardLabel')}
+                anyLabel={t('universities.wardAny')}
+                value={selectedWard}
+                onChange={setSelectedWard}
+            />
+        </div>
     );
     const toggleCompare = (u: University) => {
         toggleStoredUniversity({
@@ -200,6 +207,9 @@ export function UniversitiesExplorer({
             if (tuitionEnabled) {
                 q.set('max_tuition', String(tuitionMax));
             }
+            if (selectedWard.trim()) {
+                q.set('ward', selectedWard.trim());
+            }
             const qs = q.toString();
             router.push(qs ? `/universities?${qs}` : '/universities');
         } finally {
@@ -214,6 +224,7 @@ export function UniversitiesExplorer({
         if (minScore != null) q.set('min_score', String(minScore));
         if (majorId != null) q.set('major_id', String(majorId));
         if (maxTuition != null) q.set('max_tuition', String(maxTuition));
+        if (ward) q.set('ward', ward);
         if (p > 1) q.set('page', String(p));
         const qs = q.toString();
         return qs ? `/universities?${qs}` : '/universities';
@@ -235,7 +246,7 @@ export function UniversitiesExplorer({
                             <Filter className="size-4" />
                             {t('universities.filtersTitle')}
                         </div>
-                        <form onSubmit={applyFilters} className="mt-5 space-y-5">
+                        <form onSubmit={applyFilters} className="mt-4 space-y-4">
                             {filterFields}
                             <button
                                 type="submit"
@@ -300,6 +311,13 @@ export function UniversitiesExplorer({
                                             })}
                                         </span>
                                     )}
+                                    {ward && (
+                                        <span className="rounded-full bg-secondary/15 px-2.5 py-0.5 text-xs font-medium text-primary">
+                                            {t('universities.filterWard', {
+                                                name: ward,
+                                            })}
+                                        </span>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -329,7 +347,9 @@ export function UniversitiesExplorer({
                                                 </h2>
                                                 <p className="mt-1 flex items-center gap-1 text-xs text-slate-500">
                                                     <MapPin className="size-3.5" />
-                                                    {u.location ?? t('universities.hanoi')}
+                                                    {u.ward
+                                                        ? `${u.ward}, ${u.location ?? t('universities.hanoi')}`
+                                                        : (u.location ?? t('universities.hanoi'))}
                                                 </p>
                                                 <p className="mt-0.5 flex items-center gap-1 text-xs text-slate-600">
                                                     <Banknote className="size-3.5" />

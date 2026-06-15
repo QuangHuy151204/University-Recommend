@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { StudentProfile } from './student-profile.entity';
 import { UpdateProfileDto } from './users.dto';
-import { DATA_SCOPE_LOCATION } from '../common/data-scope';
 
 @Injectable()
 export class UsersService {
@@ -37,10 +36,7 @@ export class UsersService {
       where: { user: { id: userId } },
     });
 
-    const scopedDto: UpdateProfileDto = {
-      ...dto,
-      preferred_location: DATA_SCOPE_LOCATION,
-    };
+    const scopedDto: UpdateProfileDto = { ...dto };
 
     if (profile) {
       Object.assign(profile, scopedDto);

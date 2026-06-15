@@ -250,7 +250,7 @@ export function CutoffScoresExplorer({
                                 href="/chatbot"
                                 className="font-medium text-tertiary hover:text-primary"
                             >
-                                Hỏi tư vấn AI
+                                Chatbot
                             </Link>
                         </p>
                     </section>

@@ -23,7 +23,7 @@ export class RecommendRequestDto {
 
   @IsOptional()
   @IsString()
-  preferred_location?: string; // Bị bỏ qua — API luôn dùng Hà Nội
+  preferred_location?: string; // Phường muốn học gần (Hà Nội); để trống hoặc "Bất kỳ" = không lọc phường
 
   @IsOptional()
   @IsEnum(['low', 'medium', 'high'])

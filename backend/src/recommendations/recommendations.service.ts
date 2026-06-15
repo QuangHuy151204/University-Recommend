@@ -18,7 +18,8 @@ import {
 import { UniversityMajor } from '../majors/university-major.entity';
 import { CutoffScore } from '../cutoff-scores/cutoff-score.entity';
 import { AdmissionMethodsService } from '../admission-methods/admission-methods.service';
-import { DATA_SCOPE_LOCATION, isHanoiLocation } from '../common/data-scope';
+import { isHanoiLocation } from '../common/data-scope';
+import { isAnyWardPreference, wardsMatch } from '../common/ward';
 import { relationStub } from '../common/typeorm-relations';
 import { User } from '../users/user.entity';
 import { majorMatchesInterestTerms } from '../majors/major-interest-match';
@@ -77,10 +78,11 @@ export class RecommendationsService {
     userId?: number,
   ): Promise<RecommendResponse> {
     const effectiveMethodCode = dto.method_code?.trim() || DEFAULT_METHOD_CODE;
+    const preferredWard = dto.preferred_location?.trim() || undefined;
     const effectiveDto: RecommendRequestDto = {
       ...dto,
       method_code: effectiveMethodCode,
-      preferred_location: DATA_SCOPE_LOCATION,
+      preferred_location: preferredWard,
     };
 
     const methodLabel =
@@ -123,7 +125,7 @@ export class RecommendationsService {
       method_code: effectiveMethodCode,
       method_label: methodLabel,
       interests: rawPhrases.length > 0 ? rawPhrases : null,
-      preferred_location: DATA_SCOPE_LOCATION,
+      preferred_location: preferredWard ?? null,
       budget_range: dto.budget_range ?? null,
       budget_max_yearly: dto.budget_max_yearly ?? null,
     };
@@ -453,16 +455,16 @@ export class RecommendationsService {
 
     score += interestScore;
 
-    // === 3. Phù hợp khu vực (15%) ===
-    if (dto.preferred_location) {
-      const location = (um.university?.location || '').toLowerCase();
-      const preferred = dto.preferred_location.toLowerCase();
-      if (preferred === 'bất kỳ' || preferred === 'bat ky') {
-        score += 15;
-      } else if (location.includes(preferred)) {
+    // === 3. Phù hợp khu vực / phường (15%) ===
+    if (
+      dto.preferred_location &&
+      !isAnyWardPreference(dto.preferred_location)
+    ) {
+      const universityWard = um.university?.ward || null;
+      if (wardsMatch(universityWard, dto.preferred_location)) {
         score += 15;
         reason.push(
-          `Trường tại ${um.university?.location} đúng khu vực bạn muốn`,
+          `Trường tại ${universityWard} đúng khu vực bạn chọn`,
         );
       } else {
         score += 5;

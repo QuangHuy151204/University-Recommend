@@ -11,6 +11,7 @@ interface PageProps {
         min_score?: string;
         major_id?: string;
         max_tuition?: string;
+        ward?: string;
     }>;
 }
 
@@ -28,6 +29,7 @@ export default async function UniversitiesPage({ searchParams }: PageProps) {
     const min_score = parseOptionalNumber(params.min_score);
     const major_id = parseOptionalNumber(params.major_id);
     const max_tuition = parseOptionalNumber(params.max_tuition);
+    const ward = params.ward?.trim() || undefined;
 
     let majorName: string | undefined;
     if (major_id != null) {
@@ -56,6 +58,7 @@ export default async function UniversitiesPage({ searchParams }: PageProps) {
             min_score,
             major_id,
             max_tuition,
+            ward,
         });
     } catch (err) {
         if (err instanceof ApiClientError) {
@@ -84,7 +87,7 @@ export default async function UniversitiesPage({ searchParams }: PageProps) {
                 </div>
             ) : (
                 <UniversitiesExplorer
-                    key={`${subject_combination ?? ''}|${min_score ?? ''}|${major_id ?? ''}|${max_tuition ?? ''}|${search ?? ''}|${page}`}
+                    key={`${subject_combination ?? ''}|${min_score ?? ''}|${major_id ?? ''}|${max_tuition ?? ''}|${ward ?? ''}|${search ?? ''}|${page}`}
                     initial={result}
                     search={search}
                     page={page}
@@ -93,6 +96,7 @@ export default async function UniversitiesPage({ searchParams }: PageProps) {
                     majorId={major_id}
                     majorName={majorName}
                     maxTuition={max_tuition}
+                    ward={ward}
                 />
             )}
         </>

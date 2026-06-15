@@ -16,6 +16,7 @@ const EMPTY_FORM = {
     short_name: '',
     type: 'public' as UniversityType,
     location: 'Hà Nội',
+    ward: '',
     tuition_fee_min: '',
     tuition_fee_max: '',
 };
@@ -58,6 +59,7 @@ export function UniversitiesPanel() {
             short_name: row.short_name ?? '',
             type: (row.type as UniversityType) || 'public',
             location: row.location ?? '',
+            ward: row.ward ?? '',
             tuition_fee_min: row.tuition_fee_min?.toString() ?? '',
             tuition_fee_max: row.tuition_fee_max?.toString() ?? '',
         });
@@ -72,6 +74,7 @@ export function UniversitiesPanel() {
             short_name: form.short_name.trim() || undefined,
             type: form.type,
             location: form.location.trim() || undefined,
+            ward: form.ward.trim() || undefined,
             tuition_fee_min: form.tuition_fee_min
                 ? Number(form.tuition_fee_min)
                 : undefined,
@@ -156,7 +159,13 @@ export function UniversitiesPanel() {
                 <input
                     value={form.location}
                     onChange={(e) => setForm({ ...form, location: e.target.value })}
-                    placeholder="Địa điểm"
+                    placeholder="Thành phố"
+                    className="input-field"
+                />
+                <input
+                    value={form.ward}
+                    onChange={(e) => setForm({ ...form, ward: e.target.value })}
+                    placeholder="Phường"
                     className="input-field"
                 />
                 <input

@@ -3,6 +3,7 @@ import { Hanken_Grotesk, Inter } from 'next/font/google';
 import './globals.css';
 import { AppShell } from '@/components/AppShell';
 import { AuthProvider } from '@/lib/auth';
+import { FavoritesProvider } from '@/lib/favorites';
 import { LocaleProvider } from '@/lib/i18n/locale';
 
 const inter = Inter({
@@ -18,7 +19,7 @@ const hanken = Hanken_Grotesk({
 export const metadata: Metadata = {
     title: 'UniGuide AI — Gợi ý đại học thông minh',
     description:
-        'Gợi ý trường đại học và ngành học phù hợp cho học sinh THPT tại Hà Nội — tra cứu, so sánh và chatbot tư vấn.',
+        'Gợi ý trường đại học và ngành học phù hợp cho học sinh THPT tại Hà Nội — tra cứu, so sánh và chatbot.',
 };
 
 export default function RootLayout({
@@ -33,9 +34,11 @@ export default function RootLayout({
         >
             <body className="flex min-h-full flex-col bg-background text-foreground">
                 <AuthProvider>
-                    <LocaleProvider>
-                        <AppShell>{children}</AppShell>
-                    </LocaleProvider>
+                    <FavoritesProvider>
+                        <LocaleProvider>
+                            <AppShell>{children}</AppShell>
+                        </LocaleProvider>
+                    </FavoritesProvider>
                 </AuthProvider>
             </body>
         </html>

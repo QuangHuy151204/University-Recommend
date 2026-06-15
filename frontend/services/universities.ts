@@ -5,6 +5,7 @@ import type { Paginated, University, UniversityDetail } from '@/types';
 export interface UniversityQuery {
     search?: string;
     location?: string;
+    ward?: string;
     type?: string;
     max_tuition?: number;
     subject_combination?: string;
@@ -20,6 +21,10 @@ export function listUniversities(query: UniversityQuery = {}) {
 
 export function getUniversity(id: number) {
     return api.get<UniversityDetail>(`/universities/${id}`);
+}
+
+export function listWards() {
+    return api.get<{ data: string[] }>('/universities/wards');
 }
 
 /** Fetch nhiều trường song song (dùng cho trang so sánh). */

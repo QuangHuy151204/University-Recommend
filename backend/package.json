@@ -20,6 +20,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "test:regression": "jest --testPathPatterns=\"(intent-regression|duplicate-cleanup|major-normalization|major-name-match|university-cutoff-filter|university-filter-evaluator|chat-session-context|recommendation-tier|recommendations-regression|chatbot-intent-pipeline|chatbot-guardrails|chatbot-follow-up-e2e|interest-synonyms|score-trend|university-extract)\\.spec\\.ts$\"",
     "test:university-filter-audit": "ts-node -r tsconfig-paths/register scripts/run-university-filter-audit.ts",
+    "test:university-filter-50": "ts-node -r tsconfig-paths/register scripts/run-university-filter-50.ts",
+    "test:university-filter-50-popular": "ts-node -r tsconfig-paths/register scripts/run-university-filter-50-popular.ts",
     "benchmark:ollama-e2e": "ts-node -r tsconfig-paths/register scripts/benchmark-ollama-e2e.ts",
     "import:excel": "ts-node -r tsconfig-paths/register src/import-excel.ts",
     "import:excel:merge": "ts-node -r tsconfig-paths/register src/import-excel.ts -- --merge",

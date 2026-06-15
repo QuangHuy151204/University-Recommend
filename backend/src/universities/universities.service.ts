@@ -14,7 +14,6 @@ import {
   CUTOFF_FILTER_YEARS,
   subjectCombinationSqlMatch,
 } from '../common/subject-combination';
-import { latestCutoffYearSql } from './university-cutoff-filter';
 
 @Injectable()
 export class UniversitiesService {
@@ -36,6 +35,7 @@ export class UniversitiesService {
     const {
       search,
       location,
+      ward,
       type,
       max_tuition,
       subject_combination,
@@ -59,6 +59,10 @@ export class UniversitiesService {
 
     if (location) {
       qb.andWhere('u.location ILIKE :location', { location: `%${location}%` });
+    }
+
+    if (ward) {
+      qb.andWhere('u.ward ILIKE :ward', { ward: `%${ward}%` });
     }
 
     if (type) {
@@ -118,6 +122,22 @@ export class UniversitiesService {
     return { message: `Đã xóa trường id ${id}` };
   }
 
+  /** Danh sách phường có trường — dùng dropdown gợi ý / hồ sơ */
+  async listWards(): Promise<{ data: string[] }> {
+    const rows = await this.universityRepo
+      .createQueryBuilder('u')
+      .select('DISTINCT u.ward', 'ward')
+      .where('u.ward IS NOT NULL')
+      .andWhere("TRIM(u.ward) <> ''")
+      .andWhere('u.location ILIKE :scopeLocation', {
+        scopeLocation: `%${DATA_SCOPE_LOCATION}%`,
+      })
+      .orderBy('u.ward', 'ASC')
+      .getRawMany<{ ward: string }>();
+
+    return { data: rows.map((r) => r.ward) };
+  }
+
   /** Mở rộng major_id đã chọn sang các biến thể tên ngành trong catalog. */
   private async resolveMajorIdsForFilter(
     major_id?: number,
@@ -160,18 +180,49 @@ export class UniversitiesService {
     }
 
     if (combo || hasScore) {
-      sub.innerJoin('sum.cutoffScores', 'scs');
-      sub.andWhere('scs.year IN (:...cutoffYears)', { cutoffYears });
+      if (hasScore) {
+        const latestSub = this.universityRepo.manager
+          .createQueryBuilder()
+          .select('csly.university_major_id', 'university_major_id')
+          .addSelect('MAX(csly.year)', 'max_year')
+          .from('cutoff_scores', 'csly')
+          .where('csly.year IN (:...cutoffYears)', { cutoffYears });
 
-      if (combo) {
+        if (combo) {
+          latestSub.andWhere(
+            subjectCombinationSqlMatch('csly.subject_combination', 'combo'),
+            { combo },
+          );
+        }
+
+        latestSub.groupBy('csly.university_major_id');
+
+        sub.innerJoin(
+          `(${latestSub.getQuery()})`,
+          'lc',
+          'lc.university_major_id = sum.id',
+        );
+        sub.innerJoin(
+          'cutoff_scores',
+          'scs',
+          'scs.university_major_id = sum.id AND scs.year = lc.max_year',
+        );
+        if (combo) {
+          sub.andWhere(
+            subjectCombinationSqlMatch('scs.subject_combination', 'combo'),
+          );
+        }
+        sub.andWhere('scs.score <= :minScore', { minScore: min_score });
+        for (const [key, value] of Object.entries(latestSub.getParameters())) {
+          sub.setParameter(key, value);
+        }
+      } else {
+        sub.innerJoin('sum.cutoffScores', 'scs');
+        sub.andWhere('scs.year IN (:...cutoffYears)', { cutoffYears });
         sub.andWhere(
           subjectCombinationSqlMatch('scs.subject_combination', 'combo'),
           { combo },
         );
-      }
-      if (hasScore) {
-        sub.andWhere(latestCutoffYearSql('sum', 'scs', combo ? 'combo' : null));
-        sub.andWhere('scs.score <= :minScore', { minScore: min_score });
       }
     }
 

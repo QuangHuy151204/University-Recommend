@@ -34,6 +34,12 @@ export class UniversitiesController {
     return this.universitiesService.findAll(query);
   }
 
+  @ApiOperation({ summary: 'Danh sách phường có trường (dropdown)' })
+  @Get('wards')
+  listWards() {
+    return this.universitiesService.listWards();
+  }
+
   // Public: Xem chi tiết 1 trường
   @ApiOperation({ summary: 'Lấy chi tiết 1 trường theo ID' })
   @Get(':id')

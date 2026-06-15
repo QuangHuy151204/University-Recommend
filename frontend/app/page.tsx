@@ -29,7 +29,7 @@ const features = [
     },
     {
         icon: Bot,
-        title: 'Chatbot tư vấn',
+        title: 'Chatbot',
         description:
             'Hỏi đáp tự nhiên bằng tiếng Việt: tra điểm chuẩn, học phí, danh sách ngành — chatbot giải thích rõ ràng, dễ hiểu.',
         accent: 'text-tertiary',
@@ -58,8 +58,8 @@ const steps = [
     },
     {
         step: '03',
-        title: 'Khám phá & hỏi AI',
-        text: 'Tra điểm chuẩn, so sánh trường và trò chuyện với cố vấn AI.',
+        title: 'Khám phá & chatbot',
+        text: 'Tra điểm chuẩn, so sánh trường và trò chuyện với chatbot.',
     },
 ];
 
@@ -121,7 +121,7 @@ export default function LandingPage() {
                         </li>
                         <li className="flex items-center gap-2">
                             <Sparkles className="size-4 text-secondary" />
-                            Chatbot tư vấn AI
+                            Chatbot
                         </li>
                     </ul>
                 </div>
@@ -257,7 +257,7 @@ export default function LandingPage() {
                         Sẵn sàng chọn hướng đi đại học?
                     </h2>
                     <p className="mt-4 text-slate-200">
-                        Đăng ký để mở tra cứu, gợi ý cá nhân hóa và lưu lịch sử tư vấn.
+                        Đăng ký để mở tra cứu, gợi ý cá nhân hóa và lưu lịch sử chatbot.
                     </p>
                     <div className="mt-10 flex flex-wrap justify-center gap-4">
                         <Link href="/register" className="btn-accent px-8 py-3 text-base">

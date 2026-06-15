@@ -25,6 +25,10 @@ export class University {
   @Column({ length: 100, nullable: true })
   location: string; // Hà Nội, TP.HCM, Đà Nẵng...
 
+  /** Phường/xã tại Hà Nội — dùng gợi ý theo khu ở / gần trường */
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  ward: string | null;
+
   @Column({ nullable: true })
   address: string;
 

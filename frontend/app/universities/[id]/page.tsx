@@ -123,9 +123,13 @@ export default async function UniversityDetailPage({ params }: PageProps) {
                                 />
                                 <div>
                                     <dt className="font-medium text-slate-500">
-                                        Khu vực
+                                        Địa điểm
                                     </dt>
-                                    <dd>{uni.location}</dd>
+                                    <dd>
+                                        {uni.ward
+                                            ? `${uni.ward}, ${uni.location}`
+                                            : uni.location}
+                                    </dd>
                                     {uni.address && (
                                         <dd className="mt-0.5 text-slate-600">
                                             {uni.address}
@@ -219,7 +223,7 @@ export default async function UniversityDetailPage({ params }: PageProps) {
                     href="/chatbot"
                     className="font-medium text-tertiary hover:text-primary"
                 >
-                    Hỏi tư vấn AI
+                    Chatbot
                 </Link>
                 {' · '}
                 <Link

@@ -239,7 +239,9 @@ tuyensinh247 API  →  scrape_and_fill_excel.py  →  .xlsx  →  npm run import
 | `cutoff_scores(ĐTN)` | Điểm chuẩn THPT / học bạ |
 | `cutoff_scores(ĐGNL)` | Điểm chuẩn ĐGNL / ĐGTD |
 
-### Scrape điểm chuẩn (2023–2025)
+Sheet `universities_hanoi` có cột **`Phường`** (phường/xã sau sáp nhập 2025). Import ưu tiên file `mau_du_lieu_truong_dai_hoc_5_sheets_bo_sung_phuong.xlsx` nếu có trong thư mục gốc; hoặc đặt đường dẫn tùy chỉnh: `IMPORT_EXCEL_PATH=... npm run import:excel`.
+
+API: `GET /api/universities/wards` — danh sách phường có trường (dropdown gợi ý / hồ sơ).
 
 ```powershell
 cd d:\UniversityRecommend

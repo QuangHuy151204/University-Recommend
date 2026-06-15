@@ -30,7 +30,7 @@ const MESSAGES_KEY = 'ur_chat_messages';
 
 const QUICK_ACTIONS = [
     {
-        title: 'Tư vấn chọn trường',
+        title: 'Gợi ý chọn trường',
         prompt: 'Em được 24 điểm khối A00 muốn học CNTT ở Hà Nội thì nên chọn trường nào?',
     },
     {
@@ -415,7 +415,7 @@ function ChatbotInner() {
                                 </div>
                                 <div className="card flex-1 p-4">
                                     <p className="text-sm leading-relaxed text-slate-700">
-                                        Xin chào! Tôi là trợ lý UniGuide AI. Bạn có thể
+                                        Xin chào! Tôi là chatbot UniGuide. Bạn có thể
                                         hỏi về trường, ngành, điểm chuẩn và học phí — tôi
                                         sẽ tra cứu và giải thích rõ ràng.
                                     </p>
@@ -502,7 +502,7 @@ function ChatbotInner() {
                                                             )}
                                                         >
                                                             {m.engine === 'ollama'
-                                                                ? 'Trợ lý AI'
+                                                                ? 'Chatbot'
                                                                 : 'Tra cứu'}
                                                         </span>
                                                     )}

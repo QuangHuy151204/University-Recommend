@@ -21,7 +21,8 @@ export type ExpectedRankingRow = {
 };
 
 /**
- * Thứ hạng kỳ vọng với trọng số hiện tại (điểm 35% / sở thích 30% / khu vực 15% / tài chính 10% / nghề 3%).
+ * Thứ hạng kỳ vọng với trọng số hiện tại (điểm 35% / sở thích 30% / khu vực 15% / tài chính 15% / nghề 5%).
+ * Không chọn phường: khu vực +10 (trung tính), tài chính +10, nghề +3.
  * Fixture tổng hợp — không phụ thuộc PostgreSQL import.
  */
 export const CANONICAL_SUPHAM_TOAN_REQUEST: RecommendRequestDto = {
@@ -58,21 +59,21 @@ export const EXPECTED_B01_CNTT_25_RANKING: ExpectedRankingRow[] = [
   {
     short_name: 'HUST',
     majorKeyword: 'công nghệ thông tin',
-    matchScore: 93,
+    matchScore: 88,
     admissionTier: 'safety',
     referenceCutoff: 24,
   },
   {
     short_name: 'PTIT',
     majorKeyword: 'cntt',
-    matchScore: 73,
+    matchScore: 68,
     admissionTier: 'match',
     referenceCutoff: 26,
   },
   {
     short_name: 'HUMG',
     majorKeyword: 'công nghệ thông tin',
-    matchScore: 58,
+    matchScore: 53,
     admissionTier: 'reach',
     referenceCutoff: 28,
   },

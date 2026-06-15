@@ -26,7 +26,7 @@ export class UpdateProfileDto {
 
   @IsOptional()
   @IsString()
-  preferred_location?: string; // Luôn ghi đè thành Hà Nội (scope đồ án)
+  preferred_location?: string; // Phường muốn học gần (Hà Nội)
 
   @IsOptional()
   @IsEnum(['low', 'medium', 'high'])

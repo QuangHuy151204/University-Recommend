@@ -64,6 +64,7 @@ export interface University {
     short_name: string | null;
     type: UniversityType | string;
     location: string | null;
+    ward: string | null;
     address: string | null;
     website: string | null;
     description: string | null;

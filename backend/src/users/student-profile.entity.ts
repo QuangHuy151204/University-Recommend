@@ -28,7 +28,7 @@ export class StudentProfile {
   interests: string; // Sở thích ngành nghề (JSON)
 
   @Column({ nullable: true })
-  preferred_location: string; // Khu vực muốn học
+  preferred_location: string; // Phường muốn học gần (Hà Nội)
 
   @Column({ nullable: true })
   budget_range: string; // low | medium | high

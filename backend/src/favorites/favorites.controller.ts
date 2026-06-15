@@ -10,6 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import type { AuthenticatedRequest } from '../auth/jwt-user.types';
 import { FavoritesService } from './favorites.service';
@@ -17,6 +18,7 @@ import { AddFavoriteDto } from './favorites.dto';
 
 @ApiTags('favorites')
 @ApiBearerAuth('JWT')
+@SkipThrottle()
 @Controller('favorites')
 @UseGuards(JwtAuthGuard)
 export class FavoritesController {

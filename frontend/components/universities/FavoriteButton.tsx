@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Heart } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
+import { useFavorites } from '@/lib/favorites';
 import { ApiClientError } from '@/lib/api';
 import {
     addFavorite,
-    listFavorites,
     removeFavoriteByUniversity,
 } from '@/services/favorites';
 import { cn } from '@/lib/utils';
@@ -20,41 +20,16 @@ interface Props {
 export function FavoriteButton({ universityId, className }: Props) {
     const { token } = useAuth();
     const router = useRouter();
-    const [favoriteId, setFavoriteId] = useState<number | null>(null);
+    const {
+        loading: favoritesLoading,
+        findUniversityFavoriteId,
+        upsertItem,
+        removeItemById,
+    } = useFavorites();
     const [loading, setLoading] = useState(false);
-    const [ready, setReady] = useState(!token);
-    const [prevToken, setPrevToken] = useState(token);
 
-    if (token !== prevToken) {
-        setPrevToken(token);
-        setFavoriteId(null);
-        setReady(!token);
-    }
-
-    useEffect(() => {
-        if (!token) return;
-        let cancelled = false;
-        listFavorites(token)
-            .then((items) => {
-                if (cancelled) return;
-                const hit = items.find(
-                    (f) =>
-                        f.favorite_type === 'university' &&
-                        f.university_id === universityId,
-                );
-
-                setFavoriteId(hit?.id ?? null);
-            })
-            .catch(() => {
-                if (!cancelled) setFavoriteId(null);
-            })
-            .finally(() => {
-                if (!cancelled) setReady(true);
-            });
-        return () => {
-            cancelled = true;
-        };
-    }, [token, universityId]);
+    const favoriteId = token ? findUniversityFavoriteId(universityId) : null;
+    const ready = !token || !favoritesLoading;
 
     async function toggle() {
         if (!token) {
@@ -66,10 +41,10 @@ export function FavoriteButton({ universityId, className }: Props) {
         try {
             if (favoriteId != null) {
                 await removeFavoriteByUniversity(universityId, token);
-                setFavoriteId(null);
+                removeItemById(favoriteId);
             } else {
                 const created = await addFavorite(universityId, token);
-                setFavoriteId(created.id);
+                upsertItem(created);
             }
         } catch (err) {
             const msg =

@@ -73,6 +73,7 @@ export function universityMajorPassesCutoffFilter(
 /**
  * SQL: ràng buộc scs là dòng năm mới nhất (trong cutoffYears) cho university_major,
  * có thể giới hạn theo tổ hợp khi combo được truyền.
+ * @deprecated Prefer {@link latestCutoffYearJoinSql} — correlated subquery is slow on large datasets.
  */
 export function latestCutoffYearSql(
   universityMajorAlias: string,
@@ -90,4 +91,30 @@ export function latestCutoffYearSql(
     AND ${innerAlias}.year IN (:...cutoffYears)
     ${comboClause}
   )`;
+}
+
+/**
+ * SQL fragments: JOIN năm mới nhất theo university_major (GROUP BY thay vì correlated subquery).
+ * Trả về alias bảng trung gian `lc` và alias cutoff `scs` đã join sẵn.
+ */
+export function latestCutoffYearJoinSql(
+  universityMajorAlias: string,
+  comboParamName: string | null,
+): { latestAlias: string; cutoffAlias: string; joinSql: string } {
+  const latestAlias = 'lc';
+  const cutoffAlias = 'scs';
+  const comboInner = comboParamName
+    ? `AND ${subjectCombinationSqlMatch('csly.subject_combination', comboParamName)}`
+    : '';
+  const joinSql = `INNER JOIN (
+    SELECT csly.university_major_id, MAX(csly.year) AS max_year
+    FROM cutoff_scores csly
+    WHERE csly.year IN (:...cutoffYears)
+    ${comboInner}
+    GROUP BY csly.university_major_id
+  ) ${latestAlias} ON ${latestAlias}.university_major_id = ${universityMajorAlias}.id
+  INNER JOIN cutoff_scores ${cutoffAlias}
+    ON ${cutoffAlias}.university_major_id = ${universityMajorAlias}.id
+    AND ${cutoffAlias}.year = ${latestAlias}.max_year`;
+  return { latestAlias, cutoffAlias, joinSql };
 }

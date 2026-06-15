@@ -5,12 +5,12 @@ import { useEffect, useState } from 'react';
 import { Sparkles } from 'lucide-react';
 import { Stepper } from '@/components/Stepper';
 import { SubjectCombinationPicker } from '@/components/ui/SubjectCombinationPicker';
+import { WardPicker } from '@/components/ui/WardPicker';
 import { RecommendResults } from '@/components/RecommendResults';
 import { RecommendEmptyState } from '@/components/RecommendEmptyState';
 import { AlertBox, PageHeader, PageShell } from '@/components/ui/PageLayout';
 import { useAuth } from '@/lib/auth';
 import { ApiClientError } from '@/lib/api';
-import { APP_SCOPE_LOCATION } from '@/lib/scope';
 import { getMe, updateProfile } from '@/services/auth';
 import { recommend } from '@/services/recommendations';
 import { listAdmissionMethods } from '@/services/admission-methods';
@@ -57,7 +57,7 @@ function profileToForm(p: StudentProfile | null | undefined): RecommendRequest {
         expected_score: p?.expected_score ?? 20,
         subject_combination: p?.subject_combination ?? 'A00',
         interests: p?.interests ?? '',
-        preferred_location: APP_SCOPE_LOCATION,
+        preferred_location: p?.preferred_location ?? '',
         budget_range: p?.budget_range ?? 'medium',
         budget_max_yearly: budgetAmountFromProfile(p),
         career_goal: p?.career_goal ?? '',
@@ -147,7 +147,7 @@ export function RecommendWizard() {
         setError(null);
         const payload: RecommendRequest = {
             ...form,
-            preferred_location: APP_SCOPE_LOCATION,
+            preferred_location: form.preferred_location?.trim() || undefined,
             budget_range: budgetRangeFromAmount(budgetAmount),
             budget_max_yearly: budgetAmount,
             method_code: form.method_code?.trim() || 'THPT',
@@ -162,7 +162,7 @@ export function RecommendWizard() {
                             expected_score: payload.expected_score,
                             subject_combination: payload.subject_combination,
                             interests: payload.interests,
-                            preferred_location: APP_SCOPE_LOCATION,
+                            preferred_location: payload.preferred_location,
                             budget_range: payload.budget_range,
                             budget_max_yearly: payload.budget_max_yearly,
                             career_goal: payload.career_goal,
@@ -273,6 +273,14 @@ export function RecommendWizard() {
                                 className="input-field"
                             />
                         </div>
+                        <WardPicker
+                            id="recommend-ward"
+                            label="Khu vực"
+                            value={form.preferred_location ?? ''}
+                            onChange={(ward) =>
+                                setForm({ ...form, preferred_location: ward || undefined })
+                            }
+                        />
                         <div>
                             <label className="mb-1.5 block text-sm font-medium text-slate-700">
                                 Mục tiêu nghề nghiệp (tuỳ chọn)
@@ -364,7 +372,7 @@ export function RecommendWizard() {
                                         methods,
                                         response.meta.filtersApplied.method_label,
                                     ),
-                                    location: APP_SCOPE_LOCATION,
+                                    location: form.preferred_location?.trim() || 'Tất cả phường (Hà Nội)',
                                 }}
                             />
                         )}

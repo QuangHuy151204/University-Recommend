@@ -10,6 +10,7 @@
 
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
+import * as fs from 'fs';
 import * as path from 'path';
 import * as XLSX from 'xlsx';
 import { DATA_SCOPE_LOCATION, isHanoiLocation } from './common/data-scope';
@@ -22,10 +23,20 @@ import { KHAC_GROUP_ID } from './majors/major-groups-catalog';
 
 dotenv.config();
 
-const EXCEL_PATH = path.resolve(
+const DEFAULT_EXCEL_PATH = path.resolve(
   __dirname,
   '../../mau_du_lieu_truong_dai_hoc_5_sheets.xlsx',
 );
+const WARD_EXCEL_PATH = path.resolve(
+  __dirname,
+  '../../mau_du_lieu_truong_dai_hoc_5_sheets_bo_sung_phuong.xlsx',
+);
+
+const EXCEL_PATH = process.env.IMPORT_EXCEL_PATH
+  ? path.resolve(process.env.IMPORT_EXCEL_PATH)
+  : fs.existsSync(WARD_EXCEL_PATH)
+    ? WARD_EXCEL_PATH
+    : DEFAULT_EXCEL_PATH;
 
 const SHEET_UNIVERSITIES = 'universities_hanoi';
 const SHEET_METHODS = 'admission_methods';
@@ -53,6 +64,15 @@ function cleanNum(v: unknown): number | null {
 function cleanInt(v: unknown): number | null {
   const n = cleanNum(v);
   return n === null ? null : Math.round(n);
+}
+
+function readWard(row: Record<string, unknown>): string | null {
+  return (
+    cleanStr(row['Phường']) ||
+    cleanStr(row['phuong']) ||
+    cleanStr(row['ward']) ||
+    null
+  );
 }
 
 function readSheet(wb: XLSX.WorkBook, name: string): Record<string, unknown>[] {
@@ -197,6 +217,7 @@ async function main() {
         short,
         cleanStr(row['type']) || 'public',
         rawLocation,
+        readWard(row),
         cleanStr(row['address']),
         cleanStr(row['website']),
         cleanStr(row['description']),
@@ -208,15 +229,15 @@ async function main() {
       const existingId = uniIdByShort.get(short);
       if (mergeMode && existingId !== undefined) {
         await qr.query(
-          `UPDATE universities SET name=$1, short_name=$2, type=$3, location=$4, address=$5, website=$6,
-           description=$7, tuition_fee_min=$8, tuition_fee_max=$9, source_url=$10, updated_at=NOW()
-           WHERE id=$11`,
+          `UPDATE universities SET name=$1, short_name=$2, type=$3, location=$4, ward=$5, address=$6, website=$7,
+           description=$8, tuition_fee_min=$9, tuition_fee_max=$10, source_url=$11, updated_at=NOW()
+           WHERE id=$12`,
           [...params, existingId],
         );
       } else {
         const result = await qr.query(
-          `INSERT INTO universities (name, short_name, type, location, address, website, description, tuition_fee_min, tuition_fee_max, source_url)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id`,
+          `INSERT INTO universities (name, short_name, type, location, ward, address, website, description, tuition_fee_min, tuition_fee_max, source_url)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING id`,
           params,
         );
         uniIdByShort.set(short, result[0].id);

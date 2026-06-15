@@ -46,7 +46,7 @@ async function loadDataset(ds: typeof dataSource): Promise<FilterDataset> {
 
   const [universities, universityMajors, cutoffs, catalog] = await Promise.all([
     ds.query(
-      `SELECT id, name, short_name, location, type, tuition_fee_min
+      `SELECT id, name, short_name, location, ward, type, tuition_fee_min
        FROM universities WHERE location ILIKE $1`,
       [scope],
     ),

@@ -33,6 +33,10 @@ export class CreateUniversityDto {
 
   @IsOptional()
   @IsString()
+  ward?: string;
+
+  @IsOptional()
+  @IsString()
   address?: string;
 
   @IsOptional()
@@ -71,7 +75,11 @@ export class QueryUniversityDto {
 
   @IsOptional()
   @IsString()
-  location?: string; // Lọc theo khu vực
+  location?: string; // Lọc theo thành phố (mặc định Hà Nội)
+
+  @IsOptional()
+  @IsString()
+  ward?: string; // Lọc theo phường
 
   @IsOptional()
   @IsEnum(UniversityType)

@@ -10,6 +10,7 @@ import {
 export type UniversityFilterQuery = {
   search?: string;
   location?: string;
+  ward?: string;
   type?: string;
   max_tuition?: number;
   subject_combination?: string;
@@ -24,6 +25,7 @@ export type UniversitySnapshot = {
   name: string;
   short_name: string;
   location: string;
+  ward?: string | null;
   type: string | null;
   tuition_fee_min: number | null;
 };
@@ -92,6 +94,11 @@ function universityPassesBaseFilters(
     ) {
       return false;
     }
+  }
+  if (query.ward?.trim()) {
+    const want = query.ward.trim().toLowerCase();
+    const have = (uni.ward ?? '').trim().toLowerCase();
+    if (!have.includes(want)) return false;
   }
   if (query.type && uni.type !== query.type) return false;
   if (query.max_tuition != null && Number.isFinite(query.max_tuition)) {

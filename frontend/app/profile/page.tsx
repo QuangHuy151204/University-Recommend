@@ -19,8 +19,8 @@ import type {
     UpdateProfilePayload,
     StudentProfile,
 } from '@/types';
-import { APP_SCOPE_LOCATION } from '@/lib/scope';
 import { SubjectCombinationPicker } from '@/components/ui/SubjectCombinationPicker';
+import { WardPicker } from '@/components/ui/WardPicker';
 import { FavoritesSection } from '@/components/favorites/FavoritesSection';
 
 const BUDGET_MIN = 0;
@@ -50,7 +50,7 @@ function emptyForm(p: StudentProfile | null | undefined): UpdateProfilePayload {
         expected_score: p?.expected_score ?? undefined,
         subject_combination: p?.subject_combination ?? '',
         interests: p?.interests ?? '',
-        preferred_location: APP_SCOPE_LOCATION,
+        preferred_location: p?.preferred_location ?? '',
         budget_range: (p?.budget_range as UpdateProfilePayload['budget_range']) ?? undefined,
         career_goal: p?.career_goal ?? '',
         preferred_method_code: p?.preferred_method_code ?? 'THPT',
@@ -143,7 +143,9 @@ export default function ProfilePage() {
         }
         if (form.subject_combination) payload.subject_combination = form.subject_combination;
         if (form.interests) payload.interests = form.interests;
-        payload.preferred_location = APP_SCOPE_LOCATION;
+        if (form.preferred_location !== undefined) {
+            payload.preferred_location = form.preferred_location.trim() || undefined;
+        }
         payload.budget_range = budgetRangeFromAmount(budgetAmount);
         payload.budget_max_yearly = budgetAmount;
         if (form.career_goal) payload.career_goal = form.career_goal;
@@ -180,7 +182,7 @@ export default function ProfilePage() {
             <PageHeader
                 eyebrow="Tài khoản"
                 title="Hồ sơ học sinh"
-                subtitle="Thông tin này được dùng để điền sẵn form gợi ý và tư vấn qua chatbot."
+                subtitle="Thông tin này được dùng để điền sẵn form gợi ý và dùng chatbot."
             />
 
             {me && (
@@ -249,21 +251,14 @@ export default function ProfilePage() {
                         />
                     </div>
 
-                    <div>
-                        <label className="mb-1.5 block text-sm font-medium text-slate-700">
-                            Khu vực
-                        </label>
-                        <input
-                            type="text"
-                            value={APP_SCOPE_LOCATION}
-                            readOnly
-                            disabled
-                            className="input-field cursor-not-allowed bg-slate-50 text-slate-600"
-                        />
-                        <p className="mt-1 text-xs text-slate-500">
-                            Hệ thống chỉ hỗ trợ tra cứu và gợi ý trường đại học tại Hà Nội.
-                        </p>
-                    </div>
+                    <WardPicker
+                        id="profile-ward"
+                        label="Khu vực"
+                        value={form.preferred_location ?? ''}
+                        onChange={(ward) =>
+                            setForm({ ...form, preferred_location: ward || undefined })
+                        }
+                    />
 
                     <div>
                         <label className="mb-1.5 block text-sm font-medium text-slate-700">
@@ -357,7 +352,7 @@ export default function ProfilePage() {
                         Gợi ý trường – ngành
                     </Link>
                     <Link href="/chatbot" className="btn-secondary">
-                        Tư vấn AI
+                        Chatbot
                     </Link>
                 </div>
             </form>
