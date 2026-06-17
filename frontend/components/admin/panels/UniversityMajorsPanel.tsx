@@ -1,9 +1,12 @@
 'use client';
 
 /* eslint-disable react-hooks/set-state-in-effect -- admin tables fetch on filter change */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { listUniversities } from '@/services/universities';
-import { listMajors } from '@/services/majors';
+import { ADMIN_PREFERRED_UNIVERSITY_SHORT_NAME } from '@/lib/admin-universities';
+import { sortRows, useTableSort } from '@/lib/admin-table-sort';
+import { AdminSortableTh } from '@/components/admin/AdminSortableTh';
+import { listAllMajors } from '@/services/majors';
 import {
     createUniversityMajor,
     deleteUniversityMajor,
@@ -31,17 +34,57 @@ export function UniversityMajorsPanel() {
     const [editing, setEditing] = useState<UniversityMajor | null>(null);
     const [form, setForm] = useState(EMPTY);
     const [saving, setSaving] = useState(false);
+    const { sort, toggleSort } = useTableSort();
+
+    const getSortValue = useCallback((row: UniversityMajor, key: string) => {
+        switch (key) {
+            case 'id':
+                return row.id;
+            case 'university':
+                return row.university.name;
+            case 'major':
+                return row.major.name;
+            case 'training_program':
+                return row.training_program ?? '';
+            case 'tuition_fee':
+                return row.tuition_fee ?? -1;
+            default:
+                return '';
+        }
+    }, []);
+
+    const displayRows = useMemo(
+        () => sortRows(rows, sort, getSortValue),
+        [rows, sort, getSortValue],
+    );
 
     useEffect(() => {
-        Promise.all([
-            listUniversities({ limit: 200 }),
-            listMajors({ limit: 200 }),
-        ])
-            .then(([u, m]) => {
+        let cancelled = false;
+        void (async () => {
+            try {
+                const [u, m] = await Promise.all([
+                    listUniversities({
+                        limit: 200,
+                        prefer_short_name: ADMIN_PREFERRED_UNIVERSITY_SHORT_NAME,
+                    }),
+                    listAllMajors(),
+                ]);
+                if (cancelled) return;
                 setUniversities(u.data);
-                setMajors(m.data);
-            })
-            .catch(() => {});
+                setMajors(m);
+            } catch (err) {
+                if (!cancelled) {
+                    setError(
+                        err instanceof ApiClientError
+                            ? err.message
+                            : 'Lỗi tải danh sách trường/ngành',
+                    );
+                }
+            }
+        })();
+        return () => {
+            cancelled = true;
+        };
     }, []);
 
     const load = useCallback(async () => {
@@ -141,9 +184,6 @@ export function UniversityMajorsPanel() {
                 <button type="button" onClick={() => void load()} className="btn-secondary">
                     Tải lại
                 </button>
-                <button type="button" onClick={openCreate} className="btn-primary">
-                    Gán ngành cho trường
-                </button>
             </div>
 
             {error && (
@@ -217,11 +257,36 @@ export function UniversityMajorsPanel() {
                 <table className="min-w-full text-left text-sm">
                     <thead className="border-b border-slate-200 bg-slate-50 text-slate-600">
                         <tr>
-                            <th className="px-4 py-3">ID</th>
-                            <th className="px-4 py-3">Trường</th>
-                            <th className="px-4 py-3">Ngành</th>
-                            <th className="px-4 py-3">CTĐT</th>
-                            <th className="px-4 py-3">Học phí</th>
+                            <AdminSortableTh
+                                label="ID"
+                                sortKey="id"
+                                sort={sort}
+                                onSort={toggleSort}
+                            />
+                            <AdminSortableTh
+                                label="Trường"
+                                sortKey="university"
+                                sort={sort}
+                                onSort={toggleSort}
+                            />
+                            <AdminSortableTh
+                                label="Ngành"
+                                sortKey="major"
+                                sort={sort}
+                                onSort={toggleSort}
+                            />
+                            <AdminSortableTh
+                                label="CTĐT"
+                                sortKey="training_program"
+                                sort={sort}
+                                onSort={toggleSort}
+                            />
+                            <AdminSortableTh
+                                label="Học phí"
+                                sortKey="tuition_fee"
+                                sort={sort}
+                                onSort={toggleSort}
+                            />
                             <th className="px-4 py-3" />
                         </tr>
                     </thead>
@@ -233,7 +298,7 @@ export function UniversityMajorsPanel() {
                                 </td>
                             </tr>
                         ) : (
-                            rows.map((row) => (
+                            displayRows.map((row) => (
                                 <tr key={row.id} className="border-b border-slate-100">
                                     <td className="px-4 py-3">{row.id}</td>
                                     <td className="px-4 py-3">{row.university.name}</td>

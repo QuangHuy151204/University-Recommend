@@ -2,13 +2,11 @@
 
 import { useEffect, useRef, useState, Suspense } from 'react';
 import {
-    Bot,
     Check,
     Copy,
     Plus,
     Send,
     Clock,
-    Sparkles,
     Lock,
     Zap,
     User,
@@ -22,6 +20,7 @@ import { ApiClientError } from '@/lib/api';
 import { CHATBOT_FRESH_AFTER_LOGIN_KEY, useAuth } from '@/lib/auth';
 import type { ChatHistoryItem, ChatMessage, ChatSessionSummary } from '@/types';
 import { ChatCompareCard } from '@/components/chatbot/ChatCompareCard';
+import { ChatbotAvatar } from '@/components/chatbot/ChatbotAvatar';
 import { ChatMarkdown } from '@/components/chatbot/ChatMarkdown';
 import { cn } from '@/lib/utils';
 
@@ -410,9 +409,7 @@ function ChatbotInner() {
                     <div className="mx-auto max-w-2xl space-y-6">
                         {showWelcome && (
                             <div className="flex gap-3">
-                                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary text-white">
-                                    <Bot className="size-5" />
-                                </div>
+                                <ChatbotAvatar />
                                 <div className="card flex-1 p-4">
                                     <p className="text-sm leading-relaxed text-slate-700">
                                         Xin chào! Tôi là chatbot UniGuide. Bạn có thể
@@ -451,21 +448,16 @@ function ChatbotInner() {
                                             isUser ? 'flex-row-reverse' : '',
                                         )}
                                     >
-                                        <div
-                                            className={cn(
-                                                'flex size-9 shrink-0 items-center justify-center rounded-lg',
-                                                isUser
-                                                    ? 'bg-slate-200 text-slate-700'
-                                                    : 'bg-primary text-white',
-                                            )}
-                                            aria-hidden
-                                        >
-                                            {isUser ? (
+                                        {isUser ? (
+                                            <div
+                                                className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-slate-200 text-slate-700"
+                                                aria-hidden
+                                            >
                                                 <User className="size-5" />
-                                            ) : (
-                                                <Bot className="size-5" />
-                                            )}
-                                        </div>
+                                            </div>
+                                        ) : (
+                                            <ChatbotAvatar />
+                                        )}
                                         <div
                                             className={
                                                 isUser
@@ -538,9 +530,7 @@ function ChatbotInner() {
 
                         {loading && (
                             <div className="flex gap-3">
-                                <div className="flex size-9 items-center justify-center rounded-lg bg-primary text-white">
-                                    <Sparkles className="size-5 animate-pulse" />
-                                </div>
+                                <ChatbotAvatar pulse />
                                 <div className="card px-4 py-3 text-sm text-slate-500">
                                     Đang trả lời…
                                 </div>

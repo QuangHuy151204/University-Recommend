@@ -9,6 +9,7 @@ import {
   splitSubjectCombination,
 } from '../common/subject-combination';
 import { QueryCutoffAdminDto } from './cutoff-admin.dto';
+import { applyUniversityDisplayOrder } from '../common/university-display-order';
 
 export class CreateCutoffScoreDto {
   @IsNumber()
@@ -195,12 +196,12 @@ export class CutoffScoresService {
     });
 
     const total = await qb.getCount();
-    const data = await qb
-      .orderBy('cs.year', 'DESC')
-      .addOrderBy('u.name', 'ASC')
+    qb.orderBy('cs.year', 'DESC');
+    applyUniversityDisplayOrder(qb, 'u', undefined, { append: true })
+      .addOrderBy('m.name', 'ASC')
       .skip((page - 1) * limit)
-      .take(limit)
-      .getMany();
+      .take(limit);
+    const data = await qb.getMany();
 
     return {
       data,

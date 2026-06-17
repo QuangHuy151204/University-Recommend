@@ -5,34 +5,62 @@ import { useCallback, useEffect, useState } from 'react';
 import { listMajors } from '@/services/majors';
 import { createMajor, deleteMajor, updateMajor } from '@/services/admin';
 import { ApiClientError } from '@/lib/api';
+import { useTableSort } from '@/lib/admin-table-sort';
+import { AdminSortableTh } from '@/components/admin/AdminSortableTh';
 import type { Major } from '@/types';
 
 const EMPTY = { name: '', code: '', field_group: '', career_orientation: '' };
 
+const PAGE_SIZE = 50;
+
+function toApiSortKey(key: string): 'id' | 'name' | 'code' | 'field_group' {
+    if (key === 'tags') return 'field_group';
+    if (key === 'id' || key === 'name' || key === 'code' || key === 'field_group') {
+        return key;
+    }
+    return 'id';
+}
+
 export function MajorsPanel() {
     const [rows, setRows] = useState<Major[]>([]);
     const [search, setSearch] = useState('');
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [editing, setEditing] = useState<Major | null>(null);
     const [form, setForm] = useState(EMPTY);
     const [saving, setSaving] = useState(false);
+    const { sort, toggleSort } = useTableSort({ key: 'id', direction: 'asc' });
 
     const load = useCallback(async () => {
         setLoading(true);
+        setError(null);
         try {
-            const res = await listMajors({ search: search || undefined, limit: 50 });
+            const res = await listMajors({
+                search: search || undefined,
+                limit: PAGE_SIZE,
+                page,
+                sort_by: toApiSortKey(sort?.key ?? 'id'),
+                sort_order: sort?.direction ?? 'asc',
+            });
             setRows(res.data);
+            setTotalPages(res.totalPages);
         } catch (err) {
             setError(err instanceof ApiClientError ? err.message : 'Lỗi tải dữ liệu');
         } finally {
             setLoading(false);
         }
-    }, [search]);
+    }, [search, page, sort]);
 
     useEffect(() => {
         void load();
     }, [load]);
+
+    function handleSort(key: string) {
+        toggleSort(key);
+        setPage(1);
+    }
 
     function openCreate() {
         setEditing(null);
@@ -87,15 +115,15 @@ export function MajorsPanel() {
             <div className="flex flex-wrap gap-3">
                 <input
                     value={search}
-                    onChange={(e) => setSearch(e.target.value)}
+                    onChange={(e) => {
+                        setSearch(e.target.value);
+                        setPage(1);
+                    }}
                     placeholder="Tìm ngành…"
                     className="input-field max-w-xs"
                 />
                 <button type="button" onClick={() => void load()} className="btn-secondary">
                     Tải lại
-                </button>
-                <button type="button" onClick={openCreate} className="btn-primary">
-                    Thêm ngành
                 </button>
             </div>
 
@@ -149,11 +177,36 @@ export function MajorsPanel() {
                 <table className="min-w-full text-left text-sm">
                     <thead className="border-b border-slate-200 bg-slate-50 text-slate-600">
                         <tr>
-                            <th className="px-4 py-3">ID</th>
-                            <th className="px-4 py-3">Tên</th>
-                            <th className="px-4 py-3">Mã</th>
-                            <th className="px-4 py-3">Nhóm ngành</th>
-                            <th className="px-4 py-3">Tags</th>
+                            <AdminSortableTh
+                                label="ID"
+                                sortKey="id"
+                                sort={sort}
+                                onSort={handleSort}
+                            />
+                            <AdminSortableTh
+                                label="Tên"
+                                sortKey="name"
+                                sort={sort}
+                                onSort={handleSort}
+                            />
+                            <AdminSortableTh
+                                label="Mã"
+                                sortKey="code"
+                                sort={sort}
+                                onSort={handleSort}
+                            />
+                            <AdminSortableTh
+                                label="Nhóm ngành"
+                                sortKey="field_group"
+                                sort={sort}
+                                onSort={handleSort}
+                            />
+                            <AdminSortableTh
+                                label="Tags"
+                                sortKey="tags"
+                                sort={sort}
+                                onSort={handleSort}
+                            />
                             <th className="px-4 py-3" />
                         </tr>
                     </thead>
@@ -162,6 +215,12 @@ export function MajorsPanel() {
                             <tr>
                                 <td colSpan={6} className="px-4 py-6 text-slate-500">
                                     Đang tải…
+                                </td>
+                            </tr>
+                        ) : rows.length === 0 ? (
+                            <tr>
+                                <td colSpan={6} className="px-4 py-6 text-slate-500">
+                                    Không có dữ liệu
                                 </td>
                             </tr>
                         ) : (
@@ -202,6 +261,30 @@ export function MajorsPanel() {
                         )}
                     </tbody>
                 </table>
+            </div>
+
+            <div className="flex items-center justify-between text-sm text-slate-600">
+                <span>
+                    Trang {page} / {totalPages} · {PAGE_SIZE} dòng/trang
+                </span>
+                <div className="flex gap-2">
+                    <button
+                        type="button"
+                        disabled={page <= 1}
+                        onClick={() => setPage((p) => p - 1)}
+                        className="btn-secondary"
+                    >
+                        Trước
+                    </button>
+                    <button
+                        type="button"
+                        disabled={page >= totalPages}
+                        onClick={() => setPage((p) => p + 1)}
+                        className="btn-secondary"
+                    >
+                        Sau
+                    </button>
+                </div>
             </div>
         </div>
     );

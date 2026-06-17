@@ -195,7 +195,7 @@ export class OllamaService {
   /**
    * Trích thực thể từ câu hỏi người dùng theo schema cho trước.
    *
-   * Trả về object có **đúng** các key trong `schema`, mỗi value là `string | number | null`.
+   * Trả về object có đúng các key trong `schema`, mỗi value là `string | number | null`.
    * `null` khi Ollama disabled, mạng lỗi, timeout, parse fail, hoặc validate schema fail
    * → caller PHẢI có fallback (regex/keyword cũ) để bot vẫn chạy.
    *
@@ -303,7 +303,7 @@ export class OllamaService {
   }
 
   /**
-   * Phân loại intent + trích entity trong **một** lượt gọi Ollama (giảm latency).
+   * Phân loại intent + trích entity trong một lượt gọi Ollama (giảm latency).
    * Trả `null` khi disabled / lỗi / parse fail — caller fallback classify+extract riêng.
    */
   async classifyAndExtract<T extends string, K extends string>(

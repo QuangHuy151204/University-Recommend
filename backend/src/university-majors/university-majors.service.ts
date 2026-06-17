@@ -14,6 +14,7 @@ import {
   UpdateUniversityMajorDto,
   QueryUniversityMajorDto,
 } from './university-major.dto';
+import { applyUniversityDisplayOrder } from '../common/university-display-order';
 
 @Injectable()
 export class UniversityMajorsService {
@@ -94,12 +95,11 @@ export class UniversityMajorsService {
     }
 
     const total = await qb.getCount();
-    const data = await qb
-      .orderBy('u.name', 'ASC')
+    applyUniversityDisplayOrder(qb, 'u')
       .addOrderBy('m.name', 'ASC')
       .skip((page - 1) * limit)
-      .take(limit)
-      .getMany();
+      .take(limit);
+    const data = await qb.getMany();
 
     return {
       data,

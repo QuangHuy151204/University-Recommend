@@ -10,6 +10,7 @@ import {
   QueryUniversityDto,
 } from './university.dto';
 import { DATA_SCOPE_LOCATION } from '../common/data-scope';
+import { applyUniversityDisplayOrder } from '../common/university-display-order';
 import {
   CUTOFF_FILTER_YEARS,
   subjectCombinationSqlMatch,
@@ -43,6 +44,7 @@ export class UniversitiesService {
       major_id,
       page = 1,
       limit = 10,
+      prefer_short_name,
     } = query;
 
     const qb = this.universityRepo.createQueryBuilder('u');
@@ -77,11 +79,13 @@ export class UniversitiesService {
     this.applyCutoffFilters(qb, subject_combination, min_score, majorIds);
 
     const total = await qb.getCount();
-    const data = await qb
-      .skip((page - 1) * limit)
-      .take(limit)
-      .orderBy('u.name', 'ASC')
-      .getMany();
+    const pageQb = qb.skip((page - 1) * limit).take(limit);
+    if (prefer_short_name?.trim()) {
+      applyUniversityDisplayOrder(pageQb, 'u', prefer_short_name.trim());
+    } else {
+      pageQb.orderBy('u.name', 'ASC');
+    }
+    const data = await pageQb.getMany();
 
     return {
       data,

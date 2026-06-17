@@ -453,7 +453,7 @@ export class ChatbotService {
       '- TUYỆT ĐỐI không thêm tên trường, điểm chuẩn, học phí, ngành hay phương thức xét tuyển ngoài dữ liệu tham chiếu.',
       '- Nếu thiếu dữ liệu hoặc không có danh sách ngành, nói thẳng là chưa có — không tự bịa danh sách.',
       '- Giữ nguyên mọi con số và từng tên ngành/chương trình đúng như trong dữ liệu.',
-      '- Không rút gọn danh sách có sẵn; không dùng markdown (** hoặc `).',
+      '- Không rút gọn danh sách có sẵn; không dùng markdown ( hoặc `).',
       '- Không nhắc backend, database, PostgreSQL, API hay "dữ liệu hệ thống".',
       '- Tối đa 1–2 emoji nhẹ (tùy chọn); không disclaimer dài trừ khi đã có trong dữ liệu.',
     ]
@@ -1196,7 +1196,7 @@ export class ChatbotService {
         u.tuition_fee_max,
       );
       const fee = programFee ?? rangeFee;
-      blocks.push(`**${u.short_name || u.name}**: ${fee}`);
+      blocks.push(`${u.short_name || u.name}: ${fee}`);
       const minVal = u.tuition_fee_min ?? Number.POSITIVE_INFINITY;
       if (minVal < cheapestMin) {
         cheapestMin = minVal;
@@ -1204,13 +1204,13 @@ export class ChatbotService {
       }
     }
 
-    const majorNote = majorFilter ? ` — ngành **${majorFilter}**` : '';
+    const majorNote = majorFilter ? ` — ngành ${majorFilter}` : '';
     const cheapestNote = cheapest
-      ? `\n\nTheo mức học phí thấp nhất trong dữ liệu, **${cheapest.short_name || cheapest.name}** có học phí tham khảo thấp hơn trong nhóm vừa so sánh.`
+      ? `\n\nTheo mức học phí thấp nhất trong dữ liệu, ${cheapest.short_name || cheapest.name} có học phí tham khảo thấp hơn trong nhóm vừa so sánh.`
       : '';
 
     return (
-      `So sánh học phí${majorNote} giữa **${universities.map((u) => u.short_name || u.name).join(', ')}**:\n\n` +
+      `So sánh học phí${majorNote} giữa ${universities.map((u) => u.short_name || u.name).join(', ')}:\n\n` +
       `${blocks.join('\n')}${cheapestNote}\n\n${CHAT_DISCLAIMER_TUITION}`
     );
   }
@@ -1796,7 +1796,7 @@ export class ChatbotService {
         : 'chưa có trong dữ liệu điểm chuẩn';
 
     let block =
-      `**${u.name}** (${u.short_name || '—'})\n` +
+      `${u.name} (${u.short_name || '—'})\n` +
       `• Loại hình: ${this.formatUniversityTypeLabel(u.type)}\n` +
       `• Khu vực: ${u.location || 'Hà Nội'}` +
       (u.address ? ` — ${u.address}` : '') +
@@ -1903,8 +1903,8 @@ export class ChatbotService {
         );
       }
 
-      const majorNote = majorFilter ? ` — ngành **${majorFilter}**` : '';
-      const yearNote = entities.year ? ` năm **${entities.year}**` : '';
+      const majorNote = majorFilter ? ` — ngành ${majorFilter}` : '';
+      const yearNote = entities.year ? ` năm ${entities.year}` : '';
       const compareIds = universities.slice(0, 2).map((u) => u.id);
       const deeplink =
         compareIds.length >= 2
@@ -1912,10 +1912,10 @@ export class ChatbotService {
           : null;
 
       return (
-        `So sánh **${universities.length} trường**${majorNote}${yearNote}:\n\n` +
+        `So sánh ${universities.length} trường${majorNote}${yearNote}:\n\n` +
         `${blocks.join('\n\n')}\n\n` +
         (deeplink
-          ? `Xem bảng so sánh chi tiết trên web: **${deeplink}** (lọc năm & tổ hợp trực tiếp trên trang).\n\n`
+          ? `Xem bảng so sánh chi tiết trên web: ${deeplink} (lọc năm & tổ hợp trực tiếp trên trang).\n\n`
           : '') +
         `Bạn có thể hỏi tiếp: "Hai trường này học phí chênh nhau thế nào?" hoặc "Trường nào dễ đỗ hơn?"\n\n` +
         `${CHAT_DISCLAIMER_CUTOFF}`
@@ -1945,7 +1945,7 @@ export class ChatbotService {
       const desc = catalog.find((c) => c.method_code === entities.method_code);
       const name = label ?? entities.method_code;
       const note = desc?.description?.trim();
-      return `Phương thức **${name}** (${entities.method_code}):\n${note || 'Mỗi trường có quy định riêng — bạn hỏi thêm tên trường để mình xem PT nào có trong dữ liệu điểm chuẩn.'}\n\n${CHAT_DISCLAIMER_GENERAL}`;
+      return `Phương thức ${name} (${entities.method_code}):\n${note || 'Mỗi trường có quy định riêng — bạn hỏi thêm tên trường để mình xem PT nào có trong dữ liệu điểm chuẩn.'}\n\n${CHAT_DISCLAIMER_GENERAL}`;
     }
 
     if (mentioned) {
@@ -1967,9 +1967,9 @@ export class ChatbotService {
 
       const list = methods.map((m) => `• ${m}`).join('\n');
       const methodHint = entities.method_code
-        ? `\n\nBạn đang hỏi về PT **${entities.method_code}** — hỏi thêm "điểm chuẩn ... theo ${entities.method_code}" để xem mức điểm.`
+        ? `\n\nBạn đang hỏi về PT ${entities.method_code} — hỏi thêm "điểm chuẩn ... theo ${entities.method_code}" để xem mức điểm.`
         : '';
-      return `Theo dữ liệu điểm chuẩn, **${mentioned.name}** (${mentioned.short_name}) có các phương thức:\n${list}${methodHint}\n\n${CHAT_DISCLAIMER_CUTOFF}`;
+      return `Theo dữ liệu điểm chuẩn, ${mentioned.name} (${mentioned.short_name}) có các phương thức:\n${list}${methodHint}\n\n${CHAT_DISCLAIMER_CUTOFF}`;
     }
 
     const list = catalog
@@ -1986,7 +1986,7 @@ export class ChatbotService {
         ? ` tại ${entities.location}`
         : '';
     const major = entities.major ? ` ngành ${entities.major}` : '';
-    return `Mình **chưa có cơ sở dữ liệu học bổng** chi tiết${uni}${major}.\n\nGợi ý:\n• Xem website chính thức của trường (mục Tuyển sinh / Học bổng)\n• Hỏi phòng Công tác sinh viên hoặc cố vấn tuyển sinh\n• Theo dõi thông báo tuyển sinh từ tháng 3–7 hàng năm\n\n${CHAT_DISCLAIMER_GENERAL}`;
+    return `Mình chưa có cơ sở dữ liệu học bổng chi tiết${uni}${major}.\n\nGợi ý:\n• Xem website chính thức của trường (mục Tuyển sinh / Học bổng)\n• Hỏi phòng Công tác sinh viên hoặc cố vấn tuyển sinh\n• Theo dõi thông báo tuyển sinh từ tháng 3–7 hàng năm\n\n${CHAT_DISCLAIMER_GENERAL}`;
   }
 
   private async handleFacilitiesQuery(
@@ -2006,7 +2006,7 @@ export class ChatbotService {
         parts.length > 0
           ? parts.join('\n')
           : 'Mình chưa có mô tả cơ sở vật chất chi tiết trong dữ liệu.';
-      return `Thông tin tham khảo — **${mentioned.name}** (${mentioned.short_name}):\n${body}\n\n**Ký túc xá / phòng lab:** hệ thống chưa lưu chi tiết — bạn nên xem website trường hoặc hỏi cố vấn tuyển sinh.\n\n${CHAT_DISCLAIMER_GENERAL}`;
+      return `Thông tin tham khảo — ${mentioned.name} (${mentioned.short_name}):\n${body}\n\nKý túc xá / phòng lab: hệ thống chưa lưu chi tiết — bạn nên xem website trường hoặc hỏi cố vấn tuyển sinh.\n\n${CHAT_DISCLAIMER_GENERAL}`;
     }
 
     if (entities.location) {
@@ -2025,7 +2025,7 @@ export class ChatbotService {
       }
     }
 
-    return `Mình có thể tra **địa chỉ / website** nếu bạn nêu tên trường. Thông tin **ký túc xá, lab, thư viện** chưa có trong cơ sở dữ liệu — vui lòng xem website trường.\n\n${CHAT_DISCLAIMER_GENERAL}`;
+    return `Mình có thể tra địa chỉ / website nếu bạn nêu tên trường. Thông tin ký túc xá, lab, thư viện chưa có trong cơ sở dữ liệu — vui lòng xem website trường.\n\n${CHAT_DISCLAIMER_GENERAL}`;
   }
 
   private async handleCareerQuery(
@@ -2058,7 +2058,7 @@ export class ChatbotService {
 
   /**
    * Làm mềm văn phong cho UI chat:
-   * - bỏ markdown markers như **, `
+   * - bỏ markdown markers như , `
    * - tránh lộ nguồn kỹ thuật (backend/DB/PostgreSQL)
    */
   private humanizeAnswer(raw: string): string {

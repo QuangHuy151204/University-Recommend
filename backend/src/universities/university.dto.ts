@@ -121,4 +121,9 @@ export class QueryUniversityDto {
   @IsInt()
   @Min(1)
   limit?: number = 10;
+
+  /** Viết tắt trường ưu tiên lên đầu danh sách (vd. USTH cho admin). */
+  @IsOptional()
+  @IsString()
+  prefer_short_name?: string;
 }

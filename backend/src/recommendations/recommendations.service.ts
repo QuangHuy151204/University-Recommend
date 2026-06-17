@@ -463,9 +463,7 @@ export class RecommendationsService {
       const universityWard = um.university?.ward || null;
       if (wardsMatch(universityWard, dto.preferred_location)) {
         score += 15;
-        reason.push(
-          `Trường tại ${universityWard} đúng khu vực bạn chọn`,
-        );
+        reason.push(`Trường tại ${universityWard} đúng khu vực bạn chọn`);
       } else {
         score += 5;
       }

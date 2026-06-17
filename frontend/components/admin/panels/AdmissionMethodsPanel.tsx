@@ -1,7 +1,7 @@
 'use client';
 
 /* eslint-disable react-hooks/set-state-in-effect -- admin tables fetch on filter change */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { listAdmissionMethods } from '@/services/admission-methods';
 import {
     createAdmissionMethod,
@@ -9,6 +9,8 @@ import {
     updateAdmissionMethod,
 } from '@/services/admin';
 import { ApiClientError } from '@/lib/api';
+import { sortRows, useTableSort } from '@/lib/admin-table-sort';
+import { AdminSortableTh } from '@/components/admin/AdminSortableTh';
 import type { AdmissionMethod } from '@/types';
 
 const EMPTY = { method_code: '', method_name: '', description: '' };
@@ -20,6 +22,27 @@ export function AdmissionMethodsPanel() {
     const [editing, setEditing] = useState<AdmissionMethod | null>(null);
     const [form, setForm] = useState(EMPTY);
     const [saving, setSaving] = useState(false);
+    const { sort, toggleSort } = useTableSort();
+
+    const getSortValue = useCallback((row: AdmissionMethod, key: string) => {
+        switch (key) {
+            case 'id':
+                return row.id;
+            case 'method_code':
+                return row.method_code;
+            case 'method_name':
+                return row.method_name;
+            case 'description':
+                return row.description ?? '';
+            default:
+                return '';
+        }
+    }, []);
+
+    const displayRows = useMemo(
+        () => sortRows(rows, sort, getSortValue),
+        [rows, sort, getSortValue],
+    );
 
     const load = useCallback(async () => {
         setLoading(true);
@@ -88,9 +111,6 @@ export function AdmissionMethodsPanel() {
                 <button type="button" onClick={() => void load()} className="btn-secondary">
                     Tải lại
                 </button>
-                <button type="button" onClick={openCreate} className="btn-primary">
-                    Thêm phương thức
-                </button>
             </div>
 
             {error && (
@@ -136,10 +156,30 @@ export function AdmissionMethodsPanel() {
                 <table className="min-w-full text-left text-sm">
                     <thead className="border-b border-slate-200 bg-slate-50 text-slate-600">
                         <tr>
-                            <th className="px-4 py-3">ID</th>
-                            <th className="px-4 py-3">Mã</th>
-                            <th className="px-4 py-3">Tên</th>
-                            <th className="px-4 py-3">Mô tả</th>
+                            <AdminSortableTh
+                                label="ID"
+                                sortKey="id"
+                                sort={sort}
+                                onSort={toggleSort}
+                            />
+                            <AdminSortableTh
+                                label="Mã"
+                                sortKey="method_code"
+                                sort={sort}
+                                onSort={toggleSort}
+                            />
+                            <AdminSortableTh
+                                label="Tên"
+                                sortKey="method_name"
+                                sort={sort}
+                                onSort={toggleSort}
+                            />
+                            <AdminSortableTh
+                                label="Mô tả"
+                                sortKey="description"
+                                sort={sort}
+                                onSort={toggleSort}
+                            />
                             <th className="px-4 py-3" />
                         </tr>
                     </thead>
@@ -151,7 +191,7 @@ export function AdmissionMethodsPanel() {
                                 </td>
                             </tr>
                         ) : (
-                            rows.map((row) => (
+                            displayRows.map((row) => (
                                 <tr key={row.id} className="border-b border-slate-100">
                                     <td className="px-4 py-3">{row.id}</td>
                                     <td className="px-4 py-3 font-mono">{row.method_code}</td>

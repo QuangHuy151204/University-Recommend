@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Major } from './major.entity';
 import { UniversityMajor } from './university-major.entity';
 import { MajorGroup } from './major-group.entity';
@@ -142,8 +142,39 @@ export class MajorsService {
     return { data, total: data.length };
   }
 
+  private applyMajorOrder(
+    qb: SelectQueryBuilder<Major>,
+    sortBy?: QueryMajorDto['sort_by'],
+    sortOrder: QueryMajorDto['sort_order'] = 'asc',
+  ): void {
+    const dir = sortOrder === 'desc' ? 'DESC' : 'ASC';
+    switch (sortBy) {
+      case 'id':
+        qb.orderBy('m.id', dir);
+        break;
+      case 'code':
+        qb.orderBy('m.code', dir, 'NULLS LAST');
+        break;
+      case 'field_group':
+        qb.orderBy('m.field_group', dir, 'NULLS LAST');
+        break;
+      case 'name':
+        qb.orderBy('m.name', dir);
+        break;
+      default:
+        qb.orderBy('m.name', 'ASC');
+    }
+  }
+
   async findAll(query: QueryMajorDto = {}) {
-    const { search, page = 1, limit = 20, group } = query;
+    const {
+      search,
+      page = 1,
+      limit = 20,
+      group,
+      sort_by,
+      sort_order = 'asc',
+    } = query;
     const groupSlug = group ? normalizeGroupSlug(group) : null;
 
     if (groupSlug) {
@@ -173,8 +204,28 @@ export class MajorsService {
 
       qb.orderBy('m.name', 'ASC');
       const all = await qb.getMany();
-      const total = all.length;
-      const data = all
+      const sorted = [...all].sort((a, b) => {
+        const dir = sort_order === 'desc' ? -1 : 1;
+        switch (sort_by) {
+          case 'id':
+            return (a.id - b.id) * dir;
+          case 'code':
+            return (
+              (a.code ?? '').localeCompare(b.code ?? '', 'vi') * dir
+            );
+          case 'field_group':
+            return (
+              (a.field_group ?? '').localeCompare(b.field_group ?? '', 'vi') *
+              dir
+            );
+          case 'name':
+            return a.name.localeCompare(b.name, 'vi') * dir;
+          default:
+            return a.name.localeCompare(b.name, 'vi');
+        }
+      });
+      const total = sorted.length;
+      const data = sorted
         .slice((page - 1) * limit, page * limit)
         .map((m) => this.enrichMajor(m));
 
@@ -203,8 +254,8 @@ export class MajorsService {
     }
 
     const total = await qb.getCount();
+    this.applyMajorOrder(qb, sort_by, sort_order);
     const rows = await qb
-      .orderBy('m.name', 'ASC')
       .skip((page - 1) * limit)
       .take(limit)
       .getMany();

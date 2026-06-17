@@ -1,8 +1,11 @@
 'use client';
 
 /* eslint-disable react-hooks/set-state-in-effect -- admin tables fetch on filter change */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { listUniversities } from '@/services/universities';
+import { ADMIN_PREFERRED_UNIVERSITY_SHORT_NAME } from '@/lib/admin-universities';
+import { sortRows, useTableSort } from '@/lib/admin-table-sort';
+import { AdminSortableTh } from '@/components/admin/AdminSortableTh';
 import { listAdmissionMethods } from '@/services/admission-methods';
 import {
     createCutoff,
@@ -40,10 +43,38 @@ export function CutoffScoresPanel() {
     const [editing, setEditing] = useState<CutoffScore | null>(null);
     const [form, setForm] = useState(EMPTY);
     const [saving, setSaving] = useState(false);
+    const { sort, toggleSort } = useTableSort();
+
+    const getSortValue = useCallback((row: CutoffScore, key: string) => {
+        switch (key) {
+            case 'id':
+                return row.id;
+            case 'university_major':
+                return `${row.universityMajor?.university?.name ?? ''} ${row.universityMajor?.major?.name ?? ''}`.trim();
+            case 'year':
+                return row.year;
+            case 'subject_combination':
+                return row.subject_combination ?? '';
+            case 'admission_method':
+                return row.admission_method ?? '';
+            case 'score':
+                return row.score;
+            default:
+                return '';
+        }
+    }, []);
+
+    const displayRows = useMemo(
+        () => sortRows(rows, sort, getSortValue),
+        [rows, sort, getSortValue],
+    );
 
     useEffect(() => {
         Promise.all([
-            listUniversities({ limit: 200 }),
+            listUniversities({
+                limit: 200,
+                prefer_short_name: ADMIN_PREFERRED_UNIVERSITY_SHORT_NAME,
+            }),
             listAdmissionMethods(),
         ])
             .then(([u, m]) => {
@@ -209,9 +240,6 @@ export function CutoffScoresPanel() {
                 <button type="button" onClick={() => void load()} className="btn-secondary">
                     Tải lại
                 </button>
-                <button type="button" onClick={openCreate} className="btn-primary">
-                    Thêm điểm chuẩn
-                </button>
             </div>
 
             {error && (
@@ -297,12 +325,42 @@ export function CutoffScoresPanel() {
                 <table className="min-w-full text-left text-sm">
                     <thead className="border-b border-slate-200 bg-slate-50 text-slate-600">
                         <tr>
-                            <th className="px-4 py-3">ID</th>
-                            <th className="px-4 py-3">Trường / Ngành</th>
-                            <th className="px-4 py-3">Năm</th>
-                            <th className="px-4 py-3">Tổ hợp</th>
-                            <th className="px-4 py-3">PT</th>
-                            <th className="px-4 py-3">Điểm</th>
+                            <AdminSortableTh
+                                label="ID"
+                                sortKey="id"
+                                sort={sort}
+                                onSort={toggleSort}
+                            />
+                            <AdminSortableTh
+                                label="Trường / Ngành"
+                                sortKey="university_major"
+                                sort={sort}
+                                onSort={toggleSort}
+                            />
+                            <AdminSortableTh
+                                label="Năm"
+                                sortKey="year"
+                                sort={sort}
+                                onSort={toggleSort}
+                            />
+                            <AdminSortableTh
+                                label="Tổ hợp"
+                                sortKey="subject_combination"
+                                sort={sort}
+                                onSort={toggleSort}
+                            />
+                            <AdminSortableTh
+                                label="PT"
+                                sortKey="admission_method"
+                                sort={sort}
+                                onSort={toggleSort}
+                            />
+                            <AdminSortableTh
+                                label="Điểm"
+                                sortKey="score"
+                                sort={sort}
+                                onSort={toggleSort}
+                            />
                             <th className="px-4 py-3" />
                         </tr>
                     </thead>
@@ -314,7 +372,7 @@ export function CutoffScoresPanel() {
                                 </td>
                             </tr>
                         ) : (
-                            rows.map((row) => (
+                            displayRows.map((row) => (
                                 <tr key={row.id} className="border-b border-slate-100">
                                     <td className="px-4 py-3">{row.id}</td>
                                     <td className="px-4 py-3">

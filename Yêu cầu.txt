@@ -97,6 +97,8 @@ Không cần chatbot quá “thông minh” như người thật
 
 4. Các chức năng nên có
 
+Phạm vi đã triển khai (2026): Xem `docs/README.md` và sequence trong `docs/diagrams/`. Học sinh phải đăng nhập để tra cứu, gợi ý, chatbot, so sánh, yêu thích (chỉ landing và auth là công khai). So sánh chỉ trường. Gợi ý không có trang lịch sử. Dữ liệu master: nhập tay trong Excel → `npm run import:excel`.
+
 Bạn đang hơi mơ hồ “sẽ có những gì”, nên tôi giúp bạn chốt luôn thành bộ chức năng hợp lý.
 
 4.1. Chức năng cho học sinh/người dùng
@@ -170,7 +172,7 @@ theo năm
 
 theo phương thức xét tuyển
 
-So sánh trường / ngành
+So sánh trường (đã triển khai; chưa có so sánh ngành)
 
 Ví dụ:
 
@@ -489,9 +491,14 @@ answer
 created_at
 
 8. Luồng hoạt động chính của hệ thống
+
+Lưu ý triển khai: Các luồng dưới đây (trừ landing) yêu cầu học sinh đăng nhập trên frontend (`AuthGate`).
+
 Luồng 1: Tra cứu thông tin
 
 Người dùng:
+
+đăng nhập (nếu chưa có phiên)
 
 vào trang web
 
@@ -505,15 +512,19 @@ Luồng 2: Nhận gợi ý
 
 Người dùng:
 
-điền hồ sơ cơ bản
+đăng nhập
+
+điền hồ sơ / wizard gợi ý
 
 hệ thống phân tích
 
-trả về danh sách trường/ngành phù hợp
+trả về danh sách trường/ngành phù hợp (hiển thị ngay, không lưu lịch sử trên UI)
 
 Luồng 3: Chatbot hỗ trợ
 
 Người dùng:
+
+đăng nhập
 
 hỏi chatbot
 
@@ -686,148 +697,65 @@ Calibration — vài case test cố định (25 điểm B01 HN + CNTT) để reg
 
 
 
-28/5:
-Chatbot: coverage intent chưa đủ; rewrite Ollama rủi ro nếu context trống; intent.txt chưa tích hợp.
-Auth: JWT localStorage (chưa httpOnly); email chưa rate-limit prod.
-Gợi ý: ngân sách API vẫn enum low/medium/high (slider VNĐ chỉ map phía FE); 0 kết quả nếu ít ngành theo khối.
-So sánh trong chat: chỉ deeplink UI, chưa so sánh thật trong handler.
-
-
-
- Đánh giá tổng thể
-
-Kết luận ngắn: Dự án **đủ làm đồ án / demo end-to-end**, nhưng **chưa “hoàn thiện”** theo spec dài hạn (`Yêu cầu.txt`, `UNIVERSITY_RECOMMEND_CURSOR_CONTEXT.md`). Ước lượng **~80% phạm vi đồ án cốt lõi**, **~60% spec đầy đủ**.
-
-```text
-[Data pipeline]  ████████░░  ~85%
-[Backend API]  ████████░░  ~85%
-[Chatbot/Ollama] ███████░░░  ~75%
-[Frontend MVP] ████████░░  ~80%
-[Admin]        ██████░░░░  ~65%
-[Test/Prod]    █████░░░░░  ~50%
-```
+28/5 (ghi chú lịch sử — một số mục đã lỗi thời):
+- JWT đã dùng httpOnly cookie; compare trong chatbot đã có handler + deeplink UI.
+- Chatbot: Ollama classify + rewrite; corpus `intent-corpus.ts` từ `intent.txt`.
+- Gợi ý: ngân sách API enum low/medium/high; khu vực ở gợi ý là soft score, tra cứu lọc cứng theo phường.
 
 ---
 
-## Đã có (ổn cho demo / bảo vệ)
+## Trạng thái dự án (cập nhật 2026 — khớp code & docs/diagrams)
 
-### Backend
-- Auth đầy đủ: đăng ký, verify email, login, forgot/reset, admin login, JWT cookie
-- CRUD master data: trường, ngành, liên kết trường–ngành, điểm chuẩn, PT xét tuyển
-- Engine gợi ý có trọng số (điểm, sở thích, location, budget, career) + tier reach/match/safety
-- Chatbot pipeline: Ollama classify/extract + rule fallback + handler theo intent + session/history
-- Favorites API, recommendations API, 10 migrations, import Excel merge
-- Test regression chatbot/recommendations khá mạnh (~195+ unit tests)
+Mục tiêu: Web gợi ý trường–ngành THPT (Hà Nội), tra cứu điểm chuẩn, chatbot, admin CRUD dữ liệu.
 
-### Frontend
-- 25 routes: landing, auth, home, tra cứu trường/ngành/điểm chuẩn, gợi ý (wizard), chatbot, profile + favorites, so sánh 2 trường
-- Admin dashboard tabbed: stats + CRUD 5 nhóm dữ liệu
-- Tích hợp API qua `lib/api.ts` + services
+Stack: Next.js 16 + NestJS + PostgreSQL + Ollama local + pipeline Excel.
 
-### Data
-- Scrape Tuyensinh247 → Excel → PostgreSQL
-- Phạm vi Hà Nội, điểm chuẩn 2023–2025
+Phạm vi đã chốt (không mở rộng thêm cho đồ án):
 
----
+| Module | Trạng thái |
+|--------|------------|
+| Auth (register, verify, login, forgot/reset, admin login) | ✅ |
+| Tra cứu trường / ngành / điểm chuẩn | ✅ — yêu cầu login FE |
+| Gợi ý weighted + tier reach/match/safety | ✅ — không UI lịch sử |
+| Chatbot (intent → DB → rule/Ollama) + lịch sử chat | ✅ |
+| Hồ sơ, yêu thích, so sánh 2 trường | ✅ |
+| Nhóm ngành `/majors/groups/:slug` | ✅ |
+| Admin CRUD 5 nhóm master data + stats | ✅ |
+| Pipeline Excel → import PostgreSQL | ✅ CLI |
+| Test regression recommendations/chatbot | ✅ ~195+ |
 
-## Còn thiếu / chưa đủ (so với spec)
+Cố ý không làm / ngoài phạm vi UI:
 
-### Chức năng người dùng
-| Mục | Trạng thái |
-|-----|------------|
-| Trang chủ: ngành nổi bật | Thiếu |
-| Chatbot nhanh embed trên home | Chỉ link, chưa widget |
-| So sánh **ngành** | Thiếu hoàn toàn |
-| Lịch sử gợi ý (`GET /recommendations/my`) | API có, **UI chưa dùng** |
-| Tra cứu **không cần login** | Hiện `AuthGate` chặn hầu hết trang — lệch spec “tra cứu công khai” |
-| Cơ hội việc làm / block career riêng | Chỉ mô tả ngành nếu có trong DB |
-
-### Admin
-| Mục | Trạng thái |
-|-----|------------|
-| Quản lý user | API có (`listUsersAdmin`), **không có panel** |
-| FAQ / tri thức chatbot | Thiếu |
-| Xem/review chat history | Thiếu |
-| Import Excel từ UI | Chỉ CLI `npm run import:excel` |
-
-### Chatbot / AI
-| Mục | Trạng thái |
-|-----|------------|
-| Học bổng (`ask_scholarship`) | Không có DB → trả text hướng dẫn |
-| Cơ sở vật chất/KTX (`ask_facilities`) | Thiếu dữ liệu chi tiết |
-| `intent.txt` corpus | Có `intent-corpus.ts` + script generate; **chưa chắc đồng bộ 100%** với `intent.txt` |
-| `engine: "rule"` nhiều | **Đúng thiết kế** (skip rewrite để giữ số liệu DB), không phải Ollama tắt |
-
-### Kỹ thuật / chất lượng
-| Mục | Trạng thái |
-|-----|------------|
-| `POST /recommendations` lưu lịch sử khi đã login | **Bug nhỏ**: thiếu `OptionalJwtAuthGuard` → `req.user` luôn null dù có cookie |
-| E2E HTTP tests (auth, CRUD, chatbot API) | Gần như không có; `test:e2e` còn stale |
-| Secrets trong git history | `.env` từng push — cần rotate |
-| Production deploy | Chưa có Docker/CI, chưa audit bảo mật đầy đủ |
-| Một số ghi chú `Yêu cầu.txt` (dòng 690–693) | **Lỗi thời**: compare chatbot đã sửa; JWT đã cookie; intent coverage đã cải thiện |
-
-### Dữ liệu
-- Không phủ toàn quốc (cố ý — Hà Nội)
-- Một số ngành/khối thiếu cutoff → gợi ý trả `[]` (cần UX message rõ hơn)
-- Ngân sách backend vẫn enum low/medium/high
-
----
-
-## Phân loại theo mục tiêu
-
-### Đủ để nộp / demo đồ án
-- Luồng: đăng ký → tra cứu → gợi ý → chatbot → favorites → compare
-- Admin CRUD dữ liệu
-- Ollama + fallback
-- Pipeline dữ liệu có chứng minh được
-
-### Chưa đủ nếu gọi là “sản phẩm hoàn chỉnh”
-- Public browse không login
-- Admin user + FAQ
-- Lịch sử gợi ý trên UI
+- Tra cứu công khai không login
+- Trang lịch sử gợi ý (`GET /recommendations/my` có API, không dùng FE)
 - So sánh ngành
-- Test E2E + deploy production
-- Dữ liệu học bổng/KTX/career sâu hơn
+- Admin panel user, FAQ, review chat
+- Import Excel từ admin UI (chỉ CLI `npm run import:excel`)
+- E2E tự động, Docker/CI production
+
+Tài liệu: `docs/diagrams/` (8 sequence + 2 use-case PlantUML), `docs/Database.png`, `docs/README.md`.
+
+Ước lượng hoàn thành phạm vi đồ án đã chốt: ~95% (còn polish nhỏ, render lại PNG từ `.puml` nếu cần slide).
 
 ---
-
-## Ưu tiên nếu muốn “chốt” nhanh (1–2 tuần)
-
-1. **Sửa `OptionalJwtAuthGuard` trên `POST /recommendations`** + trang lịch sử gợi ý
-2. **Mở public** tra cứu trường/ngành/điểm chuẩn (chỉ giữ login cho profile/favorites/recommend save)
-3. **Admin panel user** (list/delete)
-4. **Trang chủ**: thêm ngành nổi bật + CTA chatbot
-5. **Rotate secrets** + chạy full regression trước bảo vệ
-6. (Tuỳ chọn) So sánh ngành, FAQ admin
-
----
-
-**Tóm lại:** Core đồ án **đã chạy được và khá đầy đủ**; phần còn lại chủ yếu là **polish UX**, **admin mở rộng**, **test/deploy**, và vài **gap spec** (public browse, lịch sử gợi ý, so sánh ngành). Không phải “còn xây từ đầu”, mà là **hoàn thiện lớp 2** sau MVP.
-
-Bạn muốn tôi làm luôn mục nào trong 6 ưu tiên trên không?
-
-
-
-
 
 
 
 
 | Nhóm ngành                                            | Các ngành tiêu biểu                                                                            | Vì sao nổi bật                                                                                                                                                                                                         |
 | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **1. Công nghệ thông tin**                            | Khoa học máy tính, Công nghệ phần mềm, Hệ thống thông tin, An toàn thông tin, AI, Data Science | AI, dữ liệu, cloud, cybersecurity đang là nhóm kỹ năng tăng mạnh toàn cầu; WEF cũng xếp Big Data, AI/ML, Software Developer, Security Management vào nhóm nghề tăng trưởng nhanh đến 2030. ([World Economic Forum][1]) |
-| **2. Trí tuệ nhân tạo & Khoa học dữ liệu**            | AI, Machine Learning, Data Analytics, Big Data                                                 | Đây là nhánh nên tách riêng trong tư vấn vì nhu cầu rất mạnh, nhưng yêu cầu nền tảng toán, lập trình và tư duy phân tích cao.                                                                                          |
-| **3. Vi mạch bán dẫn – Điện tử**                      | Thiết kế vi mạch, Kỹ thuật điện tử, Kỹ thuật máy tính, Tự động hóa, IoT                        | Việt Nam đã có chương trình phát triển nhân lực bán dẫn đến 2030, định hướng 2050; mục tiêu đào tạo ít nhất 50.000 nhân lực trình độ đại học trở lên cho ngành bán dẫn. ([Văn Bản Chính Phủ][2])                       |
-| **4. Kỹ thuật – Công nghệ sản xuất**                  | Cơ điện tử, Robot, Tự động hóa, Kỹ thuật cơ khí, Kỹ thuật ô tô, Kỹ thuật điện                  | Phù hợp với xu hướng sản xuất thông minh, FDI, nhà máy tự động hóa và chuỗi cung ứng công nghiệp.                                                                                                                      |
-| **5. Logistics & Quản lý chuỗi cung ứng**             | Logistics, Supply Chain, Kinh doanh quốc tế, Xuất nhập khẩu                                    | Việt Nam tiếp tục hưởng lợi từ thương mại, sản xuất, thương mại điện tử và dịch chuyển chuỗi cung ứng; logistics được nhắc đến là một lĩnh vực tăng trưởng nhanh trong thị trường lao động. ([vietnamnews.vn][3])      |
-| **6. Kinh tế số – Thương mại điện tử – Marketing số** | Digital Marketing, E-commerce, Business Analytics, Quản trị kinh doanh số                      | Doanh nghiệp chuyển mạnh sang bán hàng online, vận hành bằng dữ liệu, CRM, quảng cáo số và tự động hóa marketing.                                                                                                      |
-| **7. Tài chính – Ngân hàng – Fintech**                | Tài chính, Ngân hàng, Kế toán, Kiểm toán, Fintech, Phân tích tài chính                         | Vẫn là nhóm ngành ổn định, nhưng nên ưu tiên các chương trình có dữ liệu, công nghệ tài chính, phân tích rủi ro, kiểm toán số.                                                                                         |
-| **8. Y dược & Chăm sóc sức khỏe**                     | Y khoa, Dược, Điều dưỡng, Kỹ thuật xét nghiệm, Công nghệ sinh học                              | Nhu cầu chăm sóc sức khỏe tăng theo già hóa dân số, chất lượng sống và hệ thống y tế mở rộng.                                                                                                                          |
-| **9. Năng lượng tái tạo – Môi trường – ESG**          | Kỹ thuật năng lượng, Môi trường, Quản lý tài nguyên, Kinh tế xanh                              | Công nghệ xanh, năng lượng tái tạo và phát triển bền vững là xu hướng nghề nghiệp toàn cầu; WEF cũng nhấn mạnh chuyển đổi xanh là một động lực thay đổi việc làm. ([World Economic Forum][1])                          |
-| **10. Ngôn ngữ – Quan hệ quốc tế – Truyền thông**     | Ngôn ngữ Anh, Nhật, Hàn, Trung; Truyền thông đa phương tiện; Quan hệ quốc tế                   | Vẫn nổi bật nếu kết hợp với kỹ năng nghề cụ thể như thương mại, công nghệ, marketing, nhân sự, du lịch hoặc biên phiên dịch chuyên ngành.                                                                              |
-| **11. Du lịch – Khách sạn – Dịch vụ**                 | Quản trị khách sạn, Du lịch, Lữ hành, Nhà hàng                                                 | Phù hợp với quá trình phục hồi du lịch và nhu cầu dịch vụ chất lượng cao, nhưng nên chọn trường có thực tập/doanh nghiệp liên kết tốt.                                                                                 |
-| **12. Giáo dục – Sư phạm**                            | Sư phạm Toán, Tin, Anh, Mầm non, Tiểu học, Giáo dục đặc biệt                                   | Nhu cầu giáo viên chất lượng cao vẫn có, đặc biệt các môn STEM, ngoại ngữ và giáo dục sớm.                                                                                                                             |
+| 1. Công nghệ thông tin                            | Khoa học máy tính, Công nghệ phần mềm, Hệ thống thông tin, An toàn thông tin, AI, Data Science | AI, dữ liệu, cloud, cybersecurity đang là nhóm kỹ năng tăng mạnh toàn cầu; WEF cũng xếp Big Data, AI/ML, Software Developer, Security Management vào nhóm nghề tăng trưởng nhanh đến 2030. ([World Economic Forum][1]) |
+| 2. Trí tuệ nhân tạo & Khoa học dữ liệu            | AI, Machine Learning, Data Analytics, Big Data                                                 | Đây là nhánh nên tách riêng trong tư vấn vì nhu cầu rất mạnh, nhưng yêu cầu nền tảng toán, lập trình và tư duy phân tích cao.                                                                                          |
+| 3. Vi mạch bán dẫn – Điện tử                      | Thiết kế vi mạch, Kỹ thuật điện tử, Kỹ thuật máy tính, Tự động hóa, IoT                        | Việt Nam đã có chương trình phát triển nhân lực bán dẫn đến 2030, định hướng 2050; mục tiêu đào tạo ít nhất 50.000 nhân lực trình độ đại học trở lên cho ngành bán dẫn. ([Văn Bản Chính Phủ][2])                       |
+| 4. Kỹ thuật – Công nghệ sản xuất                  | Cơ điện tử, Robot, Tự động hóa, Kỹ thuật cơ khí, Kỹ thuật ô tô, Kỹ thuật điện                  | Phù hợp với xu hướng sản xuất thông minh, FDI, nhà máy tự động hóa và chuỗi cung ứng công nghiệp.                                                                                                                      |
+| 5. Logistics & Quản lý chuỗi cung ứng             | Logistics, Supply Chain, Kinh doanh quốc tế, Xuất nhập khẩu                                    | Việt Nam tiếp tục hưởng lợi từ thương mại, sản xuất, thương mại điện tử và dịch chuyển chuỗi cung ứng; logistics được nhắc đến là một lĩnh vực tăng trưởng nhanh trong thị trường lao động. ([vietnamnews.vn][3])      |
+| 6. Kinh tế số – Thương mại điện tử – Marketing số | Digital Marketing, E-commerce, Business Analytics, Quản trị kinh doanh số                      | Doanh nghiệp chuyển mạnh sang bán hàng online, vận hành bằng dữ liệu, CRM, quảng cáo số và tự động hóa marketing.                                                                                                      |
+| 7. Tài chính – Ngân hàng – Fintech                | Tài chính, Ngân hàng, Kế toán, Kiểm toán, Fintech, Phân tích tài chính                         | Vẫn là nhóm ngành ổn định, nhưng nên ưu tiên các chương trình có dữ liệu, công nghệ tài chính, phân tích rủi ro, kiểm toán số.                                                                                         |
+| 8. Y dược & Chăm sóc sức khỏe                     | Y khoa, Dược, Điều dưỡng, Kỹ thuật xét nghiệm, Công nghệ sinh học                              | Nhu cầu chăm sóc sức khỏe tăng theo già hóa dân số, chất lượng sống và hệ thống y tế mở rộng.                                                                                                                          |
+| 9. Năng lượng tái tạo – Môi trường – ESG          | Kỹ thuật năng lượng, Môi trường, Quản lý tài nguyên, Kinh tế xanh                              | Công nghệ xanh, năng lượng tái tạo và phát triển bền vững là xu hướng nghề nghiệp toàn cầu; WEF cũng nhấn mạnh chuyển đổi xanh là một động lực thay đổi việc làm. ([World Economic Forum][1])                          |
+| 10. Ngôn ngữ – Quan hệ quốc tế – Truyền thông     | Ngôn ngữ Anh, Nhật, Hàn, Trung; Truyền thông đa phương tiện; Quan hệ quốc tế                   | Vẫn nổi bật nếu kết hợp với kỹ năng nghề cụ thể như thương mại, công nghệ, marketing, nhân sự, du lịch hoặc biên phiên dịch chuyên ngành.                                                                              |
+| 11. Du lịch – Khách sạn – Dịch vụ                 | Quản trị khách sạn, Du lịch, Lữ hành, Nhà hàng                                                 | Phù hợp với quá trình phục hồi du lịch và nhu cầu dịch vụ chất lượng cao, nhưng nên chọn trường có thực tập/doanh nghiệp liên kết tốt.                                                                                 |
+| 12. Giáo dục – Sư phạm                            | Sư phạm Toán, Tin, Anh, Mầm non, Tiểu học, Giáo dục đặc biệt                                   | Nhu cầu giáo viên chất lượng cao vẫn có, đặc biệt các môn STEM, ngoại ngữ và giáo dục sớm.                                                                                                                             |
 
 [1]: https://reports.weforum.org/docs/WEF_Future_of_Jobs_Report_2025.pdf?utm_source=chatgpt.com "Future of Jobs Report 2025"
 [2]: https://vanban.chinhphu.vn/?docid=211239&pageid=27160&utm_source=chatgpt.com "Quyết định số 1017/QĐ-TTg của Thủ tướng Chính phủ"

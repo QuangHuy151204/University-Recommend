@@ -1,8 +1,11 @@
 'use client';
 
 /* eslint-disable react-hooks/set-state-in-effect -- admin tables fetch on filter change */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { listUniversities } from '@/services/universities';
+import { ADMIN_PREFERRED_UNIVERSITY_SHORT_NAME } from '@/lib/admin-universities';
+import { sortRows, useTableSort } from '@/lib/admin-table-sort';
+import { AdminSortableTh } from '@/components/admin/AdminSortableTh';
 import {
     createUniversity,
     deleteUniversity,
@@ -29,12 +32,39 @@ export function UniversitiesPanel() {
     const [editing, setEditing] = useState<University | null>(null);
     const [form, setForm] = useState(EMPTY_FORM);
     const [saving, setSaving] = useState(false);
+    const { sort, toggleSort } = useTableSort();
+
+    const getSortValue = useCallback((row: University, key: string) => {
+        switch (key) {
+            case 'id':
+                return row.id;
+            case 'name':
+                return row.name;
+            case 'short_name':
+                return row.short_name ?? '';
+            case 'type':
+                return row.type ?? '';
+            case 'location':
+                return row.location ?? '';
+            default:
+                return '';
+        }
+    }, []);
+
+    const displayRows = useMemo(
+        () => sortRows(rows, sort, getSortValue),
+        [rows, sort, getSortValue],
+    );
 
     const load = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
-            const res = await listUniversities({ search: search || undefined, limit: 50 });
+            const res = await listUniversities({
+                search: search || undefined,
+                limit: 50,
+                prefer_short_name: ADMIN_PREFERRED_UNIVERSITY_SHORT_NAME,
+            });
             setRows(res.data);
         } catch (err) {
             setError(err instanceof ApiClientError ? err.message : 'Lỗi tải dữ liệu');
@@ -120,9 +150,6 @@ export function UniversitiesPanel() {
                 <button type="button" onClick={() => void load()} className="btn-secondary">
                     Tải lại
                 </button>
-                <button type="button" onClick={openCreate} className="btn-primary">
-                    Thêm trường
-                </button>
             </div>
 
             {error && (
@@ -202,11 +229,36 @@ export function UniversitiesPanel() {
                 <table className="min-w-full text-left text-sm">
                     <thead className="border-b border-slate-200 bg-slate-50 text-slate-600">
                         <tr>
-                            <th className="px-4 py-3">ID</th>
-                            <th className="px-4 py-3">Tên</th>
-                            <th className="px-4 py-3">Mã</th>
-                            <th className="px-4 py-3">Loại</th>
-                            <th className="px-4 py-3">Địa điểm</th>
+                            <AdminSortableTh
+                                label="ID"
+                                sortKey="id"
+                                sort={sort}
+                                onSort={toggleSort}
+                            />
+                            <AdminSortableTh
+                                label="Tên"
+                                sortKey="name"
+                                sort={sort}
+                                onSort={toggleSort}
+                            />
+                            <AdminSortableTh
+                                label="Mã"
+                                sortKey="short_name"
+                                sort={sort}
+                                onSort={toggleSort}
+                            />
+                            <AdminSortableTh
+                                label="Loại"
+                                sortKey="type"
+                                sort={sort}
+                                onSort={toggleSort}
+                            />
+                            <AdminSortableTh
+                                label="Địa điểm"
+                                sortKey="location"
+                                sort={sort}
+                                onSort={toggleSort}
+                            />
                             <th className="px-4 py-3" />
                         </tr>
                     </thead>
@@ -224,7 +276,7 @@ export function UniversitiesPanel() {
                                 </td>
                             </tr>
                         ) : (
-                            rows.map((row) => (
+                            displayRows.map((row) => (
                                 <tr key={row.id} className="border-b border-slate-100">
                                     <td className="px-4 py-3">{row.id}</td>
                                     <td className="px-4 py-3 font-medium">{row.name}</td>

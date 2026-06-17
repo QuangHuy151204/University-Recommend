@@ -70,7 +70,7 @@ export function resolveMajorSearchTerm(msg: string): string | null {
 
 /**
  * Lấy cụm ngành đầy đủ từ câu hỏi hoặc entity (Ollama).
- * Ưu tiên alias/fragment trong **message** — tránh entity LLM rút gọn (vd. "toán") ghi đè "sư phạm toán".
+ * Ưu tiên alias/fragment trong message — tránh entity LLM rút gọn (vd. "toán") ghi đè "sư phạm toán".
  */
 export function pickMajorInterestPhrase(
   msg: string,

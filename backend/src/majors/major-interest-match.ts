@@ -119,7 +119,7 @@ function matchesSingleWordPhrase(
 
 /**
 
- * So khớp sở thích với tên ngành theo **cụm từ đầy đủ** (và alias đồng nghĩa đã mở rộng trước đó).
+ * So khớp sở thích với tên ngành theo cụm từ đầy đủ (và alias đồng nghĩa đã mở rộng trước đó).
 
  * Không tách từ rời; không khớp qua career_orientation.
 

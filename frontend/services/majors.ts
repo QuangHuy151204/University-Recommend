@@ -15,15 +15,12 @@ import type {
 
 
 export function listMajors(params?: {
-
     search?: string;
-
     group?: string;
-
     page?: number;
-
     limit?: number;
-
+    sort_by?: 'id' | 'name' | 'code' | 'field_group';
+    sort_order?: 'asc' | 'desc';
 }) {
 
     return api.get<Paginated<Major>>('/majors', {

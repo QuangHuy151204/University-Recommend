@@ -11,6 +11,7 @@ export interface UniversityQuery {
     subject_combination?: string;
     min_score?: number;
     major_id?: number;
+    prefer_short_name?: string;
     page?: number;
     limit?: number;
 }
