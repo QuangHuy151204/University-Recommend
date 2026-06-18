@@ -23,7 +23,7 @@ const DEFAULT_TUITION_FILE = path.resolve(
 );
 const MASTER_EXCEL = path.resolve(
   __dirname,
-  '../../mau_du_lieu_truong_dai_hoc_5_sheets.xlsx',
+  '../../mau_du_lieu_truong_dai_hoc_5_sheets_bo_sung_phuong.xlsx',
 );
 const SHEET_TUITION = 'thieu_hoc_phi';
 const SHEET_MASTER_UNI = 'universities_hanoi';
@@ -301,7 +301,7 @@ async function main() {
   console.log('\n🎉 Import học phí hoàn tất!');
   if (!patchMaster) {
     console.log(
-      '   Gợi ý: chạy lại với --patch-master để ghi vào mau_du_lieu_truong_dai_hoc_5_sheets.xlsx',
+      '   Gợi ý: chạy lại với --patch-master để ghi vào mau_du_lieu_truong_dai_hoc_5_sheets_bo_sung_phuong.xlsx',
     );
   }
 }

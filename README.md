@@ -89,7 +89,6 @@ ollama pull qwen2.5:3b
 | `npm run import:excel` | Import Excel → DB (truncate master) |
 | `npm run import:excel:merge` | Import merge (không truncate) |
 | `npm run import:tuition` | Cập nhật học phí từ file batch |
-| `npm run generate:intent-corpus` | Sinh corpus chatbot từ `intent.txt` |
 
 ### Frontend (`frontend/`)
 
@@ -110,7 +109,7 @@ npm run import:excel        # nạp lại toàn bộ master
 npm run import:excel:merge  # cập nhật merge, không truncate
 ```
 
-File mặc định: `mau_du_lieu_truong_dai_hoc_5_sheets.xlsx` (hoặc `mau_du_lieu_truong_dai_hoc_5_sheets_bo_sung_phuong.xlsx` nếu có trong thư mục gốc).
+File master: `mau_du_lieu_truong_dai_hoc_5_sheets_bo_sung_phuong.xlsx` (thư mục gốc repo). Có thể override bằng `IMPORT_EXCEL_PATH` trong `backend/.env`.
 
 ## Ghi chú nhanh
 

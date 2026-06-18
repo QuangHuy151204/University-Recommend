@@ -51,17 +51,14 @@ A **local Ollama chatbot** (target) explains results in natural language. Factua
 | Universities / majors / cutoff scores | Implemented |
 | Recommendation engine | Implemented (weighted score) |
 | Chatbot | **Partial** — rule-based today; Ollama integration planned |
-| Excel scrape + import pipeline | Implemented |
-| Next.js frontend | **Not started** (folder `frontend/` planned) |
+| Excel nhập tay + import pipeline | Implemented |
+| Next.js frontend | Implemented (MVP) |
 | Admin dashboard | Planned |
 
 ## Architecture
 
 ```text
-[ tuyensinh247 API ] --> scrape_and_fill_excel.py --> Excel (.xlsx)
-                              |
-                              v
-                    import-excel.ts (npm run import:excel)
+Excel (.xlsx, nhập tay) --> import-excel.ts (npm run import:excel)
                               |
                               v
                          PostgreSQL
@@ -70,10 +67,10 @@ A **local Ollama chatbot** (target) explains results in natural language. Factua
                     NestJS REST API (/api, port 3001)
                               |
                               v
-                    Next.js frontend (port 3000, planned)
+                    Next.js frontend (port 3000)
                               |
                               v
-                    Ollama (localhost:11434, planned)
+                    Ollama (localhost:11434, optional)
 ```
 
 ## Repository layout (current)
@@ -83,8 +80,7 @@ UniversityRecommend/
 ├── backend/              # NestJS + TypeORM
 ├── frontend/             # planned — not in repo yet
 ├── .cursor/rules/        # AI rules for Cursor
-├── mau_du_lieu_truong_dai_hoc_5_sheets.xlsx
-├── scrape_and_fill_excel.py
+├── mau_du_lieu_truong_dai_hoc_5_sheets_bo_sung_phuong.xlsx
 ├── README.md
 └── UNIVERSITY_RECOMMEND_CURSOR_CONTEXT.md  # long-term spec (may differ from current code)
 ```

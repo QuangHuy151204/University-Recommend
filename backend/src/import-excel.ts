@@ -1,5 +1,5 @@
 /**
- * Import toàn bộ dữ liệu từ mau_du_lieu_truong_dai_hoc_5_sheets.xlsx vào PostgreSQL.
+ * Import toàn bộ dữ liệu từ mau_du_lieu_truong_dai_hoc_5_sheets_bo_sung_phuong.xlsx vào PostgreSQL.
  *
  * Chạy: npm run import:excel
  * Merge (không TRUNCATE): npm run import:excel -- --merge
@@ -25,18 +25,12 @@ dotenv.config();
 
 const DEFAULT_EXCEL_PATH = path.resolve(
   __dirname,
-  '../../mau_du_lieu_truong_dai_hoc_5_sheets.xlsx',
-);
-const WARD_EXCEL_PATH = path.resolve(
-  __dirname,
   '../../mau_du_lieu_truong_dai_hoc_5_sheets_bo_sung_phuong.xlsx',
 );
 
 const EXCEL_PATH = process.env.IMPORT_EXCEL_PATH
   ? path.resolve(process.env.IMPORT_EXCEL_PATH)
-  : fs.existsSync(WARD_EXCEL_PATH)
-    ? WARD_EXCEL_PATH
-    : DEFAULT_EXCEL_PATH;
+  : DEFAULT_EXCEL_PATH;
 
 const SHEET_UNIVERSITIES = 'universities_hanoi';
 const SHEET_METHODS = 'admission_methods';

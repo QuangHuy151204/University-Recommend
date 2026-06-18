@@ -52,7 +52,7 @@ users 1—* recommendations, chat_history
 
 ## Data pipeline
 
-1. Edit or scrape into `mau_du_lieu_truong_dai_hoc_5_sheets.xlsx`
+1. Edit `mau_du_lieu_truong_dai_hoc_5_sheets_bo_sung_phuong.xlsx` in repo root
 2. Run `npm run import:excel` in `backend/`
 
 **Import behavior:** TRUNCATE and reload `universities`, `majors`, `university_majors`, `cutoff_scores`, `admission_methods`. **Does not delete** `users`, `student_profiles`, `recommendations`, `chat_history`.

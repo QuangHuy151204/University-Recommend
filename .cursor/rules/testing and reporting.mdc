@@ -43,12 +43,10 @@ npm run dev
 
 Open `http://localhost:3000` and test the affected route.
 
-## Data / scrape changes
+## Data / Excel changes
 
 ```bash
-# from repo root
-pip install pandas openpyxl requests beautifulsoup4 lxml
-python scrape_and_fill_excel.py
+# Chỉnh file master trong repo root, rồi:
 cd backend && npm run import:excel
 ```
 

@@ -46,7 +46,6 @@ export default tseslint.config(
       'src/import-excel.ts',
       'src/import-tuition-excel.ts',
       'src/database/migrations/**/*.ts',
-      'scripts/**/*.ts',
     ],
     rules: {
       '@typescript-eslint/no-unsafe-assignment': 'off',
