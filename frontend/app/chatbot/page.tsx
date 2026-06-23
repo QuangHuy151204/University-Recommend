@@ -23,6 +23,7 @@ import { ChatCompareCard } from '@/components/chatbot/ChatCompareCard';
 import { ChatbotAvatar } from '@/components/chatbot/ChatbotAvatar';
 import { ChatMarkdown } from '@/components/chatbot/ChatMarkdown';
 import { cn } from '@/lib/utils';
+import { useLocale } from '@/lib/i18n/locale';
 
 const SESSION_KEY = 'ur_chat_session_id';
 const MESSAGES_KEY = 'ur_chat_messages';
@@ -146,6 +147,7 @@ function persistMessages(messages: ChatMessage[]) {
 
 function ChatbotInner() {
     const { user, loading: authLoading } = useAuth();
+    const { t } = useLocale();
     const [sessionId, setSessionId] = useState('');
     const [sessions, setSessions] = useState<ChatSessionSummary[]>([]);
     const [sessionsLoading, setSessionsLoading] = useState(false);
@@ -559,7 +561,7 @@ function ChatbotInner() {
                             <input
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
-                                placeholder="Nhập câu hỏi của bạn tại đây..."
+                                placeholder={t('chatbot.inputPlaceholder')}
                                 disabled={loading}
                                 className="min-w-0 flex-1 border-0 bg-transparent text-sm focus:outline-none"
                             />

@@ -11,6 +11,7 @@ import {
 import { ChevronDown, X } from 'lucide-react';
 import { getMajor, listAllMajors } from '@/services/majors';
 import type { Major } from '@/types';
+import { useLocale } from '@/lib/i18n/locale';
 
 export type MajorResolveResult = {
     majorId: number | null;
@@ -43,11 +44,14 @@ export const MajorSearchPicker = forwardRef<MajorSearchPickerHandle, Props>(
             value,
             onChange,
             id: idProp,
-            label = 'Ngành',
-            hint = 'bấm chọn trong danh sách',
+            label,
+            hint,
         },
         ref,
     ) {
+        const { t } = useLocale();
+        const resolvedLabel = label ?? t('picker.major.defaultLabel');
+        const resolvedHint = hint ?? t('picker.major.defaultHint');
         const autoId = useId();
         const id = idProp ?? autoId;
         const rootRef = useRef<HTMLDivElement>(null);
@@ -59,7 +63,7 @@ export const MajorSearchPicker = forwardRef<MajorSearchPickerHandle, Props>(
         const [options, setOptions] = useState<Major[]>([]);
         const [selected, setSelected] = useState<Major | null>(null);
         const [loading, setLoading] = useState(false);
-        const [loadError, setLoadError] = useState<string | null>(null);
+        const [loadError, setLoadError] = useState(false);
         const [resolveError, setResolveError] = useState<string | null>(null);
 
         useEffect(() => {
@@ -99,12 +103,12 @@ export const MajorSearchPicker = forwardRef<MajorSearchPickerHandle, Props>(
             (async () => {
                 if (!allMajorsRef.current) {
                     setLoading(true);
-                    setLoadError(null);
+                    setLoadError(false);
                     try {
                         allMajorsRef.current = await listAllMajors();
                     } catch {
                         if (!cancelled) {
-                            setLoadError('Không tải được danh sách ngành.');
+                            setLoadError(true);
                             setOptions([]);
                         }
                         return;
@@ -136,7 +140,7 @@ export const MajorSearchPicker = forwardRef<MajorSearchPickerHandle, Props>(
                 try {
                     allMajorsRef.current = await listAllMajors();
                 } catch {
-                    setResolveError('Không tải được danh sách ngành.');
+                    setResolveError(t('picker.major.loadError'));
                     return { majorId: null, blocked: true };
                 }
             }
@@ -160,9 +164,7 @@ export const MajorSearchPicker = forwardRef<MajorSearchPickerHandle, Props>(
                 return { majorId: pool[0].id, blocked: false };
             }
 
-            setResolveError(
-                'Chọn ngành trong danh sách gợi ý (bấm vào tên ngành).',
-            );
+                    setResolveError(t('picker.major.resolveError'));
             setOpen(true);
             return { majorId: null, blocked: true };
         }
@@ -231,10 +233,10 @@ export const MajorSearchPicker = forwardRef<MajorSearchPickerHandle, Props>(
                     htmlFor={`${id}-input`}
                     className="text-xs font-semibold uppercase text-slate-500"
                 >
-                    {label}
-                    {hint ? (
+                    {resolvedLabel}
+                    {resolvedHint ? (
                         <span className="ml-1 font-normal normal-case text-slate-400">
-                            ({hint})
+                            ({resolvedHint})
                         </span>
                     ) : null}
                 </label>
@@ -250,7 +252,7 @@ export const MajorSearchPicker = forwardRef<MajorSearchPickerHandle, Props>(
                         aria-controls={`${id}-listbox`}
                         autoComplete="off"
                         value={displayValue}
-                        placeholder="Tìm tên ngành…"
+                        placeholder={t('picker.major.placeholder')}
                         onFocus={handleFocus}
                         onChange={handleChange}
                         onKeyDown={handleKeyDown}
@@ -261,7 +263,7 @@ export const MajorSearchPicker = forwardRef<MajorSearchPickerHandle, Props>(
                             <button
                                 type="button"
                                 tabIndex={-1}
-                                aria-label="Bỏ chọn ngành"
+                                aria-label={t('picker.major.clear')}
                                 className="pointer-events-auto rounded p-1 text-slate-400 hover:text-slate-600"
                                 onMouseDown={(e) => {
                                     e.preventDefault();
@@ -284,7 +286,9 @@ export const MajorSearchPicker = forwardRef<MajorSearchPickerHandle, Props>(
                 )}
 
                 {loadError && (
-                    <p className="mt-1.5 text-xs text-amber-700">{loadError}</p>
+                    <p className="mt-1.5 text-xs text-amber-700">
+                        {t('picker.major.loadError')}
+                    </p>
                 )}
 
                 {open && (
@@ -292,15 +296,15 @@ export const MajorSearchPicker = forwardRef<MajorSearchPickerHandle, Props>(
                         id={`${id}-listbox`}
                         role="listbox"
                         className="absolute left-0 right-0 z-30 mt-1 max-h-52 overflow-y-auto rounded-xl border border-slate-200 bg-white py-1 shadow-lg"
-                        aria-label="Danh sách ngành"
+                        aria-label={t('picker.major.listLabel')}
                     >
                         {loading && options.length === 0 ? (
                             <li className="px-3 py-4 text-center text-xs text-slate-500">
-                                Đang tải danh sách ngành…
+                                {t('picker.major.loading')}
                             </li>
                         ) : options.length === 0 ? (
                             <li className="px-3 py-4 text-center text-xs text-slate-500">
-                                Không tìm thấy ngành phù hợp
+                                {t('picker.major.notFound')}
                             </li>
                         ) : (
                             options.map((item) => {

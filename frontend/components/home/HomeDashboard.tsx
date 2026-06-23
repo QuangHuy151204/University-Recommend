@@ -21,13 +21,12 @@ export function HomeDashboard({ featured }: { featured: University[] }) {
         <div className="space-y-16 sm:space-y-20">
             <section className="relative overflow-hidden bg-primary">
                 <div
-                    className="absolute inset-0 bg-cover bg-center opacity-30"
+                    className="absolute inset-0 bg-cover bg-center"
                     style={{
-                        backgroundImage:
-                            'url(https://images.unsplash.com/photo-1562774053-701939374585?w=1600&q=80)',
+                        backgroundImage: "url('/home-hero-bg.png')",
                     }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/95 to-primary/80" />
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/85 to-primary/75" />
                 <div className="relative mx-auto max-w-4xl px-6 py-20 text-center sm:px-8 sm:py-28">
                     <h1 className="font-display text-3xl font-bold leading-tight text-white sm:text-4xl md:text-5xl">
                         {t('home.heroTitle')}

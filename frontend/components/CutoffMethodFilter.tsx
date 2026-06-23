@@ -9,6 +9,7 @@ import {
 } from '@/lib/cutoff-display';
 import { FavoriteProgramButton } from '@/components/universities/FavoriteProgramButton';
 import { SearchField } from '@/components/ui/SearchField';
+import { useLocale } from '@/lib/i18n/locale';
 
 interface ProgramCutoff {
     programId: number;
@@ -45,6 +46,7 @@ export function CutoffMethodFilter({
     methods,
     programs,
 }: CutoffMethodFilterProps) {
+    const { t } = useLocale();
     const [methodCode, setMethodCode] = useState<string>('');
     const [majorQuery, setMajorQuery] = useState('');
 
@@ -89,7 +91,7 @@ export function CutoffMethodFilter({
                 <SearchField
                     value={majorQuery}
                     onChange={setMajorQuery}
-                    placeholder="Tìm ngành..."
+                    placeholder={t('cutoff.searchMajor')}
                     className="sm:max-w-sm"
                 />
             </div>
@@ -100,7 +102,7 @@ export function CutoffMethodFilter({
                         htmlFor="cutoff-method"
                         className="text-sm font-medium text-slate-700"
                     >
-                        Phương thức xét tuyển
+                        {t('cutoff.methodLabel')}
                     </label>
                     <select
                         id="cutoff-method"
@@ -108,7 +110,7 @@ export function CutoffMethodFilter({
                         onChange={(e) => setMethodCode(e.target.value)}
                         className="input-field max-w-xs py-2"
                     >
-                        <option value="">Tất cả phương thức</option>
+                        <option value="">{t('cutoff.allMethods')}</option>
                         {methods.map((m) => (
                             <option key={m.method_code} value={m.method_code}>
                                 {m.method_name}
@@ -122,8 +124,10 @@ export function CutoffMethodFilter({
                 {sortedPrograms.length === 0 ? (
                     <div className="card p-8 text-center text-sm text-slate-600">
                         {majorQuery.trim()
-                            ? `Không tìm thấy ngành nào cho "${majorQuery.trim()}".`
-                            : 'Chưa có dữ liệu ngành.'}
+                            ? t('cutoff.noMajorForQuery', {
+                                  query: majorQuery.trim(),
+                              })
+                            : t('cutoff.noMajorData')}
                     </div>
                 ) : (
                     sortedPrograms.map((p) => (
@@ -145,7 +149,7 @@ export function CutoffMethodFilter({
                                 <div className="mt-1 flex flex-wrap gap-2">
                                     {p.majorCode && (
                                         <span className="text-xs text-slate-500">
-                                            Mã {p.majorCode}
+                                            {t('cutoff.code')} {p.majorCode}
                                         </span>
                                     )}
                                     {p.fieldGroup && (
@@ -157,7 +161,7 @@ export function CutoffMethodFilter({
                                 {p.trainingProgram && (
                                     <div>
                                         <dt className="inline font-medium text-slate-500">
-                                            CT:{' '}
+                                            {t('cutoff.program')}:{' '}
                                         </dt>
                                         <dd className="inline">{p.trainingProgram}</dd>
                                     </div>
@@ -165,19 +169,22 @@ export function CutoffMethodFilter({
                                 {p.duration != null && (
                                     <div>
                                         <dt className="inline font-medium text-slate-500">
-                                            Thời gian:{' '}
+                                            {t('cutoff.duration')}:{' '}
                                         </dt>
-                                        <dd className="inline">{p.duration} năm</dd>
+                                        <dd className="inline">
+                                            {t('cutoff.years', { n: p.duration })}
+                                        </dd>
                                     </div>
                                 )}
                                 {p.tuitionFee != null && (
                                     <div>
                                         <dt className="inline font-medium text-slate-500">
-                                            Học phí:{' '}
+                                            {t('cutoff.tuition')}:{' '}
                                         </dt>
                                         <dd className="inline font-semibold text-primary">
-                                            {(p.tuitionFee / 1_000_000).toFixed(1)}{' '}
-                                            triệu/năm
+                                            {t('cutoff.tuitionPerYear', {
+                                                value: (p.tuitionFee / 1_000_000).toFixed(1),
+                                            })}
                                         </dd>
                                     </div>
                                 )}
@@ -189,11 +196,11 @@ export function CutoffMethodFilter({
                                 <table className="min-w-full text-sm">
                                     <thead>
                                         <tr className="border-b border-slate-200 bg-neutral/80 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                                            <th className="px-3 py-2.5">Năm</th>
-                                            <th className="px-3 py-2.5">Tổ hợp</th>
-                                            <th className="px-3 py-2.5">Phương thức</th>
+                                            <th className="px-3 py-2.5">{t('cutoff.colYear')}</th>
+                                            <th className="px-3 py-2.5">{t('cutoff.colCombo')}</th>
+                                            <th className="px-3 py-2.5">{t('cutoff.colMethod')}</th>
                                             <th className="px-3 py-2.5 text-right">
-                                                Điểm chuẩn
+                                                {t('cutoff.colScore')}
                                             </th>
                                         </tr>
                                     </thead>
@@ -227,8 +234,8 @@ export function CutoffMethodFilter({
                         ) : (
                             <p className="mt-4 text-sm text-slate-500">
                                 {selected
-                                    ? 'Không có điểm chuẩn cho phương thức đã chọn.'
-                                    : 'Chưa có điểm chuẩn.'}
+                                    ? t('cutoff.noMethodScore')
+                                    : t('cutoff.noScore')}
                             </p>
                         )}
                     </article>

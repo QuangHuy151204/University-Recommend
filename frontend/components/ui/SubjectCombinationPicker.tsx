@@ -8,6 +8,7 @@ import {
     filterCombinationOptions,
     subjectCombinationLabel,
 } from '@/lib/subject-combinations';
+import { useLocale } from '@/lib/i18n/locale';
 
 interface Props {
     value: string;
@@ -20,8 +21,10 @@ export function SubjectCombinationPicker({
     value,
     onChange,
     id: idProp,
-    label = 'Khối thi',
+    label,
 }: Props) {
+    const { locale, t } = useLocale();
+    const resolvedLabel = label ?? t('picker.subject.defaultLabel');
     const autoId = useId();
     const id = idProp ?? autoId;
     const rootRef = useRef<HTMLDivElement>(null);
@@ -31,19 +34,19 @@ export function SubjectCombinationPicker({
     const [query, setQuery] = useState('');
     const [options, setOptions] = useState<SubjectCombinationOption[]>([]);
     const [loading, setLoading] = useState(true);
-    const [loadError, setLoadError] = useState<string | null>(null);
+    const [loadError, setLoadError] = useState(false);
 
     useEffect(() => {
         let cancelled = false;
         (async () => {
             setLoading(true);
-            setLoadError(null);
+            setLoadError(false);
             try {
                 const rows = await listSubjectCombinations();
                 if (!cancelled) setOptions(rows);
             } catch {
                 if (!cancelled) {
-                    setLoadError('Không tải được danh sách tổ hợp từ hệ thống.');
+                    setLoadError(true);
                 }
             } finally {
                 if (!cancelled) setLoading(false);
@@ -55,7 +58,7 @@ export function SubjectCombinationPicker({
     }, []);
 
     const filtered = filterCombinationOptions(query, options);
-    const selectedLabel = value ? subjectCombinationLabel(value) : null;
+    const selectedLabel = value ? subjectCombinationLabel(value, locale) : null;
 
     useEffect(() => {
         if (!open) return;
@@ -124,7 +127,7 @@ export function SubjectCombinationPicker({
                 htmlFor={`${id}-input`}
                 className="text-xs font-semibold uppercase text-slate-500"
             >
-                {label}
+                {resolvedLabel}
             </label>
 
             <div className="relative mt-2">
@@ -138,7 +141,11 @@ export function SubjectCombinationPicker({
                     aria-controls={`${id}-listbox`}
                     autoComplete="off"
                     value={displayValue}
-                    placeholder={loading ? 'Đang tải tổ hợp…' : 'Tổ hợp môn'}
+                    placeholder={
+                        loading
+                            ? t('picker.subject.loading')
+                            : t('picker.subject.placeholder')
+                    }
                     disabled={loading && options.length === 0}
                     onFocus={handleFocus}
                     onChange={handleChange}
@@ -150,7 +157,7 @@ export function SubjectCombinationPicker({
                         <button
                             type="button"
                             tabIndex={-1}
-                            aria-label="Bỏ chọn khối"
+                            aria-label={t('picker.subject.clear')}
                             className="pointer-events-auto rounded p-1 text-slate-400 hover:text-slate-600"
                             onMouseDown={(e) => {
                                 e.preventDefault();
@@ -168,7 +175,9 @@ export function SubjectCombinationPicker({
             </div>
 
             {loadError && (
-                <p className="mt-1.5 text-xs text-amber-700">{loadError}</p>
+                <p className="mt-1.5 text-xs text-amber-700">
+                    {t('picker.subject.loadError')}
+                </p>
             )}
 
             {open && (
@@ -176,7 +185,7 @@ export function SubjectCombinationPicker({
                     id={`${id}-listbox`}
                     role="listbox"
                     className="absolute left-0 right-0 z-30 mt-1 max-h-52 overflow-y-auto rounded-xl border border-slate-200 bg-white py-1 shadow-lg"
-                    aria-label="Danh sách tổ hợp môn"
+                    aria-label={t('picker.subject.listLabel')}
                 >
                     {!query.trim() && (
                         <li>
@@ -188,20 +197,20 @@ export function SubjectCombinationPicker({
                                 onClick={() => pick('')}
                                 className="flex w-full px-3 py-2 text-left text-sm text-slate-600 hover:bg-slate-50"
                             >
-                                Tất cả khối
+                                {t('picker.subject.all')}
                             </button>
                         </li>
                     )}
                     {filtered.length === 0 ? (
                         <li className="px-3 py-4 text-center text-xs text-slate-500">
                             {loading
-                                ? 'Đang tải…'
-                                : 'Không tìm thấy tổ hợp trong dữ liệu'}
+                                ? t('common.loading')
+                                : t('picker.subject.notFound')}
                         </li>
                     ) : (
                         filtered.slice(0, 80).map((item) => {
                             const active = value === item.code;
-                            const sub = subjectCombinationLabel(item.code);
+                            const sub = subjectCombinationLabel(item.code, locale);
                             return (
                                 <li key={item.code}>
                                     <button

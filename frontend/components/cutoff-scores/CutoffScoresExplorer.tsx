@@ -13,6 +13,7 @@ import type {
     University,
     UniversityDetail,
 } from '@/types';
+import { useLocale } from '@/lib/i18n/locale';
 
 const CUTOFF_YEARS = [2023, 2024, 2025] as const;
 
@@ -38,6 +39,7 @@ export function CutoffScoresExplorer({
     loadError,
 }: Props) {
     const router = useRouter();
+    const { t } = useLocale();
     const [query, setQuery] = useState(search ?? '');
 
     function buildHref(next: { search?: string; university?: number }) {
@@ -84,11 +86,10 @@ export function CutoffScoresExplorer({
                         <BarChart3 className="size-6" aria-hidden />
                     </div>
                     <h1 className="font-display mt-4 text-2xl font-bold text-primary sm:text-3xl">
-                        Điểm chuẩn 2023–2025
+                        {t('cutoff.title')}
                     </h1>
                     <p className="mt-2 text-sm text-slate-600">
-                        Tìm tên trường đại học tại Hà Nội, sau đó xem bảng điểm chuẩn
-                        theo ngành, năm và phương thức xét tuyển.
+                        {t('cutoff.subtitle')}
                     </p>
                 </div>
             </div>
@@ -99,7 +100,7 @@ export function CutoffScoresExplorer({
                         htmlFor="cutoff-university-search"
                         className="mb-2 block text-sm font-medium text-slate-700"
                     >
-                        Tên trường
+                        {t('cutoff.schoolLabel')}
                     </label>
                     <div className="flex flex-col gap-3 sm:flex-row">
                         <div className="relative flex-1">
@@ -112,18 +113,19 @@ export function CutoffScoresExplorer({
                                 type="text"
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
-                                placeholder="VD: Bách Khoa, NEU, FPT, ULIS…"
+                                placeholder={t('cutoff.searchPlaceholder')}
                                 autoComplete="off"
                                 className="input-field !pl-10"
                             />
                         </div>
                         <button type="submit" className="btn-primary shrink-0">
-                            Tìm trường
+                            {t('cutoff.searchButton')}
                         </button>
                     </div>
                     <p className="mt-3 text-xs text-slate-500">
-                        Dữ liệu: các trường đại học tại Hà Nội · năm{' '}
-                        {CUTOFF_YEARS.join(', ')}.
+                        {t('cutoff.dataNote', {
+                            years: CUTOFF_YEARS.join(', '),
+                        })}
                     </p>
                 </form>
 
@@ -136,7 +138,9 @@ export function CutoffScoresExplorer({
                 {!university && searchResults && searchResults.data.length > 0 && (
                     <section className="mt-6">
                         <h2 className="text-sm font-semibold text-slate-700">
-                            Kết quả tìm kiếm ({searchResults.total} trường)
+                            {t('cutoff.resultsTitle', {
+                                count: searchResults.total,
+                            })}
                         </h2>
                         <ul className="mt-3 space-y-2">
                             {searchResults.data.map((u) => (
@@ -157,12 +161,12 @@ export function CutoffScoresExplorer({
                                             </span>
                                             {u.short_name && (
                                                 <span className="text-xs text-slate-500">
-                                                    {u.short_name} · {u.location ?? 'Hà Nội'}
+                                                    {u.short_name} · {u.location ?? t('common.hanoi')}
                                                 </span>
                                             )}
                                         </span>
                                         <span className="text-xs font-medium text-tertiary">
-                                            Xem điểm chuẩn →
+                                            {t('cutoff.viewCutoff')}
                                         </span>
                                     </button>
                                 </li>
@@ -173,10 +177,9 @@ export function CutoffScoresExplorer({
 
                 {!university && search && searchResults?.data.length === 0 && !loadError && (
                     <div className="card mt-6 p-8 text-center text-sm text-slate-600">
-                        Không tìm thấy trường phù hợp với «{search}». Thử tên viết tắt
-                        (HUST, NEU) hoặc{' '}
+                        {t('cutoff.noResults', { search })}{' '}
                         <Link href="/universities" className="font-medium text-tertiary">
-                            xem danh sách trường
+                            {t('cutoff.browseList')}
                         </Link>
                         .
                     </div>
@@ -187,7 +190,7 @@ export function CutoffScoresExplorer({
                         <div className="mb-4">
                             <BackButton
                                 onClick={clearUniversity}
-                                label="Chọn trường khác"
+                                label={t('cutoff.pickOther')}
                             />
                         </div>
 
@@ -204,13 +207,13 @@ export function CutoffScoresExplorer({
                                         {university.short_name
                                             ? `${university.short_name} · `
                                             : ''}
-                                        {university.location ?? 'Hà Nội'}
+                                        {university.location ?? t('common.hanoi')}
                                     </p>
                                     <Link
                                         href={`/universities/${university.id}`}
                                         className="mt-2 inline-block text-sm font-medium text-tertiary hover:text-primary"
                                     >
-                                        Xem thông tin & học phí trường →
+                                        {t('cutoff.viewSchoolInfo')}
                                     </Link>
                                 </div>
                             </div>
@@ -218,21 +221,21 @@ export function CutoffScoresExplorer({
 
                         <div className="mt-6">
                             <h3 className="font-display text-lg font-bold text-primary">
-                                Bảng điểm chuẩn theo ngành
+                                {t('cutoff.tableTitle')}
                             </h3>
                             <p className="mt-1 text-sm text-slate-600">
-                                Lọc theo phương thức xét tuyển · chỉ hiển thị năm{' '}
-                                {CUTOFF_YEARS.join(', ')}.
+                                {t('cutoff.tableSubtitle', {
+                                    years: CUTOFF_YEARS.join(', '),
+                                })}
                             </p>
 
                             {programs.length === 0 ? (
                                 <div className="card mt-4 p-8 text-center text-sm text-slate-500">
-                                    Chưa có dữ liệu ngành cho trường này.
+                                    {t('cutoff.noPrograms')}
                                 </div>
                             ) : !hasCutoffData ? (
                                 <div className="card mt-4 p-8 text-center text-sm text-slate-500">
-                                    Chưa có điểm chuẩn năm 2023–2025 cho trường này trong
-                                    hệ thống.
+                                    {t('cutoff.noCutoffData')}
                                 </div>
                             ) : (
                                 <div className="mt-5">
@@ -245,7 +248,7 @@ export function CutoffScoresExplorer({
                         </div>
 
                         <p className="mt-8 text-center text-xs text-slate-500">
-                            Cần gợi ý trường theo điểm của bạn?{' '}
+                            {t('cutoff.needSuggest')}{' '}
                             <Link
                                 href="/chatbot"
                                 className="font-medium text-tertiary hover:text-primary"

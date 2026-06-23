@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Sparkles } from 'lucide-react';
 import { Stepper } from '@/components/Stepper';
 import { SubjectCombinationPicker } from '@/components/ui/SubjectCombinationPicker';
@@ -20,13 +20,7 @@ import type {
     RecommendResponse,
     StudentProfile,
 } from '@/types';
-
-const STEPS = [
-    { id: 1, label: 'Điểm & khối' },
-    { id: 2, label: 'Sở thích' },
-    { id: 3, label: 'Ngân sách & xét tuyển' },
-    { id: 4, label: 'Kết quả' },
-];
+import { useLocale } from '@/lib/i18n/locale';
 
 const BUDGET_MIN = 0;
 const BUDGET_MAX = 80_000_000;
@@ -78,6 +72,16 @@ function resolveMethodLabel(
 
 export function RecommendWizard() {
     const { token } = useAuth();
+    const { t } = useLocale();
+    const steps = useMemo(
+        () => [
+            { id: 1, label: t('recommend.step1') },
+            { id: 2, label: t('recommend.step2') },
+            { id: 3, label: t('recommend.step3') },
+            { id: 4, label: t('recommend.step4') },
+        ],
+        [t],
+    );
     const [step, setStep] = useState(1);
     const [form, setForm] = useState<RecommendRequest>(profileToForm(null));
     const [budgetAmount, setBudgetAmount] = useState(20_000_000);
@@ -119,7 +123,7 @@ export function RecommendWizard() {
         setError(null);
         if (step === 1) {
             if (!form.subject_combination?.trim()) {
-                setError('Vui lòng chọn tổ hợp môn.');
+                setError(t('recommend.errSubject'));
                 return;
             }
             if (
@@ -127,12 +131,12 @@ export function RecommendWizard() {
                 form.expected_score < 0 ||
                 form.expected_score > 30
             ) {
-                setError('Điểm dự kiến phải từ 0 đến 30.');
+                setError(t('recommend.errScore'));
                 return;
             }
         }
         if (step === 2 && !form.interests?.trim()) {
-            setError('Nhập ít nhất một từ khóa ngành / sở thích.');
+            setError(t('recommend.errInterests'));
             return;
         }
         if (step === 3) {
@@ -179,7 +183,7 @@ export function RecommendWizard() {
             setError(
                 err instanceof ApiClientError
                     ? err.message
-                    : 'Không lấy được gợi ý. Kiểm tra backend.',
+                    : t('recommend.errFetch'),
             );
         } finally {
             setSubmitting(false);
@@ -190,7 +194,7 @@ export function RecommendWizard() {
         return (
             <PageShell>
                 <p className="text-center text-sm text-slate-500">
-                    Đang tải bộ lọc từ hồ sơ…
+                    {t('recommend.loadingProfile')}
                 </p>
             </PageShell>
         );
@@ -199,17 +203,15 @@ export function RecommendWizard() {
     return (
         <PageShell maxWidth="max-w-3xl">
             <PageHeader
-                eyebrow="Gợi ý"
-                title="Gợi ý trường – ngành"
+                eyebrow={t('recommend.eyebrow')}
+                title={t('recommend.title')}
                 subtitle={
-                    token
-                        ? 'Đã điền sẵn từ hồ sơ của bạn. Bạn có thể chỉnh trước khi xem gợi ý.'
-                        : 'Điền tiêu chí để nhận danh sách trường và ngành phù hợp (An toàn / Vừa sức / Cân nhắc).'
+                    token ? t('recommend.subtitleAuth') : t('recommend.subtitleGuest')
                 }
             />
 
             <div className="mb-8">
-                <Stepper steps={STEPS} current={step} />
+                <Stepper steps={steps} current={step} />
             </div>
 
             <div className="card space-y-5 p-6 sm:p-8">
@@ -217,12 +219,12 @@ export function RecommendWizard() {
                     <>
                         <div className="flex items-center gap-2 text-primary">
                             <Sparkles className="size-5" aria-hidden />
-                            <h2 className="font-display font-bold">Điểm & tổ hợp</h2>
+                            <h2 className="font-display font-bold">{t('recommend.step1Title')}</h2>
                         </div>
                         <div className="grid gap-4 sm:grid-cols-2">
                             <div>
                                 <label className="mb-1.5 block text-sm font-medium text-slate-700">
-                                    Điểm dự kiến (0–30)
+                                    {t('recommend.expectedScore')}
                                 </label>
                                 <input
                                     type="number"
@@ -241,7 +243,7 @@ export function RecommendWizard() {
                             </div>
                             <SubjectCombinationPicker
                                 id="recommend-subject"
-                                label="Tổ hợp môn"
+                                label={t('recommend.subjectCombo')}
                                 value={form.subject_combination}
                                 onChange={(code) =>
                                     setForm({
@@ -257,15 +259,15 @@ export function RecommendWizard() {
                 {step === 2 && (
                     <>
                         <h2 className="font-display font-bold text-primary">
-                            Sở thích & mục tiêu
+                            {t('recommend.step2Title')}
                         </h2>
                         <div>
                             <label className="mb-1.5 block text-sm font-medium text-slate-700">
-                                Ngành / lĩnh vực quan tâm
+                                {t('recommend.interests')}
                             </label>
                             <input
                                 type="text"
-                                placeholder="VD: CNTT, Marketing, Y khoa"
+                                placeholder={t('recommend.interestsPlaceholder')}
                                 value={form.interests}
                                 onChange={(e) =>
                                     setForm({ ...form, interests: e.target.value })
@@ -275,7 +277,7 @@ export function RecommendWizard() {
                         </div>
                         <WardPicker
                             id="recommend-ward"
-                            label="Khu vực"
+                            label={t('picker.ward.defaultLabel')}
                             value={form.preferred_location ?? ''}
                             onChange={(ward) =>
                                 setForm({ ...form, preferred_location: ward || undefined })
@@ -283,7 +285,7 @@ export function RecommendWizard() {
                         />
                         <div>
                             <label className="mb-1.5 block text-sm font-medium text-slate-700">
-                                Mục tiêu nghề nghiệp (tuỳ chọn)
+                                {t('recommend.careerGoal')}
                             </label>
                             <textarea
                                 rows={3}
@@ -300,11 +302,11 @@ export function RecommendWizard() {
                 {step === 3 && (
                     <>
                         <h2 className="font-display font-bold text-primary">
-                            Ngân sách & phương thức xét tuyển
+                            {t('recommend.step3Title')}
                         </h2>
                         <div>
                             <label className="mb-1.5 block text-sm font-medium text-slate-700">
-                                Học phí tối đa / năm
+                                {t('recommend.maxTuition')}
                             </label>
                             <input
                                 type="range"
@@ -323,7 +325,7 @@ export function RecommendWizard() {
                         </div>
                         <div>
                             <label className="mb-1.5 block text-sm font-medium text-slate-700">
-                                Phương thức xét tuyển
+                                {t('recommend.method')}
                             </label>
                             <select
                                 value={form.method_code ?? 'THPT'}
@@ -342,12 +344,11 @@ export function RecommendWizard() {
                                         </option>
                                     ))
                                 ) : (
-                                    <option value="THPT">THPT Quốc gia (THPT)</option>
+                                    <option value="THPT">{t('recommend.methodFallback')}</option>
                                 )}
                             </select>
                             <p className="mt-1 text-xs text-slate-500">
-                                Điểm chuẩn được so sánh theo phương thức xét tuyển bạn
-                                chọn (mặc định THPT Quốc gia).
+                                {t('recommend.methodHint')}
                             </p>
                         </div>
                     </>
@@ -372,7 +373,9 @@ export function RecommendWizard() {
                                         methods,
                                         response.meta.filtersApplied.method_label,
                                     ),
-                                    location: form.preferred_location?.trim() || 'Tất cả phường (Hà Nội)',
+                                    location:
+                                        form.preferred_location?.trim() ||
+                                        t('universities.wardAny'),
                                 }}
                             />
                         )}
@@ -388,7 +391,7 @@ export function RecommendWizard() {
                             onClick={() => setStep((s) => s - 1)}
                             className="btn-secondary"
                         >
-                            Quay lại
+                            {t('common.back')}
                         </button>
                     )}
                     {step < 4 && (
@@ -400,9 +403,9 @@ export function RecommendWizard() {
                         >
                             {step === 3
                                 ? submitting
-                                    ? 'Đang gợi ý…'
-                                    : 'Xem gợi ý'
-                                : 'Tiếp theo'}
+                                    ? t('recommend.submitting')
+                                    : t('recommend.submit')
+                                : t('common.nextStep')}
                         </button>
                     )}
                     {step === 4 && (
@@ -415,16 +418,16 @@ export function RecommendWizard() {
                                 }}
                                 className="btn-secondary"
                             >
-                                Chỉnh bộ lọc
+                                {t('recommend.editFilters')}
                             </button>
                             {!token && (
                                 <Link href="/login?redirect=/recommend" className="btn-primary">
-                                    Đăng nhập để lưu hồ sơ
+                                    {t('recommend.loginSave')}
                                 </Link>
                             )}
                             {token && (
                                 <Link href="/profile" className="btn-secondary">
-                                    Xem hồ sơ
+                                    {t('recommend.viewProfile')}
                                 </Link>
                             )}
                         </>
@@ -434,7 +437,7 @@ export function RecommendWizard() {
                             href="/login?redirect=/recommend"
                             className="text-sm text-slate-500 hover:text-primary"
                         >
-                            Đăng nhập để dùng bộ lọc đã lưu
+                            {t('recommend.loginSavedFilters')}
                         </Link>
                     )}
                 </div>

@@ -17,7 +17,7 @@ const hanken = Hanken_Grotesk({
 });
 
 export const metadata: Metadata = {
-    title: 'UniGuide AI — Gợi ý đại học thông minh',
+    title: 'UniGuide AI — Gợi ý đại học minh bạch',
     description:
         'Gợi ý trường đại học và ngành học phù hợp cho học sinh THPT tại Hà Nội — tra cứu, so sánh và chatbot.',
 };

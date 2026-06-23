@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { listWards } from '@/services/universities';
+import { useLocale } from '@/lib/i18n/locale';
 
 type Props = {
     id?: string;
@@ -18,16 +19,21 @@ type Props = {
 
 export function WardPicker({
     id = 'ward-picker',
-    label = 'Khu vực',
+    label,
     value = '',
     onChange,
     includeAny = true,
-    anyLabel = 'Tất cả phường (Hà Nội)',
+    anyLabel,
     disabled = false,
     helperText,
     showHelper,
     variant = 'default',
 }: Props) {
+    const { t } = useLocale();
+    const resolvedLabel = label ?? t('picker.ward.defaultLabel');
+    const resolvedAnyLabel = anyLabel ?? t('picker.ward.defaultAny');
+    const resolvedHelper = helperText ?? t('picker.ward.helper');
+
     const [wards, setWards] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [loadError, setLoadError] = useState(false);
@@ -58,7 +64,7 @@ export function WardPicker({
     return (
         <div>
             <label htmlFor={id} className={labelClass}>
-                {label}
+                {resolvedLabel}
             </label>
             <select
                 id={id}
@@ -67,14 +73,14 @@ export function WardPicker({
                 disabled={disabled || loading}
                 className={`input-field ${variant === 'filter' ? 'mt-2' : ''}`}
             >
-                {includeAny ? <option value="">{anyLabel}</option> : null}
+                {includeAny ? <option value="">{resolvedAnyLabel}</option> : null}
                 {loading ? (
                     <option value="" disabled>
-                        Đang tải danh sách khu vực…
+                        {t('picker.ward.loading')}
                     </option>
                 ) : loadError ? (
                     <option value="" disabled>
-                        Không tải được danh sách khu vực
+                        {t('picker.ward.loadError')}
                     </option>
                 ) : (
                     wards.map((w) => (
@@ -85,10 +91,7 @@ export function WardPicker({
                 )}
             </select>
             {shouldShowHelper ? (
-                <p className="mt-1 text-xs text-slate-500">
-                    {helperText ??
-                        'Hệ thống chỉ hỗ trợ trường tại Hà Nội. Chọn khu vực bạn muốn ở gần để ưu tiên gợi ý (trường khác khu vực vẫn có thể xuất hiện).'}
-                </p>
+                <p className="mt-1 text-xs text-slate-500">{resolvedHelper}</p>
             ) : null}
         </div>
     );

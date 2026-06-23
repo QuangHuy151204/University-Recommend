@@ -22,6 +22,7 @@ import type {
 import { SubjectCombinationPicker } from '@/components/ui/SubjectCombinationPicker';
 import { WardPicker } from '@/components/ui/WardPicker';
 import { FavoritesSection } from '@/components/favorites/FavoritesSection';
+import { useLocale } from '@/lib/i18n/locale';
 
 const BUDGET_MIN = 0;
 const BUDGET_MAX = 80_000_000;
@@ -61,6 +62,7 @@ function emptyForm(p: StudentProfile | null | undefined): UpdateProfilePayload {
 export default function ProfilePage() {
     const router = useRouter();
     const { token, user, loading: authLoading, refreshUser } = useAuth();
+    const { t } = useLocale();
 
     const [me, setMe] = useState<MeResponse | null>(null);
     const [form, setForm] = useState<UpdateProfilePayload>(emptyForm(null));
@@ -157,12 +159,12 @@ export default function ProfilePage() {
             const updated = await updateProfile(payload);
             setMe(updated);
             setForm(emptyForm(updated.profile));
-            setSuccess('Đã lưu hồ sơ.');
+            setSuccess(t('profile.saved'));
         } catch (err) {
             setError(
                 err instanceof ApiClientError
                     ? err.message
-                    : 'Lưu hồ sơ thất bại.',
+                    : t('profile.saveFailed'),
             );
         } finally {
             setSaving(false);
@@ -172,7 +174,7 @@ export default function ProfilePage() {
     if (authLoading || loading) {
         return (
             <PageShell maxWidth="max-w-2xl" className="space-y-6">
-                <p className="text-center text-sm text-slate-500">Đang tải hồ sơ…</p>
+                <p className="text-center text-sm text-slate-500">{t('profile.loading')}</p>
             </PageShell>
         );
     }
@@ -180,9 +182,9 @@ export default function ProfilePage() {
     return (
         <PageShell maxWidth="max-w-2xl" className="space-y-6">
             <PageHeader
-                eyebrow="Tài khoản"
-                title="Hồ sơ học sinh"
-                subtitle="Thông tin này được dùng để điền sẵn form gợi ý và dùng chatbot."
+                eyebrow={t('profile.eyebrow')}
+                title={t('profile.title')}
+                subtitle={t('profile.subtitle')}
             />
 
             {me && (
@@ -192,15 +194,15 @@ export default function ProfilePage() {
                     </div>
                     <dl className="space-y-1 text-sm">
                         <div>
-                            <dt className="inline font-medium text-slate-500">Tên: </dt>
+                            <dt className="inline font-medium text-slate-500">{t('profile.name')}: </dt>
                             <dd className="inline text-slate-900">{me.name}</dd>
                         </div>
                         <div>
-                            <dt className="inline font-medium text-slate-500">Email: </dt>
+                            <dt className="inline font-medium text-slate-500">{t('profile.email')}: </dt>
                             <dd className="inline text-slate-900">{me.email}</dd>
                         </div>
                         <div>
-                            <dt className="inline font-medium text-slate-500">Vai trò: </dt>
+                            <dt className="inline font-medium text-slate-500">{t('profile.role')}: </dt>
                             <dd className="inline capitalize text-slate-900">{me.role}</dd>
                         </div>
                     </dl>
@@ -210,13 +212,13 @@ export default function ProfilePage() {
             <form onSubmit={handleSubmit} className="card space-y-5 p-6 sm:p-8">
                 <div className="flex items-center gap-2 text-primary">
                     <Sparkles className="size-5" aria-hidden />
-                    <h2 className="font-display font-bold">Tiêu chí tuyển sinh</h2>
+                    <h2 className="font-display font-bold">{t('profile.criteriaTitle')}</h2>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                     <div>
                         <label className="mb-1.5 block text-sm font-medium text-slate-700">
-                            Điểm dự kiến (0–30)
+                            {t('profile.expectedScore')}
                         </label>
                         <input
                             type="number"
@@ -240,7 +242,7 @@ export default function ProfilePage() {
                     <div>
                         <SubjectCombinationPicker
                             id="profile-subject"
-                            label="Tổ hợp môn"
+                            label={t('profile.subjectCombo')}
                             value={form.subject_combination ?? ''}
                             onChange={(code) =>
                                 setForm({
@@ -253,7 +255,7 @@ export default function ProfilePage() {
 
                     <WardPicker
                         id="profile-ward"
-                        label="Khu vực"
+                        label={t('picker.ward.defaultLabel')}
                         value={form.preferred_location ?? ''}
                         onChange={(ward) =>
                             setForm({ ...form, preferred_location: ward || undefined })
@@ -262,7 +264,7 @@ export default function ProfilePage() {
 
                     <div>
                         <label className="mb-1.5 block text-sm font-medium text-slate-700">
-                            Khả năng tài chính tối đa cho học phí
+                            {t('profile.maxBudget')}
                         </label>
                         <input
                             type="range"
@@ -274,21 +276,23 @@ export default function ProfilePage() {
                             className="mt-1 w-full accent-primary"
                         />
                         <p className="mt-2 text-sm font-semibold text-primary">
-                            Tối đa: {formatBudgetYearlyVnd(budgetAmount)}
+                            {t('profile.maxBudgetLabel', {
+                                value: formatBudgetYearlyVnd(budgetAmount),
+                            })}
                         </p>
                         <p className="mt-1 text-xs text-slate-500">
-                            Đơn vị là học phí ước tính cho 1 năm học (12 tháng).
+                            {t('profile.budgetHint')}
                         </p>
                     </div>
                 </div>
 
                 <div>
                     <label className="mb-1.5 block text-sm font-medium text-slate-700">
-                        Sở thích ngành nghề
+                        {t('profile.interests')}
                     </label>
                     <input
                         type="text"
-                        placeholder="VD: CNTT, Trí tuệ nhân tạo, Marketing"
+                        placeholder={t('profile.interestsPlaceholder')}
                         value={form.interests ?? ''}
                         onChange={(e) =>
                             setForm({ ...form, interests: e.target.value })
@@ -299,7 +303,7 @@ export default function ProfilePage() {
 
                 <div>
                     <label className="mb-1.5 block text-sm font-medium text-slate-700">
-                        Phương thức xét tuyển ưu tiên
+                        {t('profile.preferredMethod')}
                     </label>
                     <select
                         value={form.preferred_method_code ?? 'THPT'}
@@ -318,21 +322,21 @@ export default function ProfilePage() {
                                 </option>
                             ))
                         ) : (
-                            <option value="THPT">THPT Quốc gia (THPT)</option>
+                            <option value="THPT">{t('recommend.methodFallback')}</option>
                         )}
                     </select>
                     <p className="mt-1 text-xs text-slate-500">
-                        Dùng làm mặc định cho trang gợi ý và tra cứu điểm chuẩn.
+                        {t('profile.methodHint')}
                     </p>
                 </div>
 
                 <div>
                     <label className="mb-1.5 block text-sm font-medium text-slate-700">
-                        Mục tiêu nghề nghiệp
+                        {t('profile.careerGoal')}
                     </label>
                     <textarea
                         rows={3}
-                        placeholder="VD: trở thành kỹ sư phần mềm tại doanh nghiệp công nghệ"
+                        placeholder={t('profile.careerPlaceholder')}
                         value={form.career_goal ?? ''}
                         onChange={(e) =>
                             setForm({ ...form, career_goal: e.target.value })
@@ -346,10 +350,10 @@ export default function ProfilePage() {
 
                 <div className="flex flex-wrap items-center gap-3 border-t border-slate-100 pt-5">
                     <button type="submit" disabled={saving} className="btn-primary">
-                        {saving ? 'Đang lưu…' : 'Lưu hồ sơ'}
+                        {saving ? t('common.saving') : t('common.save')}
                     </button>
                     <Link href="/recommend" className="btn-secondary">
-                        Gợi ý trường – ngành
+                        {t('profile.goRecommend')}
                     </Link>
                     <Link href="/chatbot" className="btn-secondary">
                         Chatbot

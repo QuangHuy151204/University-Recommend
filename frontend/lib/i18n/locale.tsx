@@ -6,7 +6,7 @@ import {
     useContext,
     useEffect,
     useMemo,
-    useState,
+    useSyncExternalStore,
 } from 'react';
 import {
     LOCALE_STORAGE_KEY,
@@ -23,20 +23,50 @@ interface LocaleContextValue {
 
 const LocaleContext = createContext<LocaleContextValue | null>(null);
 
+const localeListeners = new Set<() => void>();
+
+function emitLocaleChange() {
+    for (const listener of localeListeners) {
+        listener();
+    }
+}
+
+function subscribeLocale(onStoreChange: () => void) {
+    localeListeners.add(onStoreChange);
+    const onStorage = (e: StorageEvent) => {
+        if (e.key === LOCALE_STORAGE_KEY) onStoreChange();
+    };
+    window.addEventListener('storage', onStorage);
+    return () => {
+        localeListeners.delete(onStoreChange);
+        window.removeEventListener('storage', onStorage);
+    };
+}
+
+function getLocaleSnapshot(): Locale {
+    const stored = localStorage.getItem(LOCALE_STORAGE_KEY);
+    return stored === 'en' || stored === 'vi' ? stored : 'vi';
+}
+
+function getServerLocaleSnapshot(): Locale {
+    return 'vi';
+}
+
 export function LocaleProvider({ children }: { children: React.ReactNode }) {
-    const [locale, setLocaleState] = useState<Locale>(() => {
-        if (typeof window === 'undefined') return 'vi';
-        const stored = localStorage.getItem(LOCALE_STORAGE_KEY);
-        return stored === 'en' || stored === 'vi' ? stored : 'vi';
-    });
+    const locale = useSyncExternalStore(
+        subscribeLocale,
+        getLocaleSnapshot,
+        getServerLocaleSnapshot,
+    );
 
     useEffect(() => {
         document.documentElement.lang = locale;
-        localStorage.setItem(LOCALE_STORAGE_KEY, locale);
     }, [locale]);
 
     const setLocale = useCallback((next: Locale) => {
-        setLocaleState(next);
+        localStorage.setItem(LOCALE_STORAGE_KEY, next);
+        document.documentElement.lang = next;
+        emitLocaleChange();
     }, []);
 
     const t = useCallback(

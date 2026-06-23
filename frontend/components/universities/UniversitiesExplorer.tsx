@@ -422,19 +422,27 @@ export function UniversitiesExplorer({
                     )}
 
                     {/* AI banner */}
-                    <div className="card mt-8 overflow-hidden bg-primary p-6 text-white">
-                        <span className="badge-mint !bg-secondary !text-white">
-                            {t('universities.aiBadge')}
-                        </span>
-                        <p className="mt-3 max-w-xl text-sm text-slate-200">
-                            {t('universities.aiBanner')}
-                        </p>
-                        <Link
-                            href="/chatbot"
-                            className="btn-secondary mt-4 inline-flex !border-0"
-                        >
-                            {t('universities.aiCta')}
-                        </Link>
+                    <div className="card relative mt-8 overflow-hidden !border-primary/20 !bg-primary p-6 text-white sm:p-8">
+                        <div className="relative z-10 w-full sm:w-1/2">
+                            <span className="badge-mint !bg-secondary !text-white">
+                                {t('universities.aiBadge')}
+                            </span>
+                            <p className="mt-3 text-sm leading-relaxed text-white/90">
+                                {t('universities.aiBanner')}
+                            </p>
+                            <Link
+                                href="/chatbot"
+                                className="btn-secondary mt-4 inline-flex !border-0"
+                            >
+                                {t('universities.aiCta')}
+                            </Link>
+                        </div>
+                        <img
+                            src="/character.png"
+                            alt=""
+                            aria-hidden
+                            className="pointer-events-none absolute bottom-0 right-3 hidden h-36 w-auto object-contain object-bottom sm:block lg:right-6 lg:h-44"
+                        />
                     </div>
                 </div>
             </div>

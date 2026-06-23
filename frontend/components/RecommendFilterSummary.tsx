@@ -1,3 +1,7 @@
+'use client';
+
+import { useLocale } from '@/lib/i18n/locale';
+
 export interface RecommendFilterSummaryData {
     expectedScore: number;
     subjectCombination: string;
@@ -30,27 +34,46 @@ export function RecommendFilterSummary({
     methodLabel,
     location,
 }: RecommendFilterSummaryData) {
+    const { t } = useLocale();
+
     return (
         <aside className="rounded-xl border border-slate-200 bg-slate-50/90 p-4">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                Bộ lọc của bạn
+                {t('recommend.filtersTitle')}
             </h3>
             <dl className="mt-3 space-y-2.5">
                 <SummaryRow
-                    label="Điểm dự kiến"
+                    label={t('recommend.filterScore')}
                     value={Number(expectedScore).toFixed(2)}
                 />
-                <SummaryRow label="Tổ hợp" value={subjectCombination} />
-                <SummaryRow label="Sở thích" value={interests.trim() || '—'} />
+                <SummaryRow
+                    label={t('recommend.filterCombo')}
+                    value={subjectCombination}
+                />
+                <SummaryRow
+                    label={t('recommend.filterInterests')}
+                    value={interests.trim() || '—'}
+                />
                 {careerGoal?.trim() ? (
-                    <SummaryRow label="Mục tiêu" value={careerGoal.trim()} />
+                    <SummaryRow
+                        label={t('recommend.filterGoal')}
+                        value={careerGoal.trim()}
+                    />
                 ) : null}
                 <SummaryRow
-                    label="Học phí tối đa"
+                    label={t('recommend.filterTuition')}
                     value={formatBudgetYearlyVnd(budgetMaxYearly)}
                 />
-                <SummaryRow label="Xét tuyển" value={methodLabel} />
-                {location ? <SummaryRow label="Khu vực" value={location} /> : null}
+                <SummaryRow
+                    label={t('recommend.filterMethod')}
+                    value={methodLabel}
+                />
+                {location ? (
+                    <SummaryRow
+                        label={t('recommend.filterArea')}
+                        value={location}
+                    />
+                ) : null}
             </dl>
         </aside>
     );
