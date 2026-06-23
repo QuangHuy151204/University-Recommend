@@ -210,9 +210,7 @@ export class MajorsService {
           case 'id':
             return (a.id - b.id) * dir;
           case 'code':
-            return (
-              (a.code ?? '').localeCompare(b.code ?? '', 'vi') * dir
-            );
+            return (a.code ?? '').localeCompare(b.code ?? '', 'vi') * dir;
           case 'field_group':
             return (
               (a.field_group ?? '').localeCompare(b.field_group ?? '', 'vi') *

@@ -70,8 +70,8 @@ export class RecommendationsService {
    * - Phù hợp điểm số: 35%
    * - Phù hợp sở thích/ngành: 30%
    * - Phù hợp khu vực: 15%
-   * - Phù hợp tài chính: 15%
-   * - Phù hợp nghề nghiệp: 5%
+   * - Phù hợp tài chính: 10%
+   * - Phù hợp nghề nghiệp: 10%
    */
   async recommend(
     dto: RecommendRequestDto,
@@ -471,7 +471,7 @@ export class RecommendationsService {
       score += 10;
     }
 
-    // === 4. Phù hợp tài chính (15%) ===
+    // === 4. Phù hợp tài chính (10%) ===
     const numericBudgetActive =
       typeof dto.budget_max_yearly === 'number' && dto.budget_max_yearly >= 0;
     if ((dto.budget_range || numericBudgetActive) && um.university) {
@@ -489,20 +489,20 @@ export class RecommendationsService {
         : budgetMap[dto.budget_range!];
 
       if (avgTuition <= maxBudget) {
-        score += 15;
+        score += 10;
         reason.push(
           numericBudgetActive
             ? `Học phí phù hợp ngân sách tối đa (${Math.round(maxBudget / 1_000_000)} triệu/năm)`
             : `Học phí phù hợp với khả năng tài chính`,
         );
       } else {
-        score += 3;
+        score += 2;
       }
     } else {
-      score += 10;
+      score += 7;
     }
 
-    // === 5. Phù hợp nghề nghiệp mong muốn (5%) ===
+    // === 5. Phù hợp nghề nghiệp mong muốn (10%) ===
     if (dto.career_goal) {
       const careerGoalWords = dto.career_goal
         .toLowerCase()
@@ -511,15 +511,15 @@ export class RecommendationsService {
       const orientation = (um.major?.career_orientation || '').toLowerCase();
       const hasMatch = careerGoalWords.some((w) => orientation.includes(w));
       if (hasMatch) {
-        score += 5;
+        score += 10;
         reason.push(
           `Ngành ${um.major?.name} mở ra nghề nghiệp phù hợp mục tiêu`,
         );
       } else {
-        score += 2;
+        score += 4;
       }
     } else {
-      score += 3;
+      score += 6;
     }
 
     return { score: Math.min(score, 100), reason };
