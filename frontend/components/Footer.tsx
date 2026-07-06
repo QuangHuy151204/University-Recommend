@@ -14,7 +14,7 @@ export function Footer({ variant = 'app' }: { variant?: FooterVariant }) {
             <div className="mx-auto max-w-7xl px-6 py-12">
                 <div className="grid gap-10 md:grid-cols-4">
                     <div>
-                        <p className="font-display text-xl font-bold">UniGuide AI</p>
+                        <p className="font-display text-xl font-bold">UniPath</p>
                         <p className="mt-3 max-w-xs text-sm leading-relaxed text-slate-300">
                             {t('footer.tagline')}
                         </p>

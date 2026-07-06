@@ -22,3 +22,12 @@ export function translateUniversityType(type: string | null | undefined): string
     if (!type) return '—';
     return UNIVERSITY_TYPE_LABELS[type] ?? type;
 }
+
+/** Hiển thị điểm chuẩn — tối đa 2 chữ số thập phân, bỏ số 0 thừa. */
+export function formatCutoffScore(score: number): string {
+    const rounded = Math.round(score * 100) / 100;
+    if (Number.isInteger(rounded)) return String(rounded);
+    const oneDecimal = Math.round(score * 10) / 10;
+    if (oneDecimal === rounded) return oneDecimal.toFixed(1);
+    return rounded.toFixed(2);
+}

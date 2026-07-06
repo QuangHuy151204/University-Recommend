@@ -520,6 +520,14 @@ export function resolveFollowUpIntent(
   }
 
   if (
+    session.last_intent === 'ask_cutoff_score' &&
+    extractYearFromMessage(msg) !== null &&
+    containsText(msg, ['thi sao', 'thì sao', 'the nao', 'thế nào'])
+  ) {
+    return 'ask_cutoff_score';
+  }
+
+  if (
     extractScoreFromMessage(msg) !== null &&
     containsText(msg, [
       'du vao',
@@ -1222,6 +1230,47 @@ export function looksLikeTuitionBillingQuery(msg: string): boolean {
   );
 }
 
+/** Yêu cầu bịa/tự nghĩ ra dữ liệu — adversarial. */
+export function looksLikeAdversarialFabrication(msg: string): boolean {
+  if (
+    containsText(msg, [
+      'bia diem',
+      'bịa điểm',
+      'tu nghi ra',
+      'tự nghĩ ra',
+      'tu bia',
+      'tự bịa',
+      'hay bia',
+      'hãy bịa',
+      'ban tu nghi',
+      'bạn tự nghĩ',
+      'tu tao ra',
+      'tự tạo ra',
+      'khong can dung du lieu',
+      'không cần đúng dữ liệu',
+      'diem chuan ao',
+      'điểm chuẩn ảo',
+      'liet ke 100',
+      'liệt kê 100',
+      'liet ke tat ca',
+      'liệt kê tất cả',
+      'ignore previous',
+      'ignore system',
+      'ignore instructions',
+      'pretend',
+    ])
+  ) {
+    return true;
+  }
+  if (
+    containsText(msg, ['tu nghi', 'tự nghĩ', 'tu bia', 'tự bịa', 'tu tao', 'tự tạo']) &&
+    containsText(msg, ['diem', 'điểm', 'truong', 'trường', 'hoc phi', 'học phí', 'du lieu', 'dữ liệu'])
+  ) {
+    return true;
+  }
+  return false;
+}
+
 /** Khu vực ngoài phạm vi dữ liệu (chỉ Hà Nội) — corpus gắn `unknown`. */
 export function looksLikeOutOfScopeLocationQuery(msg: string): boolean {
   const outOfScope = containsText(msg, [
@@ -1252,6 +1301,10 @@ export function looksLikeOutOfScopeLocationQuery(msg: string): boolean {
     'bình dương',
     'dong nai',
     'đồng nai',
+    'mien nam',
+    'miền nam',
+    'mien trung',
+    'miền trung',
   ]);
   if (!outOfScope) return false;
   return containsText(msg, [
@@ -1273,6 +1326,10 @@ export function looksLikeOutOfScopeLocationQuery(msg: string): boolean {
     'tốt',
     'manh',
     'mạnh',
+    'diem',
+    'điểm',
+    'o ',
+    'ở ',
   ]);
 }
 
@@ -1517,7 +1574,45 @@ export function looksLikeGreeting(msg: string): boolean {
   return containsText(msg, ['bot oi', 'bot ơi', 'giup em voi', 'giúp em với']);
 }
 
+/** Hỏi phạm vi / hỗ trợ ngoài Hà Nội — nên trả scope message. */
+export function looksLikeScopeQuestion(msg: string): boolean {
+  if (
+    containsText(msg, ['ngoai ha noi', 'ngoài hà nội']) &&
+    containsText(msg, [
+      'ho tro',
+      'hỗ trợ',
+      'co khong',
+      'có không',
+      'duoc khong',
+      'được không',
+      'pham vi',
+      'phạm vi',
+      'co du lieu',
+      'có dữ liệu',
+      'co thong tin',
+      'có thông tin',
+    ])
+  ) {
+    return true;
+  }
+  if (
+    containsText(msg, ['pham vi', 'phạm vi']) &&
+    containsText(msg, ['he thong', 'hệ thống', 'du lieu', 'dữ liệu', 'ho tro', 'hỗ trợ'])
+  ) {
+    return true;
+  }
+  if (
+    containsText(msg, ['ho tro', 'hỗ trợ']) &&
+    containsText(msg, ['ngoai', 'ngoài']) &&
+    containsText(msg, ['ha noi', 'hà nội'])
+  ) {
+    return true;
+  }
+  return false;
+}
+
 export function looksLikeHelpQuery(msg: string): boolean {
+  if (looksLikeScopeQuestion(msg)) return false;
   return containsText(msg, [
     'cach dung',
     'cách dùng',
@@ -1546,8 +1641,6 @@ export function looksLikeHelpQuery(msg: string): boolean {
     'phạm vi',
     'chi ho tro',
     'chỉ hỗ trợ',
-    'ngoai ha noi',
-    'ngoài hà nội',
     'app nay lam gi',
     'app này làm gì',
     'he thong lam gi',
@@ -1650,7 +1743,6 @@ export function looksLikeCompareUniversities(msg: string): boolean {
     containsText(msg, [
       ' voi ',
       ' với ',
-      ' hay ',
       'so sanh',
       'so sánh',
       'khac nhau',
@@ -1780,6 +1872,55 @@ export function looksLikeCareerQuery(msg: string): boolean {
 }
 
 /**
+ * Câu "muốn học X nên chọn trường nào" (không có điểm) → recommendation_by_score
+ * để handler yêu cầu điểm trước khi gợi ý.
+ */
+export function looksLikeRecommendationWithoutScore(msg: string): boolean {
+  if (extractScoreFromMessage(msg) !== null) return false;
+  if (looksLikeCutoffScoreQuery(msg)) return false;
+  if (looksLikeOutOfScopeLocationQuery(msg)) return false;
+  const wantsSchoolAdvice = containsText(msg, [
+    'nen chon truong',
+    'nên chọn trường',
+    'chon truong nao',
+    'chọn trường nào',
+    'hoc truong nao',
+    'học trường nào',
+    'truong nao phu hop',
+    'trường nào phù hợp',
+    'nen hoc truong nao',
+    'nên học trường nào',
+    'nen hoc o dau',
+    'nên học ở đâu',
+    'hoc o truong nao',
+    'học ở trường nào',
+    'hoc truong gi',
+    'học trường gì',
+  ]);
+  const hasMajorOrInterest = containsText(msg, [
+    'muon hoc',
+    'muốn học',
+    'thich nganh',
+    'thích ngành',
+    'thich hoc',
+    'thích học',
+    'hoc nganh',
+    'học ngành',
+    'cntt',
+    'kinh te',
+    'kinh tế',
+    'y khoa',
+    'luat',
+    'luật',
+    'marketing',
+    'logistics',
+    'nganh',
+    'ngành',
+  ]);
+  return wantsSchoolAdvice && hasMajorOrInterest;
+}
+
+/**
  * Ưu tiên: greeting/help → so sánh → cutoff → gợi ý → khu vực → trường/ngành.
  */
 export function ruleBasedClassify(msg: string): ChatIntent {
@@ -1787,8 +1928,14 @@ export function ruleBasedClassify(msg: string): ChatIntent {
   if (looksLikeGreeting(lower)) {
     return 'greeting';
   }
+  if (looksLikeScopeQuestion(lower)) {
+    return 'unknown';
+  }
   if (looksLikeHelpQuery(lower)) {
     return 'help';
+  }
+  if (looksLikeAdversarialFabrication(lower)) {
+    return 'unknown';
   }
   if (looksLikeOutOfScopeLocationQuery(lower)) {
     return 'unknown';
@@ -1823,6 +1970,9 @@ export function ruleBasedClassify(msg: string): ChatIntent {
     return 'ask_admission_method';
   }
   if (looksLikeScoreRecommendation(lower)) {
+    return 'recommendation_by_score';
+  }
+  if (looksLikeRecommendationWithoutScore(lower)) {
     return 'recommendation_by_score';
   }
   if (looksLikeLocationListQuery(lower)) {
@@ -1933,7 +2083,13 @@ export function ruleBasedClassify(msg: string): ChatIntent {
  */
 export function correctRuleIntent(intent: ChatIntent, msg: string): ChatIntent {
   const lower = msg.toLowerCase();
+  if (looksLikeAdversarialFabrication(lower)) {
+    return 'unknown';
+  }
   if (looksLikeOutOfScopeLocationQuery(lower)) {
+    return 'unknown';
+  }
+  if (looksLikeScopeQuestion(lower)) {
     return 'unknown';
   }
   if (looksLikeHelpQuery(lower)) {

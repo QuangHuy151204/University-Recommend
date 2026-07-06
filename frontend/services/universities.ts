@@ -1,4 +1,5 @@
 import { api } from '@/lib/api';
+import { pinPreferredUniversityFirst } from '@/lib/university-display-order';
 import { COMPARE_MAX } from '@/lib/university-compare';
 import type { Paginated, University, UniversityDetail } from '@/types';
 
@@ -49,5 +50,8 @@ export async function getUniversitiesByIds(ids: number[]): Promise<{
         }
     });
 
-    return { universities, failedIds };
+    return {
+        universities: pinPreferredUniversityFirst(universities),
+        failedIds,
+    };
 }

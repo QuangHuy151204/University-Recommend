@@ -32,7 +32,7 @@ function AdminShellInner({ children }: { children: React.ReactNode }) {
                     <div className="flex items-center gap-2">
                         <Shield className="size-5 text-secondary" aria-hidden />
                         <p className="font-display text-sm font-bold tracking-tight">
-                            UniGuide Admin
+                            UniPath Admin
                         </p>
                     </div>
                     <p className="mt-2 truncate text-xs text-slate-300">

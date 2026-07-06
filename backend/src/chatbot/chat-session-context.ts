@@ -1,6 +1,8 @@
 import {
+  containsText,
   extractExplicitUniversityFromMessage,
   extractYearFromMessage,
+  looksLikeCutoffScoreQuery,
 } from './chatbot-intent-rules';
 import type { ChatEntities, ChatIntent } from './chatbot.types';
 import { extractMajorFragment, resolveMajorSearchTerm } from './major-search';
@@ -137,7 +139,24 @@ export function mergeEntitiesWithSession(
       session.last_major &&
       normalizeUniKey(explicitMajor) !== normalizeUniKey(session.last_major);
     merged.major = explicitMajor;
-    if (switchedMajor && explicitYear === null && !explicitUni) {
+    const keepYearForCutoffFollowUp =
+      session.last_intent === 'ask_cutoff_score' &&
+      !looksLikeCutoffScoreQuery(msg) &&
+      containsText(msg, [
+        'còn',
+        'con',
+        'thế còn',
+        'the con',
+        'thi sao',
+        'thì sao',
+      ]);
+    if (
+      explicitYear === null &&
+      !keepYearForCutoffFollowUp &&
+      (switchedMajor ||
+        (looksLikeCutoffScoreQuery(msg) &&
+          !containsText(msg, ['còn', 'con', 'thế còn', 'the con'])))
+    ) {
       merged.year = null;
     }
   }

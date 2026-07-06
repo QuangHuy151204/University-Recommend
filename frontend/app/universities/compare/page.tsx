@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getUniversitiesByIds } from '@/services/universities';
+import { listAdmissionMethods } from '@/services/admission-methods';
 import { UniversityCompareView } from '@/components/universities/UniversityCompareView';
 import {
     AlertBox,
@@ -43,6 +44,7 @@ export default async function UniversityComparePage({ searchParams }: PageProps)
         ReturnType<typeof getUniversitiesByIds>
     >['universities'] = [];
     let failedIds: number[] = [];
+    let admissionMethods: Awaited<ReturnType<typeof listAdmissionMethods>> = [];
 
     try {
         const result = await getUniversitiesByIds(ids);
@@ -53,6 +55,14 @@ export default async function UniversityComparePage({ searchParams }: PageProps)
             err instanceof ApiClientError
                 ? `Không gọi được API (${err.status}): ${err.message}`
                 : 'Không kết nối được backend. Chạy API tại http://localhost:3001/api.';
+    }
+
+    if (!errorMessage) {
+        try {
+            admissionMethods = await listAdmissionMethods();
+        } catch {
+            admissionMethods = [];
+        }
     }
 
     if (errorMessage) {
@@ -92,7 +102,7 @@ export default async function UniversityComparePage({ searchParams }: PageProps)
             <PageHeader
                 eyebrow="So sánh trường"
                 title={`Đang so sánh ${universities.length} trường`}
-                subtitle="Học phí, khu vực, loại hình, phương thức xét tuyển và điểm chuẩn theo năm."
+                subtitle="Học phí, khu vực, loại hình, phương thức xét tuyển, khoảng điểm chung và điểm theo ngành."
                 action={
                     <Link href="/universities" className="btn-secondary shrink-0">
                         + Thêm trường
@@ -104,7 +114,10 @@ export default async function UniversityComparePage({ searchParams }: PageProps)
                     Bỏ qua id không tìm thấy: {failedIds.join(', ')}.
                 </AlertBox>
             )}
-            <UniversityCompareView universities={universities} />
+            <UniversityCompareView
+                universities={universities}
+                admissionMethods={admissionMethods}
+            />
         </PageShell>
     );
 }

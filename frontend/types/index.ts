@@ -77,6 +77,11 @@ export interface University {
     source_url?: string | null;
     created_at: string;
     updated_at: string;
+    /** Có khi lọc theo ngành — tên ngành user chọn */
+    filtered_major_name?: string;
+    /** Có khi lọc theo ngành — điểm chuẩn năm mới nhất (2023–2025) */
+    filtered_major_cutoff_score?: number;
+    filtered_major_cutoff_year?: number;
 }
 
 export interface Major {

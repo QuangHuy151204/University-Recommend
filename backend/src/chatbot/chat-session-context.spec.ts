@@ -63,6 +63,29 @@ describe('chat session context carry-over', () => {
     expect(merged.year).toBeNull();
   });
 
+  it('clears stale year when asking new major at same university', () => {
+    const session = updateSessionContext(
+      emptySessionContext(),
+      'ask_cutoff_score',
+      {
+        ...emptyEntities,
+        university_name: 'USTH',
+        major: 'Công nghệ thông tin',
+        year: 2024,
+      },
+    );
+
+    const merged = mergeEntitiesWithSession(
+      emptyEntities,
+      session,
+      'cho tôi điểm chuẩn ngành Hàng Không của USTH',
+    );
+
+    expect(merged.university_name).toBe('USTH');
+    expect(merged.major).toBe('Hàng không');
+    expect(merged.year).toBeNull();
+  });
+
   it('current turn entities override session carry-over', () => {
     const session = updateSessionContext(
       emptySessionContext(),

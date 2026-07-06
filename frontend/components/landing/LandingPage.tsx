@@ -80,32 +80,31 @@ export function LandingPage() {
         <div className="overflow-hidden">
             <section className="relative min-h-[88vh] bg-primary">
                 <div
-                    className="absolute inset-0 bg-cover bg-center opacity-25"
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                     style={{
-                        backgroundImage:
-                            'url(https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1920&q=80)',
+                        backgroundImage: "url('/home-hero-bg.png')",
+                        backgroundPosition: 'center 30%',
                     }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/92 to-[#0d1547]" />
-                <div
-                    className="pointer-events-none absolute -left-32 top-20 size-96 rounded-full bg-secondary/20 blur-3xl"
-                    aria-hidden
-                />
-                <div
-                    className="pointer-events-none absolute -right-24 bottom-10 size-80 rounded-full bg-tertiary/25 blur-3xl"
-                    aria-hidden
-                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0d1547]/80 via-primary/20 to-transparent" />
 
                 <div className="relative mx-auto flex max-w-6xl flex-col items-center px-6 pb-24 pt-16 text-center sm:pt-24">
-                    <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold tracking-wide text-slate-100 backdrop-blur">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-black/25 px-4 py-1.5 text-xs font-semibold tracking-wide text-white backdrop-blur-sm">
                         <MapPin className="size-3.5 text-secondary" />
                         {t('landing.badge')}
                     </span>
-                    <h1 className="font-display mt-8 max-w-4xl text-4xl font-bold leading-[1.1] tracking-tight text-white sm:text-5xl md:text-6xl">
-                        {t('landing.heroTitle')}{' '}
-                        <span className="text-secondary">{t('landing.heroHighlight')}</span>
+                    <h1 className="font-display mt-8 max-w-4xl text-4xl font-bold leading-[1.1] tracking-tight text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.55)] sm:text-5xl md:text-6xl">
+                        {t('landing.heroTitle')}
+                        {t('landing.heroHighlight') ? (
+                            <>
+                                {' '}
+                                <span className="text-secondary">
+                                    {t('landing.heroHighlight')}
+                                </span>
+                            </>
+                        ) : null}
                     </h1>
-                    <p className="mt-6 max-w-2xl text-base leading-relaxed text-slate-200 sm:text-lg">
+                    <p className="mt-6 max-w-2xl text-base leading-relaxed text-white drop-shadow-[0_1px_10px_rgba(0,0,0,0.5)] sm:text-lg">
                         {t('landing.heroSubtitle')}
                     </p>
                     <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
@@ -122,7 +121,7 @@ export function LandingPage() {
                             {t('landing.ctaLogin')}
                         </Link>
                     </div>
-                    <ul className="mt-12 flex flex-wrap justify-center gap-6 text-sm text-slate-300">
+                    <ul className="mt-12 flex flex-wrap justify-center gap-6 text-sm text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.45)]">
                         <li className="flex items-center gap-2">
                             <ShieldCheck className="size-4 text-secondary" />
                             {t('landing.trustCutoff')}

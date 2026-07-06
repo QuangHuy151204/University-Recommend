@@ -192,7 +192,24 @@ export function shouldSkipOllamaRewrite(
   if (cfg.skipRewriteWhenStructured && isStructuredDbAnswer(ruleAnswer)) {
     return true;
   }
+  if (isRefusalOrScopeAnswer(ruleAnswer)) return true;
   return false;
+}
+
+/** Skip Ollama rewrite for refusal/scope/no-data answers to avoid turning them into confident answers. */
+function isRefusalOrScopeAnswer(answer: string): boolean {
+  if (!answer?.trim()) return false;
+  const lower = answer.toLowerCase();
+  return (
+    lower.includes('không thể tự nghĩ') ||
+    lower.includes('không thể bịa') ||
+    lower.includes('chỉ trả lời dựa trên dữ liệu hiện có') ||
+    lower.includes('ngoài khu vực hà nội') ||
+    lower.includes('không nằm trong dữ liệu') ||
+    lower.includes('chủ yếu hỗ trợ dữ liệu các trường đại học ở hà nội') ||
+    lower.includes('chưa có dữ liệu trường/ngành ngoài') ||
+    lower.includes('hiện tại hệ thống chủ yếu hỗ trợ')
+  );
 }
 
 const PROMPT_COMBINED_PER_INTENT = 2;

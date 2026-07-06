@@ -10,11 +10,18 @@ import {
   QueryUniversityDto,
 } from './university.dto';
 import { DATA_SCOPE_LOCATION } from '../common/data-scope';
-import { applyUniversityDisplayOrder } from '../common/university-display-order';
+import {
+  applyUniversityDisplayOrder,
+  DEFAULT_PREFERRED_UNIVERSITY_SHORT_NAME,
+} from '../common/university-display-order';
 import {
   CUTOFF_FILTER_YEARS,
   subjectCombinationSqlMatch,
 } from '../common/subject-combination';
+import {
+  buildFilteredMajorCutoffMap,
+  type FilteredMajorCutoffRow,
+} from './university-filtered-major-cutoff';
 
 @Injectable()
 export class UniversitiesService {
@@ -80,15 +87,25 @@ export class UniversitiesService {
 
     const total = await qb.getCount();
     const pageQb = qb.skip((page - 1) * limit).take(limit);
-    if (prefer_short_name?.trim()) {
-      applyUniversityDisplayOrder(pageQb, 'u', prefer_short_name.trim());
-    } else {
-      pageQb.orderBy('u.name', 'ASC');
-    }
+    applyUniversityDisplayOrder(
+      pageQb,
+      'u',
+      prefer_short_name?.trim() || DEFAULT_PREFERRED_UNIVERSITY_SHORT_NAME,
+    );
     const data = await pageQb.getMany();
 
+    const enrichedData =
+      majorIds != null && majorIds.length > 0 && major_id != null
+        ? await this.attachFilteredMajorCutoffs(
+            data,
+            majorIds,
+            major_id,
+            subject_combination,
+          )
+        : data;
+
     return {
-      data,
+      data: enrichedData,
       total,
       page,
       limit,
@@ -234,5 +251,67 @@ export class UniversitiesService {
     for (const [key, value] of Object.entries(sub.getParameters())) {
       qb.setParameter(key, value);
     }
+  }
+
+  /** Gắn điểm chuẩn ngành đã lọc (năm mới nhất) lên từng trường trong trang kết quả. */
+  private async attachFilteredMajorCutoffs(
+    universities: University[],
+    majorIds: number[],
+    major_id: number,
+    subject_combination?: string,
+  ): Promise<
+    Array<
+      University & {
+        filtered_major_name?: string;
+        filtered_major_cutoff_score?: number;
+        filtered_major_cutoff_year?: number;
+      }
+    >
+  > {
+    if (universities.length === 0) return universities;
+
+    const selected = await this.majorRepo.findOne({
+      where: { id: major_id },
+      select: ['name'],
+    });
+    const displayMajorName = selected?.name;
+
+    const universityIds = universities.map((u) => u.id);
+    const qb = this.universityRepo.manager
+      .createQueryBuilder()
+      .select('um.university_id', 'university_id')
+      .addSelect('m.name', 'major_name')
+      .addSelect('cs.year', 'year')
+      .addSelect('cs.score', 'score')
+      .addSelect('cs.subject_combination', 'subject_combination')
+      .from('university_majors', 'um')
+      .innerJoin('majors', 'm', 'm.id = um.major_id')
+      .innerJoin('cutoff_scores', 'cs', 'cs.university_major_id = um.id')
+      .where('um.university_id IN (:...universityIds)', { universityIds })
+      .andWhere('um.major_id IN (:...majorIds)', { majorIds })
+      .andWhere('cs.year IN (:...cutoffYears)', {
+        cutoffYears: [...CUTOFF_FILTER_YEARS],
+      });
+
+    const combo = subject_combination?.trim();
+    if (combo) {
+      qb.andWhere(
+        subjectCombinationSqlMatch('cs.subject_combination', 'combo'),
+        { combo },
+      );
+    }
+
+    const rows = await qb.getRawMany<FilteredMajorCutoffRow>();
+    const cutoffMap = buildFilteredMajorCutoffMap(rows, subject_combination);
+
+    return universities.map((u) => {
+      const cutoff = cutoffMap.get(u.id);
+      if (!cutoff) return u;
+      return Object.assign(u, {
+        filtered_major_name: displayMajorName ?? cutoff.majorName,
+        filtered_major_cutoff_score: cutoff.score,
+        filtered_major_cutoff_year: cutoff.year,
+      });
+    });
   }
 }

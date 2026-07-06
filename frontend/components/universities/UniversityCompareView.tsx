@@ -2,23 +2,25 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ExternalLink, X } from 'lucide-react';
 import {
     buildComparePath,
-    collectSubjectCombinations,
     computeCompareStats,
     universityLabel,
     writeStoredCompareEntries,
 } from '@/lib/university-compare';
 import {
+    formatCutoffScore,
     formatTuitionVnd,
     translateUniversityType,
 } from '@/lib/utils';
-import type { UniversityDetail } from '@/types';
+import type { AdmissionMethod, UniversityDetail } from '@/types';
+import { listAdmissionMethods } from '@/services/admission-methods';
 
 interface Props {
     universities: UniversityDetail[];
+    admissionMethods?: AdmissionMethod[];
     /** Ẩn nút xóa & thẻ mô tả — dùng nhúng trong chatbot. */
     embedded?: boolean;
 }
@@ -28,9 +30,32 @@ type RowDef = {
     values: (string | React.ReactNode)[];
 };
 
-export function UniversityCompareView({ universities, embedded = false }: Props) {
+export function UniversityCompareView({
+    universities,
+    admissionMethods,
+    embedded = false,
+}: Props) {
     const router = useRouter();
-    const allYears = useMemo(() => {
+    const [methodCatalog, setMethodCatalog] = useState<AdmissionMethod[]>(
+        admissionMethods ?? [],
+    );
+
+    useEffect(() => {
+        if (admissionMethods?.length) {
+            setMethodCatalog(admissionMethods);
+            return;
+        }
+        let cancelled = false;
+        void listAdmissionMethods()
+            .then((rows) => {
+                if (!cancelled) setMethodCatalog(rows);
+            })
+            .catch(() => {});
+        return () => {
+            cancelled = true;
+        };
+    }, [admissionMethods]);
+    const compareYear = useMemo(() => {
         const set = new Set<number>();
         for (const u of universities) {
             for (const p of u.universityMajors ?? []) {
@@ -39,28 +64,83 @@ export function UniversityCompareView({ universities, embedded = false }: Props)
                 }
             }
         }
-        return [...set].sort((a, b) => b - a);
+        const years = [...set].sort((a, b) => b - a);
+        return years[0] ?? null;
     }, [universities]);
-
-    const [year, setYear] = useState<number | null>(allYears[0] ?? null);
-    const [subjectCombo, setSubjectCombo] = useState<string>('');
-
-    const subjectOptions = useMemo(
-        () => collectSubjectCombinations(universities, year),
-        [universities, year],
-    );
 
     const statsByUni = useMemo(
         () =>
             universities.map((u) =>
                 computeCompareStats(
                     u,
-                    year,
-                    subjectCombo || null,
+                    compareYear,
+                    null,
+                    methodCatalog,
+                    null,
                 ),
             ),
-        [universities, year, subjectCombo],
+        [universities, compareYear, methodCatalog],
     );
+
+    const colPercent = universities.length > 0
+        ? `${Math.floor(78 / universities.length)}%`
+        : '39%';
+
+    function renderCellContent(content: React.ReactNode) {
+        return (
+            <div className="flex min-h-[2.75rem] flex-col justify-center">
+                {content}
+            </div>
+        );
+    }
+
+    function renderMajorCutoffList(majors: ReturnType<typeof computeCompareStats>['topMajorCutoffs']) {
+        if (majors.length === 0) return '—';
+        return (
+            <ul className="space-y-1.5 text-xs">
+                {majors.map((m) => (
+                    <li key={`${m.majorName}-${m.score}`}>
+                        <span className="font-medium text-slate-800">
+                            {m.majorName}
+                            {m.subjectCombination ? ` (${m.subjectCombination})` : ''}
+                        </span>
+                        <span className="text-slate-600">
+                            {' '}
+                            · {formatCutoffScore(m.score)}
+                        </span>
+                    </li>
+                ))}
+            </ul>
+        );
+    }
+
+    function formatCutoffRange(s: ReturnType<typeof computeCompareStats>) {
+        if (s.cutoffProgramCount === 0) return '—';
+        if (s.cutoffMin == null || s.cutoffMax == null) return '—';
+        const min = formatCutoffScore(s.cutoffMin);
+        const max = formatCutoffScore(s.cutoffMax);
+        const countLabel = `${s.cutoffProgramCount} ngành`;
+        if (s.cutoffMin === s.cutoffMax) {
+            return `${min} · ${countLabel}`;
+        }
+        return `${min} – ${max} · ${countLabel}`;
+    }
+
+    function renderTagList(labels: string[]) {
+        if (labels.length === 0) return '—';
+        return (
+            <ul className="flex flex-wrap gap-1.5">
+                {labels.map((label) => (
+                    <li
+                        key={label}
+                        className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-700"
+                    >
+                        {label}
+                    </li>
+                ))}
+            </ul>
+        );
+    }
 
     const removeUniversity = (id: number) => {
         const remaining = universities.filter((u) => u.id !== id);
@@ -125,27 +205,21 @@ export function UniversityCompareView({ universities, embedded = false }: Props)
         },
         {
             label: 'Phương thức xét tuyển',
-            values: statsByUni.map((s) =>
-                s.admissionMethodLabels.length
-                    ? s.admissionMethodLabels.join(', ')
-                    : '—',
-            ),
+            values: statsByUni.map((s) => renderTagList(s.admissionMethodLabels)),
         },
         {
             label:
-                year != null
-                    ? `Điểm chuẩn ${year}${subjectCombo ? ` · ${subjectCombo}` : ''}`
-                    : 'Điểm chuẩn',
-            values: statsByUni.map((s) => {
-                if (s.cutoffCount === 0) return '—';
-                if (s.cutoffMin != null && s.cutoffMax != null) {
-                    if (s.cutoffMin === s.cutoffMax) {
-                        return `${s.cutoffMin} (${s.cutoffCount} mức)`;
-                    }
-                    return `${s.cutoffMin} – ${s.cutoffMax} (${s.cutoffCount} mức)`;
-                }
-                return '—';
-            }),
+                compareYear != null
+                    ? `Khoảng điểm chung ${compareYear}`
+                    : 'Khoảng điểm chung',
+            values: statsByUni.map((s) => formatCutoffRange(s)),
+        },
+        {
+            label:
+                compareYear != null
+                    ? `Điểm theo ngành ${compareYear}`
+                    : 'Điểm theo ngành',
+            values: statsByUni.map((s) => renderMajorCutoffList(s.topMajorCutoffs)),
         },
         {
             label: 'Website',
@@ -170,72 +244,23 @@ export function UniversityCompareView({ universities, embedded = false }: Props)
 
     return (
         <div className="space-y-6">
-            <div className="card flex flex-wrap items-end gap-4 p-4">
-                <div>
-                    <label
-                        htmlFor="compare-year"
-                        className="text-xs font-semibold uppercase text-slate-500"
-                    >
-                        Năm điểm chuẩn
-                    </label>
-                    <select
-                        id="compare-year"
-                        value={year ?? ''}
-                        onChange={(e) => {
-                            const v = Number(e.target.value);
-                            setYear(Number.isFinite(v) ? v : null);
-                            setSubjectCombo('');
-                        }}
-                        className="input-field mt-1 !w-auto min-w-[8rem]"
-                    >
-                        {allYears.length === 0 && (
-                            <option value="">Không có dữ liệu</option>
-                        )}
-                        {allYears.map((y) => (
-                            <option key={y} value={y}>
-                                {y}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div>
-                    <label
-                        htmlFor="compare-combo"
-                        className="text-xs font-semibold uppercase text-slate-500"
-                    >
-                        Tổ hợp môn
-                    </label>
-                    <select
-                        id="compare-combo"
-                        value={subjectCombo}
-                        onChange={(e) => setSubjectCombo(e.target.value)}
-                        className="input-field mt-1 !w-auto min-w-[10rem]"
-                    >
-                        <option value="">Tất cả tổ hợp</option>
-                        {subjectOptions.map((c) => (
-                            <option key={c} value={c}>
-                                {c}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <p className="text-xs text-slate-500">
-                    Thông tin tham khảo — nên kiểm tra thêm trên website tuyển sinh
-                    chính thức của từng trường.
-                </p>
-            </div>
-
             <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-                <table className="w-full min-w-[640px] border-collapse text-sm">
+                <table className="w-full min-w-[640px] table-fixed border-collapse text-sm">
+                    <colgroup>
+                        <col className="w-[22%]" />
+                        {universities.map((u) => (
+                            <col key={u.id} style={{ width: colPercent }} />
+                        ))}
+                    </colgroup>
                     <thead>
                         <tr className="border-b border-slate-200 bg-neutral">
-                            <th className="sticky left-0 z-10 bg-neutral px-4 py-3 text-left font-semibold text-slate-600">
+                            <th className="sticky left-0 z-10 bg-neutral px-4 py-3 text-left align-top font-semibold text-slate-600">
                                 Tiêu chí
                             </th>
                             {universities.map((u) => (
                                 <th
                                     key={u.id}
-                                    className="min-w-[10rem] px-4 py-3 text-left font-display font-bold text-primary"
+                                    className="px-4 py-3 text-left align-top font-display font-bold text-primary"
                                 >
                                     <div className="flex items-start justify-between gap-2">
                                         <span>{universityLabel(u)}</span>
@@ -260,15 +285,15 @@ export function UniversityCompareView({ universities, embedded = false }: Props)
                                 key={row.label}
                                 className="border-b border-slate-100 last:border-0"
                             >
-                                <td className="sticky left-0 z-10 bg-white px-4 py-3 font-medium text-slate-600">
+                                <td className="sticky left-0 z-10 bg-white px-4 py-3 align-top font-medium text-slate-600">
                                     {row.label}
                                 </td>
                                 {row.values.map((cell, i) => (
                                     <td
                                         key={`${row.label}-${universities[i]?.id ?? i}`}
-                                        className="px-4 py-3 text-slate-800"
+                                        className="px-4 py-3 align-top text-slate-800"
                                     >
-                                        {cell}
+                                        {renderCellContent(cell)}
                                     </td>
                                 ))}
                             </tr>

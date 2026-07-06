@@ -27,11 +27,40 @@ Reply in Vietnamese, concise and friendly.`;
 @Injectable()
 export class OllamaService {
   private readonly logger = new Logger(OllamaService.name);
+  /** Sau lỗi mạng/timeout — tạm bỏ qua gọi Ollama để tránh trễ mỗi câu chat. */
+  private unavailableUntil = 0;
+  private consecutiveFailures = 0;
 
   constructor(private readonly config: ConfigService) {}
 
   isEnabled(): boolean {
-    return this.config.get<string>('OLLAMA_ENABLED', 'true') === 'true';
+    return this.config.get<string>('OLLAMA_ENABLED', 'false') === 'true';
+  }
+
+  private isCircuitOpen(): boolean {
+    return Date.now() < this.unavailableUntil;
+  }
+
+  private recordFailure(): void {
+    this.consecutiveFailures += 1;
+    const cooldownMs = Number(
+      this.config.get<string>('OLLAMA_COOLDOWN_MS', '60000'),
+    );
+    this.unavailableUntil = Date.now() + cooldownMs;
+    if (this.consecutiveFailures === 1) {
+      this.logger.warn(
+        `Ollama unreachable — circuit open ${cooldownMs}ms (set OLLAMA_ENABLED=false to skip entirely).`,
+      );
+    }
+  }
+
+  private recordSuccess(): void {
+    this.consecutiveFailures = 0;
+    this.unavailableUntil = 0;
+  }
+
+  getRewriteTimeoutMs(): number {
+    return Number(this.config.get<string>('OLLAMA_REWRITE_TIMEOUT_MS', '8000'));
   }
 
   getBaseUrl(): string {
@@ -545,6 +574,10 @@ export class OllamaService {
    */
   async generate(opts: OllamaGenerateOptions): Promise<string | null> {
     if (!this.isEnabled()) return null;
+    if (this.isCircuitOpen()) {
+      this.logger.debug('Ollama circuit open — skip generate.');
+      return null;
+    }
 
     const baseUrl = this.getBaseUrl();
     const model = opts.model ?? this.getModel();
@@ -572,19 +605,23 @@ export class OllamaService {
         this.logger.warn(
           `Ollama returned HTTP ${res.status}; falling back to rule-based.`,
         );
+        this.recordFailure();
         return null;
       }
 
       const data = (await res.json()) as OllamaGenerateResponse;
       if (data.error) {
         this.logger.warn(`Ollama error: ${data.error}`);
+        this.recordFailure();
         return null;
       }
       const text = data.response?.trim();
       if (!text) {
         this.logger.warn('Ollama returned empty response.');
+        this.recordFailure();
         return null;
       }
+      this.recordSuccess();
       return text;
     } catch (err) {
       const e = err as Error;
@@ -597,6 +634,7 @@ export class OllamaService {
           `Ollama call failed (${e.message}); falling back to rule-based.`,
         );
       }
+      this.recordFailure();
       return null;
     } finally {
       clearTimeout(timer);

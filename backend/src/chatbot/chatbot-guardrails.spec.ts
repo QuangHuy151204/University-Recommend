@@ -4,6 +4,7 @@ import {
   GUARDRAIL_INTENT_ALIASES,
   isCutoffMissingAnswer,
   isLikelyFalseUniversityName,
+  isOllamaRewriteFaithful,
   sanitizeExtractedEntities,
   shouldPreferRuleOverOllamaIntent,
 } from './chatbot-guardrails';
@@ -132,6 +133,28 @@ describe('chatbot guardrails', () => {
       expect(sanitizeExtractedEntities(entities, msg).university_name).toBe(
         'NEU',
       );
+    });
+  });
+
+  describe('Ollama rewrite faithfulness', () => {
+    it('accepts rewrite that keeps scores and school codes', () => {
+      const rule =
+        'Gợi ý cho bạn:\n1. ĐH Bách khoa Hà Nội (HUST) — điểm chuẩn 27.5';
+      const llm =
+        'Mình gợi ý ĐH Bách khoa Hà Nội (HUST) với điểm chuẩn khoảng 27.5 nhé.';
+      expect(isOllamaRewriteFaithful(rule, llm)).toBe(true);
+    });
+
+    it('rejects rewrite that drops cutoff scores', () => {
+      const rule = 'Điểm chuẩn năm 2024: 24.5 điểm (THPT)';
+      const llm = 'Bạn có thể tham khảo thêm các trường phù hợp nhé.';
+      expect(isOllamaRewriteFaithful(rule, llm)).toBe(false);
+    });
+
+    it('rejects rewrite that omits missing-data message', () => {
+      const rule = 'Mình chưa có điểm chuẩn cho ngành này trong dữ liệu hiện tại.';
+      const llm = 'Bạn thử xem các trường khác ở Hà Nội nhé.';
+      expect(isOllamaRewriteFaithful(rule, llm)).toBe(false);
     });
   });
 

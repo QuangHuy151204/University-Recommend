@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import type { Paginated, University } from '@/types';
 import { useLocale } from '@/lib/i18n/locale';
-import { formatTuitionVnd } from '@/lib/utils';
+import { formatTuitionVnd, formatCutoffScore } from '@/lib/utils';
 import {
     buildComparePath,
     COMPARE_MAX,
@@ -335,24 +335,24 @@ export function UniversitiesExplorer({
                             return (
                                 <article key={u.id} className="card p-5">
                                     <div className="flex flex-wrap items-start justify-between gap-3">
-                                        <div className="flex gap-4">
+                                        <div className="flex min-w-0 flex-1 gap-4">
                                             <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-lg font-bold text-primary">
                                                 {(u.short_name || u.name)
                                                     .slice(0, 2)
                                                     .toUpperCase()}
                                             </div>
-                                            <div>
+                                            <div className="min-w-0">
                                                 <h2 className="font-display font-bold text-primary">
                                                     {u.name}
                                                 </h2>
                                                 <p className="mt-1 flex items-center gap-1 text-xs text-slate-500">
-                                                    <MapPin className="size-3.5" />
+                                                    <MapPin className="size-3.5 shrink-0" />
                                                     {u.ward
                                                         ? `${u.ward}, ${u.location ?? t('universities.hanoi')}`
                                                         : (u.location ?? t('universities.hanoi'))}
                                                 </p>
                                                 <p className="mt-0.5 flex items-center gap-1 text-xs text-slate-600">
-                                                    <Banknote className="size-3.5" />
+                                                    <Banknote className="size-3.5 shrink-0" />
                                                     {formatTuitionVnd(
                                                         u.tuition_fee_min,
                                                         u.tuition_fee_max,
@@ -360,17 +360,32 @@ export function UniversitiesExplorer({
                                                 </p>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-3">
-                                            <label className="flex cursor-pointer items-center gap-1.5 text-xs text-slate-600">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={inCompare}
-                                                    onChange={() => toggleCompare(u)}
-                                                    className="rounded text-primary"
-                                                />
-                                                {t('universities.compare')}
-                                            </label>
-                                        </div>
+                                        {majorId != null &&
+                                            u.filtered_major_cutoff_score !=
+                                                null && (
+                                                <div className="ml-auto shrink-0 text-right">
+                                                    <p className="max-w-[12rem] truncate text-xs text-slate-500">
+                                                        {u.filtered_major_name ??
+                                                            majorName}
+                                                    </p>
+                                                    <p className="mt-0.5 font-display text-xl font-bold leading-none tabular-nums text-primary">
+                                                        {formatCutoffScore(
+                                                            u.filtered_major_cutoff_score,
+                                                        )}
+                                                    </p>
+                                                    {u.filtered_major_cutoff_year !=
+                                                        null && (
+                                                        <p className="mt-1 text-[11px] text-slate-400">
+                                                            {t(
+                                                                'universities.filteredMajorCutoffYear',
+                                                                {
+                                                                    year: u.filtered_major_cutoff_year,
+                                                                },
+                                                            )}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            )}
                                     </div>
                                     <div className="mt-3 flex flex-wrap gap-2">
                                         <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
@@ -383,20 +398,31 @@ export function UniversitiesExplorer({
                                             {t('universities.viewCutoff')}
                                         </Link>
                                     </div>
-                                    <div className="mt-4 flex gap-2">
+                                    <div className="mt-4 flex flex-wrap items-center gap-2">
                                         <Link
                                             href={`/universities/${u.id}`}
                                             className="btn-secondary flex-1 text-center sm:flex-none"
                                         >
                                             {t('universities.details')}
                                         </Link>
-                                        <Link
-                                            href={`/chatbot?uni=${encodeURIComponent(u.short_name || u.name)}`}
-                                            className="btn-primary flex-1 sm:flex-none"
-                                        >
-                                            <Bot className="size-4" />
-                                            {t('universities.askAi')}
-                                        </Link>
+                                        <div className="flex flex-1 items-center justify-end gap-2 sm:flex-none">
+                                            <Link
+                                                href={`/chatbot?uni=${encodeURIComponent(u.short_name || u.name)}`}
+                                                className="btn-primary"
+                                            >
+                                                <Bot className="size-4" />
+                                                {t('universities.askAi')}
+                                            </Link>
+                                            <label className="inline-flex cursor-pointer items-center gap-1.5 px-2 py-2.5 text-sm text-slate-600">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={inCompare}
+                                                    onChange={() => toggleCompare(u)}
+                                                    className="rounded text-primary"
+                                                />
+                                                {t('universities.compare')}
+                                            </label>
+                                        </div>
                                     </div>
                                 </article>
                             );

@@ -8,6 +8,7 @@ import { useFavorites } from '@/lib/favorites';
 import { ApiClientError } from '@/lib/api';
 import { removeFavorite } from '@/services/favorites';
 import { AlertBox } from '@/components/ui/PageLayout';
+import { isPreferredUniversity } from '@/lib/university-display-order';
 import { formatTuitionVnd } from '@/lib/utils';
 
 export function FavoritesSection() {
@@ -30,7 +31,13 @@ export function FavoritesSection() {
         }
     }
 
-    const universities = items.filter((i) => i.favorite_type === 'university');
+    const universities = [...items.filter((i) => i.favorite_type === 'university')].sort(
+        (a, b) => {
+            const aPref = isPreferredUniversity(a.university?.short_name) ? 0 : 1;
+            const bPref = isPreferredUniversity(b.university?.short_name) ? 0 : 1;
+            return aPref - bPref;
+        },
+    );
     const programs = items.filter((i) => i.favorite_type === 'program');
     const displayError = actionError ?? error;
 

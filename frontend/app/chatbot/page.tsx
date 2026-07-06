@@ -21,31 +21,16 @@ import { CHATBOT_FRESH_AFTER_LOGIN_KEY, useAuth } from '@/lib/auth';
 import type { ChatHistoryItem, ChatMessage, ChatSessionSummary } from '@/types';
 import { ChatCompareCard } from '@/components/chatbot/ChatCompareCard';
 import { ChatbotAvatar } from '@/components/chatbot/ChatbotAvatar';
+import {
+    CHATBOT_PROMPT_EXAMPLES,
+    ChatbotPromptHelper,
+} from '@/components/chatbot/ChatbotPromptHelper';
 import { ChatMarkdown } from '@/components/chatbot/ChatMarkdown';
 import { cn } from '@/lib/utils';
 import { useLocale } from '@/lib/i18n/locale';
 
 const SESSION_KEY = 'ur_chat_session_id';
 const MESSAGES_KEY = 'ur_chat_messages';
-
-const QUICK_ACTIONS = [
-    {
-        title: 'Gợi ý chọn trường',
-        prompt: 'Em được 24 điểm khối A00 muốn học CNTT ở Hà Nội thì nên chọn trường nào?',
-    },
-    {
-        title: 'Điểm chuẩn',
-        prompt: 'Điểm chuẩn Bách Khoa Hà Nội năm 2024 ngành điện tử là bao nhiêu?',
-    },
-    {
-        title: 'Học phí',
-        prompt: 'Học phí trường Đại học Kinh tế Quốc dân khoảng bao nhiêu?',
-    },
-    {
-        title: 'Nghề nghiệp',
-        prompt: 'Ngành Marketing ra trường làm gì?',
-    },
-];
 
 function historyToMessages(items: ChatHistoryItem[]): ChatMessage[] {
     const out: ChatMessage[] = [];
@@ -147,7 +132,7 @@ function persistMessages(messages: ChatMessage[]) {
 
 function ChatbotInner() {
     const { user, loading: authLoading } = useAuth();
-    const { t } = useLocale();
+    const { t, locale } = useLocale();
     const [sessionId, setSessionId] = useState('');
     const [sessions, setSessions] = useState<ChatSessionSummary[]>([]);
     const [sessionsLoading, setSessionsLoading] = useState(false);
@@ -403,7 +388,28 @@ function ChatbotInner() {
             </aside>
 
             {/* Main chat */}
-            <div className="flex min-w-0 flex-1 flex-col">
+            <div className="relative flex min-w-0 flex-1 flex-col">
+                {/* Con cú gợi ý — mép phải vùng chat (desktop) */}
+                <div className="pointer-events-none absolute right-4 top-28 z-20 hidden md:block lg:right-8 xl:right-12">
+                    <div className="pointer-events-auto">
+                        <ChatbotPromptHelper
+                            disabled={loading}
+                            onPickPrompt={setInput}
+                            placement="rail"
+                        />
+                    </div>
+                </div>
+                {/* Mobile: góc phải phía trên ô nhập */}
+                <div className="pointer-events-none absolute bottom-[5.5rem] right-3 z-20 md:hidden">
+                    <div className="pointer-events-auto">
+                        <ChatbotPromptHelper
+                            disabled={loading}
+                            onPickPrompt={setInput}
+                            placement="mobile"
+                        />
+                    </div>
+                </div>
+
                 <div
                     ref={scrollRef}
                     className="flex-1 overflow-y-auto px-4 py-6 sm:px-8"
@@ -414,26 +420,41 @@ function ChatbotInner() {
                                 <ChatbotAvatar />
                                 <div className="card flex-1 p-4">
                                     <p className="text-sm leading-relaxed text-slate-700">
-                                        Xin chào! Tôi là chatbot UniGuide. Bạn có thể
+                                        Xin chào! Tôi là chatbot UniPath. Bạn có thể
                                         hỏi về trường, ngành, điểm chuẩn và học phí — tôi
                                         sẽ tra cứu và giải thích rõ ràng.
                                     </p>
                                     <div className="mt-4 grid gap-2 sm:grid-cols-2">
-                                        {QUICK_ACTIONS.map((a) => (
-                                            <button
-                                                key={a.title}
-                                                type="button"
-                                                onClick={() => void handleSend(a.prompt)}
-                                                className="rounded-xl border border-slate-200 p-3 text-left transition-colors hover:border-primary/40 hover:bg-neutral"
-                                            >
-                                                <p className="text-sm font-semibold text-primary">
-                                                    {a.title}
-                                                </p>
-                                                <p className="mt-1 line-clamp-2 text-xs text-slate-500">
-                                                    &quot;{a.prompt.slice(0, 50)}…&quot;
-                                                </p>
-                                            </button>
-                                        ))}
+                                        {CHATBOT_PROMPT_EXAMPLES.slice(0, 4).map(
+                                            (a) => {
+                                                const title = t(
+                                                    `chatbot.promptExample.${a.key}` as 'chatbot.promptExample.recommend',
+                                                );
+                                                const prompt =
+                                                    locale === 'en'
+                                                        ? a.promptEn
+                                                        : a.promptVi;
+                                                return (
+                                                    <button
+                                                        key={a.key}
+                                                        type="button"
+                                                        onClick={() =>
+                                                            void handleSend(prompt)
+                                                        }
+                                                        className="rounded-xl border border-slate-200 p-3 text-left transition-colors hover:border-primary/40 hover:bg-neutral"
+                                                    >
+                                                        <p className="text-sm font-semibold text-primary">
+                                                            {title}
+                                                        </p>
+                                                        <p className="mt-1 line-clamp-2 text-xs text-slate-500">
+                                                            &ldquo;
+                                                            {prompt.slice(0, 50)}
+                                                            …&rdquo;
+                                                        </p>
+                                                    </button>
+                                                );
+                                            },
+                                        )}
                                     </div>
                                 </div>
                             </div>

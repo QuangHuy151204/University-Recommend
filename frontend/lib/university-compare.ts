@@ -1,4 +1,9 @@
-import type { CutoffScore, University, UniversityDetail } from '@/types';
+import type {
+    AdmissionMethod,
+    CutoffScore,
+    University,
+    UniversityDetail,
+} from '@/types';
 
 export const COMPARE_MAX = 2;
 export const COMPARE_STORAGE_KEY = 'uniguide_compare_ids';
@@ -157,15 +162,164 @@ export function toggleStoredUniversity(entry: CompareEntry): CompareEntry[] {
     return next;
 }
 
+export interface MajorCutoffSummary {
+    majorName: string;
+    score: number;
+    subjectCombination: string | null;
+}
+
+export interface CompareMethodOption {
+    code: string;
+    label: string;
+}
+
 export interface UniversityCompareStats {
     programCount: number;
     admissionMethodLabels: string[];
     cutoffYears: number[];
     latestYear: number | null;
-    /** Min–max điểm chuẩn theo năm (tùy lọc tổ hợm). */
+    /** Min–max điểm chuẩn theo năm (tùy lọc tổ hợp / PT). */
     cutoffMin: number | null;
     cutoffMax: number | null;
-    cutoffCount: number;
+    /** Số chương trình ngành có điểm sau lọc. */
+    cutoffProgramCount: number;
+    /** Top ngành có điểm thấp nhất (dễ vào hơn) sau lọc. */
+    topMajorCutoffs: MajorCutoffSummary[];
+}
+
+/** Điểm chuẩn THPT / tổ hợp thường ≤ 40; loại điểm ĐGNL (~600–1000) khỏi khoảng min–max. */
+export const COMPARE_THPT_SCORE_MAX = 40;
+
+const COMPARE_TOP_MAJORS = 5;
+
+export interface CompareCutoffFilters {
+    year: number | null;
+    subjectCombination: string | null;
+    methodCode: string | null;
+}
+
+function resolveCatalogEntry(
+    raw: string,
+    catalog?: AdmissionMethod[],
+): AdmissionMethod | undefined {
+    if (!raw.trim() || !catalog?.length) return undefined;
+    const lower = raw.trim().toLowerCase();
+    return catalog.find(
+        (am) =>
+            lower === am.method_code.toLowerCase() ||
+            lower === am.method_name.toLowerCase() ||
+            lower.includes(am.method_code.toLowerCase()) ||
+            lower.includes(am.method_name.toLowerCase()),
+    );
+}
+
+/** PT có trong cutoff_scores của các trường đang so sánh (theo năm). */
+export function collectCompareMethodOptions(
+    universities: UniversityDetail[],
+    year: number | null,
+    catalog?: AdmissionMethod[],
+): CompareMethodOption[] {
+    const seen = new Map<string, string>();
+    for (const uni of universities) {
+        for (const p of uni.universityMajors ?? []) {
+            for (const c of p.cutoffScores ?? []) {
+                if (year != null && c.year !== year) continue;
+                const raw = (c.admission_method ?? '').trim();
+                if (!raw) continue;
+                const match = resolveCatalogEntry(raw, catalog);
+                const code = match?.method_code ?? raw;
+                const label = match?.method_name ?? raw;
+                if (!seen.has(code)) seen.set(code, label);
+            }
+        }
+    }
+    return [...seen.entries()]
+        .map(([code, label]) => ({ code, label }))
+        .sort((a, b) => a.label.localeCompare(b.label, 'vi'));
+}
+
+function cutoffMatchesMethod(
+    cutoff: CutoffScore,
+    methodCode: string | null,
+    catalog?: AdmissionMethod[],
+): boolean {
+    if (!methodCode) return true;
+    const raw = (cutoff.admission_method ?? '').trim();
+    if (!raw) return methodCode.toUpperCase() === 'THPT';
+
+    const match = resolveCatalogEntry(raw, catalog);
+    const catalogEntry = catalog?.find(
+        (am) => am.method_code.toUpperCase() === methodCode.toUpperCase(),
+    );
+    const targets = new Set(
+        [methodCode, catalogEntry?.method_name, match?.method_code, match?.method_name]
+            .filter(Boolean)
+            .map((s) => String(s).toLowerCase()),
+    );
+    const rawLower = raw.toLowerCase();
+    return [...targets].some(
+        (t) => rawLower === t || rawLower.includes(t),
+    );
+}
+
+function isComparableScore(score: number, methodCode: string | null): boolean {
+    if (!Number.isFinite(score) || score <= 0) return false;
+    if (methodCode) {
+        const upper = methodCode.toUpperCase();
+        if (upper.includes('DGNL')) return score > COMPARE_THPT_SCORE_MAX;
+        return score <= COMPARE_THPT_SCORE_MAX;
+    }
+    return score <= COMPARE_THPT_SCORE_MAX;
+}
+
+function filterCutoffsForCompare(
+    uni: UniversityDetail,
+    filters: CompareCutoffFilters,
+    catalog?: AdmissionMethod[],
+): Array<CutoffScore & { majorName: string; programId: number }> {
+    const rows: Array<CutoffScore & { majorName: string; programId: number }> =
+        [];
+    for (const p of uni.universityMajors ?? []) {
+        const majorName = p.major?.name ?? '—';
+        for (const c of p.cutoffScores ?? []) {
+            if (filters.year != null && c.year !== filters.year) continue;
+            if (
+                filters.subjectCombination &&
+                (c.subject_combination ?? '').trim() !==
+                    filters.subjectCombination
+            ) {
+                continue;
+            }
+            if (!cutoffMatchesMethod(c, filters.methodCode, catalog)) continue;
+            if (!isComparableScore(c.score, filters.methodCode)) continue;
+            rows.push({ ...c, majorName, programId: p.id });
+        }
+    }
+    return rows;
+}
+
+/** Một điểm đại diện mỗi chương trình ngành — lấy điểm thấp nhất trong bộ lọc. */
+export function computeTopMajorCutoffs(
+    uni: UniversityDetail,
+    filters: CompareCutoffFilters,
+    catalog?: AdmissionMethod[],
+    limit = COMPARE_TOP_MAJORS,
+): MajorCutoffSummary[] {
+    const byProgram = new Map<number, MajorCutoffSummary>();
+    for (const row of filterCutoffsForCompare(uni, filters, catalog)) {
+        const combo = (row.subject_combination ?? '').trim() || null;
+        const existing = byProgram.get(row.programId);
+        if (!existing || row.score < existing.score) {
+            byProgram.set(row.programId, {
+                majorName: row.majorName,
+                score: row.score,
+                subjectCombination: combo,
+            });
+        }
+    }
+    return [...byProgram.values()]
+        .sort((a, b) => a.score - b.score || a.majorName.localeCompare(b.majorName, 'vi'))
+        .slice(0, limit);
 }
 
 function parseAdmissionMethodsText(raw: string | null | undefined): string[] {
@@ -189,9 +343,45 @@ function parseAdmissionMethodsText(raw: string | null | undefined): string[] {
         .filter(Boolean);
 }
 
+function resolveAdmissionMethodLabel(
+    raw: string,
+    catalog?: AdmissionMethod[],
+): string {
+    const label = raw.trim();
+    if (!label || !catalog?.length) return label;
+
+    const lower = label.toLowerCase();
+    const match = catalog.find(
+        (am) =>
+            lower === am.method_code.toLowerCase() ||
+            lower === am.method_name.toLowerCase() ||
+            lower.includes(am.method_code.toLowerCase()) ||
+            lower.includes(am.method_name.toLowerCase()),
+    );
+    return match?.method_name ?? label;
+}
+
+/**
+ * Thu thập PT xét tuyển từ cutoff_scores (nguồn đúng).
+ * Không dùng university_majors.admission_methods — cột đó lưu ghi chú Excel.
+ */
 export function collectAdmissionMethodLabels(
     uni: UniversityDetail,
+    catalog?: AdmissionMethod[],
 ): string[] {
+    const raw = new Set<string>();
+    for (const p of uni.universityMajors ?? []) {
+        for (const c of p.cutoffScores ?? []) {
+            const method = (c.admission_method ?? '').trim();
+            if (method) raw.add(method);
+        }
+    }
+    const labels = [...raw].map((m) => resolveAdmissionMethodLabel(m, catalog));
+    return [...new Set(labels)].sort((a, b) => a.localeCompare(b, 'vi'));
+}
+
+/** @deprecated Chỉ dùng nội bộ khi cần đọc ghi chú ngành–trường, không phải PT xét tuyển. */
+export function collectAdmissionNotesLabels(uni: UniversityDetail): string[] {
     const set = new Set<string>();
     for (const p of uni.universityMajors ?? []) {
         for (const label of parseAdmissionMethodsText(p.admission_methods)) {
@@ -215,38 +405,38 @@ export function computeCompareStats(
     uni: UniversityDetail,
     year: number | null,
     subjectCombination: string | null,
+    catalog?: AdmissionMethod[],
+    methodCode: string | null = null,
 ): UniversityCompareStats {
     const programs = uni.universityMajors ?? [];
-    const allCutoffs: CutoffScore[] = programs.flatMap(
-        (p) => p.cutoffScores ?? [],
-    );
     const cutoffYears = getCutoffYears(uni);
     const targetYear =
         year && cutoffYears.includes(year) ? year : (cutoffYears[0] ?? null);
 
-    let filtered = allCutoffs;
-    if (targetYear != null) {
-        filtered = filtered.filter((c) => c.year === targetYear);
-    }
-    if (subjectCombination) {
-        filtered = filtered.filter(
-            (c) =>
-                (c.subject_combination ?? '').trim() === subjectCombination,
-        );
-    }
+    const filters: CompareCutoffFilters = {
+        year: targetYear,
+        subjectCombination,
+        methodCode,
+    };
 
-    const scores = filtered
-        .map((c) => c.score)
-        .filter((s) => typeof s === 'number' && s > 0);
+    const byProgram = new Map<number, number>();
+    for (const row of filterCutoffsForCompare(uni, filters, catalog)) {
+        const prev = byProgram.get(row.programId);
+        if (prev == null || row.score < prev) {
+            byProgram.set(row.programId, row.score);
+        }
+    }
+    const scoreValues = [...byProgram.values()];
 
     return {
         programCount: programs.length,
-        admissionMethodLabels: collectAdmissionMethodLabels(uni),
+        admissionMethodLabels: collectAdmissionMethodLabels(uni, catalog),
         cutoffYears,
         latestYear: targetYear,
-        cutoffMin: scores.length ? Math.min(...scores) : null,
-        cutoffMax: scores.length ? Math.max(...scores) : null,
-        cutoffCount: filtered.length,
+        cutoffMin: scoreValues.length ? Math.min(...scoreValues) : null,
+        cutoffMax: scoreValues.length ? Math.max(...scoreValues) : null,
+        cutoffProgramCount: byProgram.size,
+        topMajorCutoffs: computeTopMajorCutoffs(uni, filters, catalog),
     };
 }
 

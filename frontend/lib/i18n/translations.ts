@@ -30,7 +30,7 @@ const vi = {
     'footer.featureCutoff': 'Tra điểm chuẩn theo trường',
     'footer.featureChatbot': 'Chatbot',
     'footer.featureCompare': 'So sánh trường',
-    'footer.copyright': '© {year} UniGuide AI. Gợi ý đại học minh bạch cho Gen Z.',
+    'footer.copyright': '© {year} UniPath. Gợi ý đại học minh bạch cho Gen Z.',
 
     'home.heroTitle': 'Tìm trường đại học phù hợp cho tương lai của bạn.',
     'home.heroSubtitle':
@@ -117,18 +117,19 @@ const vi = {
     'universities.compareNow': 'So sánh ngay',
     'universities.hanoi': 'Hà Nội',
     'universities.tuitionPerYear': '{value} triệu/năm',
+    'universities.filteredMajorCutoffYear': 'Chuẩn {year}',
 
     'landing.badge': 'Phạm vi Hà Nội · Dữ liệu 2023–2025',
-    'landing.heroTitle': 'Tư vấn tuyển sinh đại học',
-    'landing.heroHighlight': 'minh bạch',
+    'landing.heroTitle': 'Tìm trường đại học phù hợp',
+    'landing.heroHighlight': '',
     'landing.heroSubtitle':
-        'UniGuide AI giúp học sinh THPT tra cứu trường–ngành, điểm chuẩn và nhận gợi ý phù hợp năng lực, sở thích và ngân sách học phí.',
+        'UniPath giúp học sinh THPT tra cứu trường–ngành, điểm chuẩn và nhận gợi ý phù hợp năng lực, sở thích và ngân sách học phí.',
     'landing.ctaRegister': 'Đăng ký miễn phí',
     'landing.ctaLogin': 'Đăng nhập',
     'landing.trustCutoff': 'Điểm chuẩn tra cứu được',
     'landing.trustSchools': '~100+ trường Hà Nội',
     'landing.trustChatbot': 'Chatbot',
-    'landing.aboutEyebrow': 'UniGuide AI là gì?',
+    'landing.aboutEyebrow': 'UniPath là gì?',
     'landing.aboutTitle': 'Người bạn đồng hành trên hành trình chọn trường',
     'landing.aboutP1':
         'Thay vì lục tìm từng bảng điểm rời rạc, bạn có một nền tảng tập trung: tra cứu trường đại học Hà Nội, so sánh điểm chuẩn theo năm và phương thức xét tuyển, nhận gợi ý ngành theo điểm số và sở thích, cùng chatbot trả lời bằng tiếng Việt khi bạn cần giải thích thêm.',
@@ -323,6 +324,24 @@ const vi = {
     'profile.goRecommend': 'Gợi ý trường – ngành',
 
     'chatbot.inputPlaceholder': 'Nhập câu hỏi của bạn tại đây...',
+    'chatbot.needHelp': 'Cần gợi ý?',
+    'chatbot.promptGuideTitle': 'Viết câu hỏi sao cho chatbot trả lời tốt',
+    'chatbot.promptGuideSubtitle':
+        'Chatbot tra cứu trường Hà Nội, ngành, điểm chuẩn và học phí — không tự bịa số liệu.',
+    'chatbot.promptTip1':
+        'Nêu điểm + khối nếu muốn gợi ý trường (vd: «24 điểm khối A00»).',
+    'chatbot.promptTip2':
+        'Ghi tên hoặc viết tắt trường (USTH, HUST, NEU, Bách Khoa…).',
+    'chatbot.promptTip3':
+        'Hỏi điểm chuẩn thì thêm năm và ngành (vd: «CNTT 2025»).',
+    'chatbot.promptTip4': 'Một câu một chủ đề — hỏi tiếp nếu cần làm rõ thêm.',
+    'chatbot.promptExamplesTitle': 'Thử mẫu câu (bấm để điền vào ô chat)',
+    'chatbot.closeGuide': 'Đóng gợi ý',
+    'chatbot.promptExample.recommend': 'Gợi ý chọn trường',
+    'chatbot.promptExample.cutoff': 'Điểm chuẩn',
+    'chatbot.promptExample.tuition': 'Học phí',
+    'chatbot.promptExample.career': 'Nghề nghiệp',
+    'chatbot.promptExample.compare': 'So sánh trường',
 } as const;
 
 const en: Record<keyof typeof vi, string> = {
@@ -353,7 +372,7 @@ const en: Record<keyof typeof vi, string> = {
     'footer.featureCutoff': 'Cutoff scores by school',
     'footer.featureChatbot': 'Chatbot',
     'footer.featureCompare': 'Compare universities',
-    'footer.copyright': '© {year} UniGuide AI. Transparent university guidance for Gen Z.',
+    'footer.copyright': '© {year} UniPath. Transparent university guidance for Gen Z.',
 
     'home.heroTitle': 'Find the right university for your future.',
     'home.heroSubtitle':
@@ -440,18 +459,19 @@ const en: Record<keyof typeof vi, string> = {
     'universities.compareNow': 'Compare now',
     'universities.hanoi': 'Hanoi',
     'universities.tuitionPerYear': '{value}M/year',
+    'universities.filteredMajorCutoffYear': 'Cutoff {year}',
 
     'landing.badge': 'Hanoi scope · Data 2023–2025',
-    'landing.heroTitle': 'University admission guidance,',
-    'landing.heroHighlight': 'transparent',
+    'landing.heroTitle': 'Find the right university for you',
+    'landing.heroHighlight': '',
     'landing.heroSubtitle':
-        'UniGuide AI helps high-school students explore universities and majors, browse cutoff scores, and get recommendations matched to ability, interests, and tuition budget.',
+        'UniPath helps high-school students explore universities and majors, browse cutoff scores, and get recommendations matched to ability, interests, and tuition budget.',
     'landing.ctaRegister': 'Sign up for free',
     'landing.ctaLogin': 'Log in',
     'landing.trustCutoff': 'Verified cutoff data',
     'landing.trustSchools': '100+ Hanoi universities',
     'landing.trustChatbot': 'Chatbot',
-    'landing.aboutEyebrow': 'What is UniGuide AI?',
+    'landing.aboutEyebrow': 'What is UniPath?',
     'landing.aboutTitle': 'Your companion on the path to choosing a university',
     'landing.aboutP1':
         'Instead of scattered score tables, you get one platform: search Hanoi universities, compare cutoffs by year and admission method, get major suggestions from your score and interests, plus a chatbot when you need explanations.',
@@ -644,6 +664,24 @@ const en: Record<keyof typeof vi, string> = {
     'profile.goRecommend': 'University & major suggestions',
 
     'chatbot.inputPlaceholder': 'Type your question here...',
+    'chatbot.needHelp': 'Need help?',
+    'chatbot.promptGuideTitle': 'How to ask so the chatbot answers well',
+    'chatbot.promptGuideSubtitle':
+        'The chatbot looks up Hanoi schools, majors, cutoffs, and tuition — it does not invent scores.',
+    'chatbot.promptTip1':
+        'Include your score and subject block for recommendations (e.g. "24 points, block A00").',
+    'chatbot.promptTip2':
+        'Use the school name or short code (USTH, HUST, NEU…).',
+    'chatbot.promptTip3':
+        'For cutoffs, add year and major (e.g. "IT 2025").',
+    'chatbot.promptTip4': 'One topic per message — ask a follow-up if you need more detail.',
+    'chatbot.promptExamplesTitle': 'Try a sample (tap to fill the chat box)',
+    'chatbot.closeGuide': 'Close guide',
+    'chatbot.promptExample.recommend': 'School suggestions',
+    'chatbot.promptExample.cutoff': 'Cutoff scores',
+    'chatbot.promptExample.tuition': 'Tuition',
+    'chatbot.promptExample.career': 'Careers',
+    'chatbot.promptExample.compare': 'Compare schools',
 };
 
 export type TranslationKey = keyof typeof vi;

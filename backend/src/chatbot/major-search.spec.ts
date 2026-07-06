@@ -31,6 +31,35 @@ describe('major-search', () => {
     ).toBe('Hàng không');
   });
 
+  it('resolveMajorSearchTerm does not map ai inside đại học', () => {
+    expect(
+      resolveMajorSearchTerm('điểm chuẩn đại học USTH ngành Dược'),
+    ).toBe('Dược');
+  });
+
+  it('resolveMajorSearchTerm still maps standalone AI alias', () => {
+    expect(resolveMajorSearchTerm('nếu em muốn học AI ở USTH thì sao')).toBe(
+      'Trí tuệ nhân tạo',
+    );
+    expect(resolveMajorSearchTerm('điểm chuẩn ngành AI của USTH')).toBe(
+      'Trí tuệ nhân tạo',
+    );
+  });
+
+  it('resolveMajorSearchTerm preserves diacritics for CNTT at USTH', () => {
+    expect(
+      resolveMajorSearchTerm(
+        'Tôi muốn xem điểm chuẩn ngành Công nghệ thông tin của trường USTH',
+      ),
+    ).toBe('Công nghệ thông tin');
+  });
+
+  it('resolveMajorSearchTerm maps unaccented CNTT fragment', () => {
+    expect(
+      resolveMajorSearchTerm('diem chuan nganh cong nghe thong tin truong USTH'),
+    ).toBe('Công nghệ thông tin');
+  });
+
   it('pickMajorInterestPhrase keeps full entity major phrase', () => {
     expect(
       pickMajorInterestPhrase('25 điểm muốn học ngành gì', 'Sư phạm Toán'),

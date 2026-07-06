@@ -57,7 +57,7 @@ export function Navbar({ variant = 'app' }: { variant?: NavbarVariant }) {
                         isLanding ? 'text-white' : 'text-primary',
                     )}
                 >
-                    UniGuide AI
+                    UniPath
                 </Link>
 
                 {variant === 'app' && (

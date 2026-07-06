@@ -169,6 +169,145 @@ export async function validateEntitiesAgainstDb(
   return { ...sanitized, university_name, major };
 }
 
+/**
+ * Out-of-scope city/location names that MUST NOT appear in Ollama rewrites.
+ */
+const REWRITE_BANNED_LOCATIONS = [
+  'TP.HCM', 'TP HCM', 'TPHCM',
+  'Sài Gòn', 'Saigon', 'Sai Gon',
+  'Hồ Chí Minh', 'Ho Chi Minh',
+  'Đà Nẵng', 'Da Nang',
+  'Cần Thơ', 'Can Tho',
+  'Huế',
+  'Hải Phòng', 'Hai Phong',
+];
+
+const REWRITE_BANNED_FOREIGN_UNIS = [
+  'Harvard', 'MIT', 'Stanford', 'Oxford',
+  'Cambridge', 'Yale', 'Princeton', 'Columbia',
+  'Berkeley', 'Caltech',
+];
+
+/**
+ * Kiểm tra bản rewrite Ollama có giữ số liệu/tên quan trọng từ câu trả lời DB.
+ * Trả false → caller nên fallback rule-based để tránh hallucination.
+ */
+export function isOllamaRewriteFaithful(
+  ruleAnswer: string,
+  llmAnswer: string,
+): boolean {
+  if (!llmAnswer?.trim()) return false;
+  const rule = ruleAnswer.trim();
+  const llm = llmAnswer.trim();
+  if (!rule) return true;
+
+  // ── Refuse rewrite if rule answer is a refusal/scope/no-data message ──
+  if (isRefusalOrScopeMessage(rule)) {
+    if (!containsRefusalSignal(llm)) return false;
+  }
+
+  // ── Reject if rewrite adds banned locations not in the rule answer ──
+  for (const loc of REWRITE_BANNED_LOCATIONS) {
+    if (
+      llm.toLowerCase().includes(loc.toLowerCase()) &&
+      !rule.toLowerCase().includes(loc.toLowerCase())
+    ) {
+      return false;
+    }
+  }
+
+  // ── Reject if rewrite adds foreign university names not in the rule answer ──
+  for (const uni of REWRITE_BANNED_FOREIGN_UNIS) {
+    if (
+      llm.toLowerCase().includes(uni.toLowerCase()) &&
+      !rule.toLowerCase().includes(uni.toLowerCase())
+    ) {
+      return false;
+    }
+  }
+
+  // ── Check significant numbers are preserved ──
+  const significantNumbers = [
+    ...new Set(
+      (rule.match(/\d+(?:[.,]\d+)?/g) ?? []).filter((n) => {
+        const v = parseFloat(n.replace(',', '.'));
+        return Number.isFinite(v) && (v >= 10 || n.includes('.') || n.includes(','));
+      }),
+    ),
+  ];
+  for (const n of significantNumbers) {
+    const alt = n.includes(',') ? n.replace(',', '.') : n;
+    if (!llm.includes(n) && !llm.includes(alt)) {
+      return false;
+    }
+  }
+
+  // ── Check university acronyms are preserved ──
+  const uniTokens = rule.match(/\b[A-Z]{2,10}\b/g) ?? [];
+  for (const token of [...new Set(uniTokens)]) {
+    if (token.length >= 3 && rule.includes(token) && !llm.includes(token)) {
+      return false;
+    }
+  }
+
+  // ── Check "no data" messages are preserved ──
+  if (
+    (rule.includes('Mình chưa có') || rule.includes('chưa có điểm chuẩn')) &&
+    !llm.includes('chưa có')
+  ) {
+    return false;
+  }
+
+  // ── Check bullet point lists are not truncated ──
+  const ruleBullets = (rule.match(/^[•\d][^\n]+/gm) ?? []).length;
+  const llmBullets = (llm.match(/^[•\d][^\n]+/gm) ?? []).length;
+  if (ruleBullets >= 3 && llmBullets < Math.ceil(ruleBullets * 0.6)) {
+    return false;
+  }
+
+  // ── Reject if rewrite adds score numbers not in rule answer ──
+  const llmNumbers = new Set(
+    (llm.match(/\d+(?:[.,]\d+)?/g) ?? [])
+      .map((n) => parseFloat(n.replace(',', '.')))
+      .filter((v) => Number.isFinite(v) && v >= 10 && v <= 30),
+  );
+  const ruleNumbers = new Set(
+    (rule.match(/\d+(?:[.,]\d+)?/g) ?? [])
+      .map((n) => parseFloat(n.replace(',', '.')))
+      .filter((v) => Number.isFinite(v) && v >= 10 && v <= 30),
+  );
+  for (const n of llmNumbers) {
+    if (!ruleNumbers.has(n)) return false;
+  }
+
+  return true;
+}
+
+function isRefusalOrScopeMessage(answer: string): boolean {
+  const lower = answer.toLowerCase();
+  return (
+    lower.includes('không thể tự nghĩ') ||
+    lower.includes('không thể bịa') ||
+    lower.includes('chưa có dữ liệu') ||
+    lower.includes('ngoài khu vực hà nội') ||
+    lower.includes('không nằm trong dữ liệu') ||
+    lower.includes('chủ yếu hỗ trợ') ||
+    lower.includes('hiện tại hệ thống') ||
+    lower.includes('chưa hỗ trợ')
+  );
+}
+
+function containsRefusalSignal(answer: string): boolean {
+  const lower = answer.toLowerCase();
+  return (
+    lower.includes('không thể') ||
+    lower.includes('chưa có') ||
+    lower.includes('không có dữ liệu') ||
+    lower.includes('hà nội') ||
+    lower.includes('không hỗ trợ')
+  );
+}
+
 /** Câu trả lời "chưa có điểm chuẩn" — không rewrite để tránh LLM bịa số. */
 export function isCutoffMissingAnswer(answer: string): boolean {
   if (!answer?.trim()) return false;

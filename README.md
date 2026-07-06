@@ -88,6 +88,8 @@ ollama pull qwen2.5:3b
 | `npm run migration:show` | Xem trạng thái migration |
 | `npm run import:excel` | Import Excel → DB (truncate master) |
 | `npm run import:excel:merge` | Import merge (không truncate) |
+| `npm run enrich:career-orientation` | Bổ sung `career_orientation` (CNTT, Y, Kinh tế) vào Excel |
+| `npm run enrich:career-orientation:merge` | Bổ sung + `import:excel:merge` |
 | `npm run import:tuition` | Cập nhật học phí từ file batch |
 
 ### Frontend (`frontend/`)
@@ -107,9 +109,11 @@ Dữ liệu master (trường, ngành, điểm chuẩn, …) được nhập và
 cd backend
 npm run import:excel        # nạp lại toàn bộ master
 npm run import:excel:merge  # cập nhật merge, không truncate
+npm run enrich:career-orientation        # patch career_orientation trong Excel
+npm run enrich:career-orientation:merge  # patch Excel + merge vào DB
 ```
 
-File master: `mau_du_lieu_truong_dai_hoc_5_sheets_bo_sung_phuong.xlsx` (thư mục gốc repo). Có thể override bằng `IMPORT_EXCEL_PATH` trong `backend/.env`.
+File master: `mau_du_lieu_truong_dai_hoc_5_sheets_bo_sung_phuong.xlsx` (thư mục gốc repo). Logic import: `backend/src/import-excel.ts` (CLI tương đương: `backend/scripts/import-excel.ts`). Có thể override bằng `IMPORT_EXCEL_PATH` trong `backend/.env`.
 
 ## Ghi chú nhanh
 

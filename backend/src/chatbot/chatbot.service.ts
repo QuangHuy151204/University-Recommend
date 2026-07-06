@@ -12,6 +12,10 @@ import { OllamaService } from '../ollama/ollama.service';
 import { RecommendationsService } from '../recommendations/recommendations.service';
 import { AdmissionMethodsService } from '../admission-methods/admission-methods.service';
 import {
+  applyUniversityDisplayOrder,
+  pinPreferredUniversityFirst,
+} from '../common/university-display-order';
+import {
   CHAT_INTENTS,
   type ChatEntities,
   type ChatIntent,
@@ -31,15 +35,19 @@ import {
   selectPromptExamples,
   shouldSkipOllamaRewrite,
 } from './intent-corpus';
+import { isOllamaRewriteFaithful } from './chatbot-guardrails';
 import {
   asksUniversityOrPrograms,
   asksUniversityPrograms,
+  asksWhichSchoolsTeachMajor,
   classifyIntentRuleOnly,
   correctRuleIntent,
   extractExplicitUniversityFromMessage,
   extractParentheticalAcronym,
   extractScoreFromMessage,
   extractYearFromMessage,
+  looksLikeOutOfScopeLocationQuery,
+  looksLikeScopeQuestion,
   looksLikeScoreRecommendation,
   resolveFollowUpIntent,
   looksLikeCompareTuitionFollowUp,
@@ -62,6 +70,7 @@ import {
   updateSessionContext,
   type ChatSessionContext,
 } from './chat-session-context';
+import { runPreClassificationGuards } from './scope-guards';
 import { relationStub } from '../common/typeorm-relations';
 import { parseFloatFromUnknown, parseIntFromUnknown } from '../common/scalar';
 import { User } from '../users/user.entity';
@@ -201,6 +210,8 @@ export class ChatbotService {
   ): Promise<{
     answer: string;
     engine: 'ollama' | 'rule';
+    intent: ChatIntent;
+    entities: ChatEntities;
     compare_university_ids: number[] | null;
   }> {
     const session = await this.resolveChatSession(userId, sessionId);
@@ -244,11 +255,16 @@ export class ChatbotService {
     if (this.ollama.isEnabled() && !skipRewrite) {
       const llm = await this.ollama.generate({
         prompt: this.buildOllamaPrompt(message, ruleAnswer, context),
+        timeoutMs: this.ollama.getRewriteTimeoutMs(),
         options: { temperature: 0, num_predict: 1024 },
       });
-      if (llm) {
+      if (llm && isOllamaRewriteFaithful(ruleAnswer, llm)) {
         finalAnswer = llm;
         engine = 'ollama';
+      } else if (llm) {
+        this.logger.warn(
+          'Ollama rewrite dropped DB facts — fallback rule-based answer.',
+        );
       } else {
         this.logger.debug('Ollama unavailable → trả về phản hồi rule-based.');
       }
@@ -284,6 +300,8 @@ export class ChatbotService {
     return {
       answer: finalAnswer,
       engine,
+      intent,
+      entities,
       compare_university_ids: compareUniversityIds,
     };
   }
@@ -472,6 +490,20 @@ export class ChatbotService {
     comparedUniversities: string[] | null;
     compareUniversityIds: number[] | null;
   }> {
+    const preGuard = runPreClassificationGuards(msg);
+    if (preGuard) {
+      this.logger.debug(
+        `Pre-classification guard fired: ${preGuard.guardType}`,
+      );
+      return {
+        answer: preGuard.answer,
+        intent: 'unknown',
+        entities: EMPTY_ENTITIES,
+        comparedUniversities: null,
+        compareUniversityIds: null,
+      };
+    }
+
     const {
       intent,
       entities: rawEntities,
@@ -531,7 +563,12 @@ export class ChatbotService {
         break;
       case 'unknown':
       default:
-        if (looksLikeScoreRecommendation(msg)) {
+        if (
+          looksLikeOutOfScopeLocationQuery(msg) ||
+          looksLikeScopeQuestion(msg)
+        ) {
+          answer = `${CHAT_SCOPE_HANOI} Hiện tại mình chưa có dữ liệu trường/ngành ngoài khu vực Hà Nội. Bạn có thể hỏi về các trường đại học ở Hà Nội nhé!`;
+        } else if (looksLikeScoreRecommendation(msg)) {
           answer = await this.handleScoreQuery(entities, msg);
         } else {
           answer = this.getDefaultAnswer();
@@ -909,6 +946,13 @@ export class ChatbotService {
     const mentioned = await this.findUniversityByEntities(entities, msg);
 
     if (!mentioned) {
+      const mentionedName =
+        entities.university_name ||
+        extractExplicitUniversityFromMessage(msg) ||
+        this.extractUnknownUniversityNameFromCutoffQuery(msg);
+      if (mentionedName) {
+        return `Trường "${mentionedName}" không nằm trong dữ liệu của mình. ${CHAT_SCOPE_HANOI}\n\nBạn thử hỏi trường khác ở Hà Nội, ví dụ: "Điểm chuẩn Bách Khoa CNTT 2024" hoặc "Điểm chuẩn USTH 2025".`;
+      }
       return `Để tra điểm chuẩn, bạn thử hỏi cụ thể, ví dụ:\n• "Điểm chuẩn Bách Khoa Hà Nội năm 2024"\n• "Điểm chuẩn ngành CNTT trường FPT"\n\nHoặc vào trang chi tiết trường để lọc theo năm, ngành và phương thức xét tuyển.`;
     }
 
@@ -944,13 +988,50 @@ export class ChatbotService {
     }
     const cutoffs = await qb.orderBy('cs.year', 'DESC').take(8).getMany();
 
+    if (cutoffs.length === 0 && entities.year) {
+      const qbAnyYear = this.cutoffRepo
+        .createQueryBuilder('cs')
+        .innerJoin('cs.universityMajor', 'um')
+        .innerJoin('um.university', 'u')
+        .innerJoin('um.major', 'm')
+        .where('u.id = :id', { id: mentioned.id });
+      if (majorFilter) {
+        qbAnyYear.andWhere(majorTagSearchWhere('m'), {
+          mq: `%${majorFilter}%`,
+        });
+      }
+      if (entities.method_code) {
+        const methodLabel = await this.admissionMethods.resolveLabel(
+          entities.method_code,
+        );
+        if (methodLabel) {
+          qbAnyYear.andWhere('cs.admission_method ILIKE :methodLabel', {
+            methodLabel: `%${methodLabel}%`,
+          });
+        }
+      }
+      const fallbackCutoffs = await qbAnyYear
+        .orderBy('cs.year', 'DESC')
+        .take(8)
+        .getMany();
+      if (fallbackCutoffs.length > 0) {
+        const lines = fallbackCutoffs
+          .map(
+            (c) =>
+              `• Năm ${c.year} — tổ hợp ${c.subject_combination || 'chưa rõ'}: ${c.score} điểm (${c.admission_method || 'THPT Quốc gia'})`,
+          )
+          .join('\n');
+        return `Không có điểm chuẩn năm ${entities.year} cho ${mentioned.name}${majorFilter ? ` — ngành ${majorFilter}` : ''} trong dữ liệu hiện tại. Các năm có sẵn:\n${lines}\n\n${CHAT_DISCLAIMER_CUTOFF}`;
+      }
+    }
+
     if (cutoffs.length === 0) {
       const methodLabel = entities.method_code
         ? await this.admissionMethods.resolveLabel(entities.method_code)
         : null;
       const filter = [
         entities.year ? `năm ${entities.year}` : null,
-        entities.major ? `ngành ${entities.major}` : null,
+        majorFilter ? `ngành ${majorFilter}` : null,
         methodLabel ? `PT ${methodLabel}` : null,
       ]
         .filter(Boolean)
@@ -1061,7 +1142,7 @@ export class ChatbotService {
     entities: ChatEntities,
     msg: string,
   ): Promise<string> {
-    if (asksUniversityOrPrograms(msg)) {
+    if (asksUniversityOrPrograms(msg) && !asksWhichSchoolsTeachMajor(msg)) {
       return this.handleUniversityQuery(entities, msg);
     }
 
@@ -1088,7 +1169,8 @@ export class ChatbotService {
         if (entities.location) {
           qb.andWhere('u.location = :loc', { loc: entities.location });
         }
-        const links = await qb.orderBy('u.name', 'ASC').take(12).getMany();
+        applyUniversityDisplayOrder(qb, 'u');
+        const links = await qb.take(12).getMany();
 
         if (links.length > 0) {
           const list = links
@@ -1253,7 +1335,7 @@ export class ChatbotService {
         .distinct(true);
     }
 
-    const universities = await qb.getMany();
+    const universities = pinPreferredUniversityFirst(await qb.getMany());
     if (universities.length === 0) {
       const filter = [
         entities.location ? `khu vực ${entities.location}` : null,
@@ -1287,9 +1369,11 @@ export class ChatbotService {
       return `${CHAT_SCOPE_HANOI} Bạn muốn xem danh sách trường, tra ngành hay điểm chuẩn?`;
     }
 
-    const unis = await this.univRepo.find({
-      where: { location: entities.location },
-    });
+    const unis = pinPreferredUniversityFirst(
+      await this.univRepo.find({
+        where: { location: entities.location },
+      }),
+    );
     if (unis.length === 0) {
       return `Mình chưa có trường ở ${entities.location} trong dữ liệu — ${CHAT_SCOPE_HANOI}`;
     }
@@ -1511,6 +1595,9 @@ export class ChatbotService {
     entities: ChatEntities,
     msg: string,
   ): Promise<string> {
+    if (looksLikeOutOfScopeLocationQuery(msg)) {
+      return `${CHAT_SCOPE_HANOI} Hiện tại mình chưa có dữ liệu trường/ngành ngoài khu vực Hà Nội. Bạn có thể hỏi gợi ý trường ở Hà Nội nhé!`;
+    }
     const score = entities.score;
     if (score === null) {
       return 'Bạn cho mình biết điểm dự kiến (thang 30) để mình gợi ý trường và ngành phù hợp hơn nhé. Ví dụ: "Em được 24 điểm khối A00 muốn học CNTT".';
@@ -2167,6 +2254,29 @@ export class ChatbotService {
     }
 
     return turns.reverse().slice(0, 50);
+  }
+
+  /**
+   * Fallback: extract a likely university name from a cutoff query when
+   * normal resolution fails (e.g. "điểm chuẩn Harvard 2024").
+   */
+  private extractUnknownUniversityNameFromCutoffQuery(
+    msg: string,
+  ): string | null {
+    const patterns = [
+      /(?:diem chuan|điểm chuẩn)\s+(?:truong|trường)?\s*([A-Za-zÀ-ỹ\s]{3,30}?)(?:\s+(?:nam|năm|ngành|nganh|\d{4})|$)/iu,
+      /(?:truong|trường)\s+([A-Za-zÀ-ỹ\s]{3,30}?)(?:\s+(?:nam|năm|ngành|nganh|diem|điểm|\d{4})|$)/iu,
+    ];
+    for (const re of patterns) {
+      const m = msg.match(re);
+      if (m) {
+        const name = m[1].trim();
+        if (name.length >= 3 && !/^\d+$/.test(name)) {
+          return name;
+        }
+      }
+    }
+    return null;
   }
 
   private contains(text: string, keywords: string[]): boolean {

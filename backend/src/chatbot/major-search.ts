@@ -21,10 +21,16 @@ export const MAJOR_SEARCH_ALIASES: Record<string, string> = {
   'hang khong': 'Hàng không',
   'hang khong vu tru': 'Hàng không',
   'y da khoa': 'Y đa khoa',
+  'y khoa': 'Y đa khoa',
+  y: 'Y đa khoa',
   'dien tu': 'Điện tử',
   'kien truc': 'Kiến trúc',
   'su pham toan': 'Sư phạm Toán học',
   'sư phạm toán': 'Sư phạm Toán học',
+  duoc: 'Dược',
+  'y duoc': 'Dược',
+  'cong nghe thong tin': 'Công nghệ thông tin',
+  'công nghệ thông tin': 'Công nghệ thông tin',
 };
 
 function normalizeMatchText(input: string): string {
@@ -36,36 +42,70 @@ function normalizeMatchText(input: string): string {
     .trim();
 }
 
-/** Trích cụm sau "ngành …" để tra DB partial match. */
+/** Trích cụm sau "ngành …" — giữ dấu tiếng Việt để ILIKE khớp DB (PostgreSQL không bỏ dấu). */
 export function extractMajorFragment(msg: string): string | null {
-  const normalized = normalizeMatchText(msg);
-  const match = normalized.match(
-    /(?:ngành|nganh|chuyên ngành|chuyen nganh)\s+(.+?)(?:\s+(?:trường|truong|cua|cu|ủa|ở|o|tại|tai|năm|nam|lấy|lay|bao|theo|thì|thi|à|a|ạ|\?)|$)/u,
+  const match = msg.match(
+    /(?:ngành|nganh|chuyên ngành|chuyen nganh)\s+(.+?)(?:\s+(?:trường|truong|cua|cu|ủa|ở|o|tại|tai|năm|nam|lấy|lay|bao|theo|thì|thi|à|a|ạ|\?)|$)/iu,
   );
   if (!match) return null;
   const fragment = match[1]
-    .replace(/\b(ha noi|hà nội|o ha noi|ở hà nội)\b/gu, '')
-    .replace(/\s+(cua|cu|ủa)\s+.+$/u, '')
+    .replace(/\b(hà nội|ha noi|ở hà nội|o ha noi)\b/giu, '')
+    .replace(/\s+(cua|cu|của)\s+.+$/iu, '')
     .trim();
-  return fragment.length >= 3 ? fragment : null;
+  if (fragment.length >= 3) return fragment;
+  return isKnownMajorAlias(fragment) ? fragment : null;
+}
+
+/** Chuẩn hoá cụm ngành tra DB: alias → giữ nguyên nếu đã có dấu. */
+export function canonicalizeMajorSearchTerm(term: string): string {
+  const fromAlias = resolveAliasFromNormalizedText(normalizeMatchText(term));
+  return fromAlias ?? term.trim();
+}
+
+function isKnownMajorAlias(fragment: string): boolean {
+  const norm = normalizeMatchText(fragment);
+  return Object.keys(MAJOR_SEARCH_ALIASES).some(
+    (alias) => normalizeMatchText(alias) === norm,
+  );
+}
+
+/** Tránh alias ngắn (vd. "ai") khớp nhầm trong "đại học" → "dai hoc". */
+function aliasMatchesInText(normAlias: string, normalized: string): boolean {
+  if (normAlias.length <= 3) {
+    const escaped = normAlias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp(
+      `(?:^|[\\s,.;:!?()])${escaped}(?:$|[\\s,.;:!?()])`,
+    ).test(` ${normalized} `);
+  }
+  return normalized.includes(normAlias);
 }
 
 function resolveAliasFromNormalizedText(normalized: string): string | null {
-  for (const [alias, term] of Object.entries(MAJOR_SEARCH_ALIASES)) {
+  const entries = Object.entries(MAJOR_SEARCH_ALIASES).sort(
+    ([a], [b]) => normalizeMatchText(b).length - normalizeMatchText(a).length,
+  );
+  for (const [alias, term] of entries) {
     const normAlias = normalizeMatchText(alias);
-    if (normAlias.length >= 2 && normalized.includes(normAlias)) {
+    if (normAlias.length >= 2 && aliasMatchesInText(normAlias, normalized)) {
       return term;
     }
   }
   return null;
 }
 
-/** Chuỗi tra DB: alias → fragment sau "ngành" → null. */
+function resolveFromMajorFragment(msg: string): string | null {
+  const fragment = extractMajorFragment(msg);
+  if (!fragment) return null;
+  return canonicalizeMajorSearchTerm(fragment);
+}
+
+/** Chuỗi tra DB: cụm sau "ngành" → alias toàn câu → null. */
 export function resolveMajorSearchTerm(msg: string): string | null {
+  const fromFragment = resolveFromMajorFragment(msg);
+  if (fromFragment) return fromFragment;
+
   const normalized = normalizeMatchText(msg);
-  const fromAlias = resolveAliasFromNormalizedText(normalized);
-  if (fromAlias) return fromAlias;
-  return extractMajorFragment(msg);
+  return resolveAliasFromNormalizedText(normalized);
 }
 
 /**

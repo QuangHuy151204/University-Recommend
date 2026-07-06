@@ -39,8 +39,9 @@ const SHEET_UNI_MAJORS = 'university_majors';
 const SHEET_DTN = 'cutoff_scores(ĐTN)';
 const SHEET_DGNL = 'cutoff_scores(ĐGNL)';
 
-const mergeMode =
-  process.argv.includes('--merge') || process.env.IMPORT_MERGE === 'true';
+function isMergeMode(): boolean {
+  return process.argv.includes('--merge') || process.env.IMPORT_MERGE === 'true';
+}
 
 function cleanStr(v: unknown): string | null {
   if (v === null || v === undefined) return null;
@@ -116,7 +117,8 @@ async function upsertCutoff(
   return 'inserted';
 }
 
-async function main() {
+export async function runExcelImport(): Promise<void> {
+  const mergeMode = isMergeMode();
   console.log('📂 Đọc file:', EXCEL_PATH);
   if (mergeMode) {
     console.log(
@@ -526,7 +528,9 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error('❌ Lỗi import:', err);
-  process.exit(1);
-});
+if (require.main === module) {
+  runExcelImport().catch((err) => {
+    console.error('❌ Lỗi import:', err);
+    process.exit(1);
+  });
+}
