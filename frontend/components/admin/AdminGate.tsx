@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Restricts admin routes to authenticated admin users.
 import { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';

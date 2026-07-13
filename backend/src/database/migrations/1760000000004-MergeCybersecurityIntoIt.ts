@@ -1,3 +1,4 @@
+// @file: Database migration: MergeCybersecurityIntoIt.
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /** Gộp nhóm An toàn thông tin vào Công nghệ thông tin. */

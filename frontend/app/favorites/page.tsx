@@ -1,3 +1,4 @@
+// @file: Lists universities and programs the student saved as favorites.
 import { redirect } from 'next/navigation';
 
 

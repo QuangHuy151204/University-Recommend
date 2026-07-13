@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Admin CRUD UI for admission method codes and labels.
 /* eslint-disable react-hooks/set-state-in-effect -- admin tables fetch on filter change */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { listAdmissionMethods } from '@/services/admission-methods';

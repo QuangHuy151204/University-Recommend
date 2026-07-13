@@ -1,3 +1,4 @@
+// @file: TypeORM entity mapping the chat session table in PostgreSQL.
 import {
   Entity,
   PrimaryGeneratedColumn,

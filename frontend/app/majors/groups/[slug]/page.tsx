@@ -1,3 +1,4 @@
+// @file: Lists majors belonging to one major group slug.
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { listMajors } from '@/services/majors';

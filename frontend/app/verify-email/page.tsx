@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Page where students confirm their email with a verification code.
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';

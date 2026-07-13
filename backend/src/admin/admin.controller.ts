@@ -1,3 +1,4 @@
+// @file: REST API endpoints exposing admin dashboard and system statistics.
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';

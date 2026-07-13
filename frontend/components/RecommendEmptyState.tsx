@@ -1,3 +1,4 @@
+// @file: Empty state when no recommendations match the criteria.
 import Link from 'next/link';
 import type { RecommendEmptyReason, RecommendResponseMeta } from '@/types';
 

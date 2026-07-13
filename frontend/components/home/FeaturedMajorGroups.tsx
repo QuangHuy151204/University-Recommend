@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Home grid of popular major groups with links.
 import Link from 'next/link';
 import {
     BookOpen,

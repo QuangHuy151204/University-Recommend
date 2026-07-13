@@ -1,3 +1,4 @@
+// @file: Automated tests for interest synonyms.
 import { expandInterestPhrases } from './interest-synonyms';
 
 describe('interest-synonyms', () => {

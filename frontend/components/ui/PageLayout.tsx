@@ -1,3 +1,4 @@
+// @file: Consistent page title, breadcrumb, and content width wrapper.
 import Link from 'next/link';
 import { ArrowLeft, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';

@@ -1,5 +1,5 @@
 'use client';
-
+// @file: React context that switches UI language at runtime.
 import {
     createContext,
     useCallback,

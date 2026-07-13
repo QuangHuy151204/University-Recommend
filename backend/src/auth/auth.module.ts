@@ -1,3 +1,4 @@
+// @file: NestJS module that registers user registration, login, JWT cookies, and password reset controllers, services, and entities.
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';

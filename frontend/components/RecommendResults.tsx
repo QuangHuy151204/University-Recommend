@@ -1,3 +1,4 @@
+// @file: Renders ranked recommendation results with tiers and reasons.
 import Link from 'next/link';
 
 import type { AdmissionTier, RecommendationItem } from '@/types';

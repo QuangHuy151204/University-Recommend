@@ -1,3 +1,4 @@
+// @file: Validated request/response DTOs for weighted university-major recommendation engine.
 import {
   IsNumber,
   IsOptional,

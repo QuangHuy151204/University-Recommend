@@ -1,3 +1,4 @@
+// @file: API client for chat messages, sessions, and history.
 import { api } from '@/lib/api';
 import type { ChatHistoryItem, ChatResponse, ChatSessionSummary } from '@/types';
 

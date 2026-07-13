@@ -1,5 +1,5 @@
 'use client';
-
+// @file: React hook encapsulating use compare entries state and side effects.
 import { useSyncExternalStore } from 'react';
 import {
     getCompareSnapshot,

@@ -1,3 +1,4 @@
+// @file: Automated tests for subject combination.
 import {
   cutoffMatchesSubjectCombination,
   normalizeSubjectCombination,

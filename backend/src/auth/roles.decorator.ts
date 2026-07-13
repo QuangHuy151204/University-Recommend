@@ -1,3 +1,4 @@
+// @file: Custom decorator used by the auth/roles system.
 import { SetMetadata } from '@nestjs/common';
 import { UserRole } from '../users/user.entity';
 

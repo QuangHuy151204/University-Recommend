@@ -1,3 +1,4 @@
+// @file: Automated tests for ward.
 import { isAnyWardPreference, normalizeWardName, wardsMatch } from './ward';
 
 describe('ward', () => {

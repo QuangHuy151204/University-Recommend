@@ -1,3 +1,4 @@
+// @file: Sort order for pinning preferred universities in lists and chat answers.
 import type { ObjectLiteral, SelectQueryBuilder } from 'typeorm';
 
 /** Trường ưu tiên hiển thị đầu danh sách (đồ án USTH). */

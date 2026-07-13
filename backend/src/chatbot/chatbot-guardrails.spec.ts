@@ -1,3 +1,4 @@
+// @file: Automated tests for chatbot guardrails.
 import { CHATBOT_E2E_CASES } from './chatbot-e2e-cases';
 import { classifyIntentRuleOnly } from './chatbot-intent-rules';
 import {
@@ -152,7 +153,8 @@ describe('chatbot guardrails', () => {
     });
 
     it('rejects rewrite that omits missing-data message', () => {
-      const rule = 'Mình chưa có điểm chuẩn cho ngành này trong dữ liệu hiện tại.';
+      const rule =
+        'Mình chưa có điểm chuẩn cho ngành này trong dữ liệu hiện tại.';
       const llm = 'Bạn thử xem các trường khác ở Hà Nội nhé.';
       expect(isOllamaRewriteFaithful(rule, llm)).toBe(false);
     });
@@ -167,10 +169,20 @@ describe('chatbot guardrails', () => {
       expect(shouldSkipOllamaRewrite(answer, 'ask_cutoff_score')).toBe(true);
     });
 
-    it('skips rewrite for structured cutoff list with scores', () => {
+    it('allows rewrite for structured cutoff list with scores', () => {
       const answer =
         'Điểm chuẩn Bách Khoa năm 2024:\n• Năm 2024 — tổ hợp A00: 27.5 điểm (THPT Quốc gia)';
-      expect(shouldSkipOllamaRewrite(answer, 'ask_cutoff_score')).toBe(true);
+      expect(isStructuredDbAnswer(answer)).toBe(true);
+      expect(shouldSkipOllamaRewrite(answer, 'ask_cutoff_score')).toBe(false);
+    });
+
+    it('skips rewrite for compare and scholarship intents', () => {
+      const answer =
+        'So sánh HUST và PTIT:\n• HUST: 27.5 điểm\n• PTIT: 25.1 điểm';
+      expect(shouldSkipOllamaRewrite(answer, 'compare_universities')).toBe(
+        true,
+      );
+      expect(shouldSkipOllamaRewrite(answer, 'ask_scholarship')).toBe(true);
     });
   });
 

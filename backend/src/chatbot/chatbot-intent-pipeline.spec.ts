@@ -1,3 +1,4 @@
+// @file: Automated tests for chatbot intent pipeline.
 import { CHATBOT_E2E_CASES } from './chatbot-e2e-cases';
 import { parseCorpusContextNote } from './chat-session-context';
 import { resolveIntentPipeline } from './chatbot-intent-pipeline';

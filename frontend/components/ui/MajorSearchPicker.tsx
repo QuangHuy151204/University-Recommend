@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Searchable major picker used in forms and filters.
 import {
     forwardRef,
     useEffect,

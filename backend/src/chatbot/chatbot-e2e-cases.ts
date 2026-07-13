@@ -1,3 +1,4 @@
+// @file: Regression chat questions with expected intents for QA runs.
 import type { ChatIntent } from './chatbot.types';
 
 /** Câu cố định cho regression intent (rule-only + benchmark Ollama E2E). */

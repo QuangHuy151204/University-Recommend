@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Student profile editor for score, interests, budget, and career goals.
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';

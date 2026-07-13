@@ -1,3 +1,4 @@
+// @file: Major detail page listing universities that offer the program.
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { BookOpen, GraduationCap } from 'lucide-react';

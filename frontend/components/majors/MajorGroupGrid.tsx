@@ -1,3 +1,4 @@
+// @file: Grid of major group cards with counts.
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import type { MajorGroupSummary } from '@/types';

@@ -1,3 +1,4 @@
+// @file: Central fetch wrapper with JWT cookies, error handling, and base API URL.
 import type { ApiError } from '@/types';
 
 const API_BASE_URL =

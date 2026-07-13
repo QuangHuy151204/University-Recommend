@@ -1,3 +1,4 @@
+// @file: Analyzes cutoff score trends across years for recommendation reasons.
 import type { CutoffScore } from '../cutoff-scores/cutoff-score.entity';
 
 export type ScoreTrendDirection =

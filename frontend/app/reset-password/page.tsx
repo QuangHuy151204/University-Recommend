@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Form to set a new password using a reset token.
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';

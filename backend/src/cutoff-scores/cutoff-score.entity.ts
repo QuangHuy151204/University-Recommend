@@ -1,3 +1,4 @@
+// @file: TypeORM entity for one admission cutoff score row linked to a university–major program.
 import {
   Entity,
   PrimaryGeneratedColumn,

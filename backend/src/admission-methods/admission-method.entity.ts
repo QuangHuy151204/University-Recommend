@@ -1,3 +1,4 @@
+// @file: TypeORM entity mapping the admission method table in PostgreSQL.
 import {
   Entity,
   PrimaryGeneratedColumn,

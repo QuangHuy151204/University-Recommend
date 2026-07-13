@@ -1,3 +1,4 @@
+// @file: Validated request/response DTOs for university catalog, search, and filters.
 import {
   IsString,
   IsOptional,

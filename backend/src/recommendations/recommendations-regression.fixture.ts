@@ -1,3 +1,4 @@
+// @file: Fixed inputs and expected ranks for recommendation regression tests.
 import { CutoffScore } from '../cutoff-scores/cutoff-score.entity';
 import { Major } from '../majors/major.entity';
 import { UniversityMajor } from '../majors/university-major.entity';

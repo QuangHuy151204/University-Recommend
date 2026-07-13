@@ -1,3 +1,4 @@
+// @file: University detail page with majors, cutoffs, tuition, and favorite actions.
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Building2, ExternalLink, MapPin } from 'lucide-react';

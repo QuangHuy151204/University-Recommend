@@ -1,3 +1,4 @@
+// @file: TypeORM DataSource configuration for migrations and CLI import scripts.
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
 

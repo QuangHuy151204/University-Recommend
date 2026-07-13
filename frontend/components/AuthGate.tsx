@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Redirects guests to login before protected student features.
 import { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';

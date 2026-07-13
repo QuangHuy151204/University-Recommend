@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Frontend helper module for admin table sort.
 import { useCallback, useMemo, useState } from 'react';
 
 export type SortDirection = 'asc' | 'desc';

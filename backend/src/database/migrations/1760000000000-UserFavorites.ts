@@ -1,3 +1,4 @@
+// @file: Database migration: UserFavorites.
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class UserFavorites1760000000000 implements MigrationInterface {

@@ -1,3 +1,4 @@
+// @file: Chat regression cases for score-based recommendation intents.
 import type { ChatIntent } from './chatbot.types';
 
 /** Regression: gợi ý theo điểm + ngành (intent, cụm sở thích, tổ hợp). */

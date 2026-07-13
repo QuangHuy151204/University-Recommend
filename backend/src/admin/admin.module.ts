@@ -1,3 +1,4 @@
+// @file: NestJS module that registers admin dashboard and system statistics controllers, services, and entities.
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminController } from './admin.controller';

@@ -1,7 +1,9 @@
+// @file: Extracts university names and aliases from user messages.
 import {
   extractExplicitUniversityFromMessage,
   extractParentheticalAcronym,
 } from './chatbot-intent-rules';
+import { collectUniversityTokensFromMessage } from './university-aliases';
 
 function normalizeMatchText(input: string): string {
   return input
@@ -11,37 +13,6 @@ function normalizeMatchText(input: string): string {
     .replace(/\s+/g, ' ')
     .trim();
 }
-
-const MESSAGE_UNIVERSITY_ACRONYMS = [
-  'USTH',
-  'HUST',
-  'NEU',
-  'FTU',
-  'PTIT',
-  'HAUI',
-  'FPT',
-  'HNUE',
-  'VNU',
-  'HMU',
-  'HUSTECH',
-  'UET',
-] as const;
-
-const MESSAGE_UNIVERSITY_NICKNAMES = [
-  'Bách Khoa Hà Nội',
-  'Bách Khoa',
-  'Kinh tế Quốc dân',
-  'Ngoại thương',
-  'Học viện Bưu chính',
-  'Học viện Ngân hàng',
-  'Thương mại',
-  'Thăng Long',
-  'Phenikaa',
-  'Ngân hàng',
-  'Luật Hà Nội',
-  'Y Hà Nội',
-  'Y dược',
-] as const;
 
 /** Tách danh sách trường từ entity `university_name` (vd. "USTH, HUST"). */
 export function parseUniversityNameList(
@@ -70,21 +41,8 @@ export function extractUniversitiesFromMessage(msg: string): string[] {
   const paren = extractParentheticalAcronym(msg);
   if (paren) push(paren);
 
-  const upper = msg.toUpperCase();
-  for (const code of MESSAGE_UNIVERSITY_ACRONYMS) {
-    const re = new RegExp(
-      `\\b${code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`,
-      'i',
-    );
-    if (re.test(upper)) push(code);
-  }
-
-  const normalized = normalizeMatchText(msg);
-  const nickSorted = [...MESSAGE_UNIVERSITY_NICKNAMES].sort(
-    (a, b) => b.length - a.length,
-  );
-  for (const nick of nickSorted) {
-    if (normalized.includes(normalizeMatchText(nick))) push(nick);
+  for (const token of collectUniversityTokensFromMessage(msg)) {
+    push(token);
   }
 
   const explicit = extractExplicitUniversityFromMessage(msg);

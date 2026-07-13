@@ -1,5 +1,5 @@
 'use client';
-
+// @file: React UI component: majors page content.
 import Link from 'next/link';
 import type { Major, MajorGroupSummary, Paginated } from '@/types';
 import MajorGroupGrid from '@/components/majors/MajorGroupGrid';

@@ -1,3 +1,4 @@
+// @file: Frontend helper module for cutoff display.
 import type { CutoffScore } from '@/types';
 
 /** Một dòng điểm chuẩn sau khi gộp các tổ hợp cùng năm + PT + điểm. */

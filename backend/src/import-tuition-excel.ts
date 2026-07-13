@@ -1,3 +1,4 @@
+// @file: Updates tuition fee fields in the database from an Excel batch file.
 /**
  * Cập nhật học phí trường (tuition_fee_min/max) từ file Excel batch.
  *

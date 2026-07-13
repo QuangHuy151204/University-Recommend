@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Password field with show/hide toggle.
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';

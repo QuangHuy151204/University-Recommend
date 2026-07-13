@@ -1,3 +1,4 @@
+// @file: Validated request/response DTOs for major catalog, groups, and university-program links.
 import { IsOptional, IsString, IsInt, Min, Max, IsIn } from 'class-validator';
 import { Type } from 'class-transformer';
 

@@ -1,3 +1,4 @@
+// @file: API client for register, login, logout, email verification, and password reset.
 import { api } from '@/lib/api';
 import type {
     AuthResponse,

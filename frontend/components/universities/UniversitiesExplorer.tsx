@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Student UI to search and filter universities.
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';

@@ -1,4 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
+// @file: Calls local Ollama for intent classify, entity extract, answer rewrite, and warmup.
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { parseFloatFromUnknown, scalarToString } from '../common/scalar';
 
@@ -11,6 +12,8 @@ export interface OllamaGenerateOptions {
   timeoutMs?: number;
   /** Extra Ollama options (temperature, num_predict, …) */
   options?: Record<string, unknown>;
+  /** Startup warmup — failure must not open the circuit breaker. */
+  forWarmup?: boolean;
 }
 
 interface OllamaGenerateResponse {
@@ -25,13 +28,21 @@ NEVER invent university names, cutoff scores, tuition fees, or admission methods
 Reply in Vietnamese, concise and friendly.`;
 
 @Injectable()
-export class OllamaService {
+export class OllamaService implements OnModuleInit {
   private readonly logger = new Logger(OllamaService.name);
   /** Sau lỗi mạng/timeout — tạm bỏ qua gọi Ollama để tránh trễ mỗi câu chat. */
   private unavailableUntil = 0;
   private consecutiveFailures = 0;
 
   constructor(private readonly config: ConfigService) {}
+
+  onModuleInit(): void {
+    if (!this.isEnabled()) return;
+    if (this.config.get<string>('OLLAMA_WARMUP_ENABLED', 'true') !== 'true') {
+      return;
+    }
+    void this.warmupModel();
+  }
 
   isEnabled(): boolean {
     return this.config.get<string>('OLLAMA_ENABLED', 'false') === 'true';
@@ -75,6 +86,52 @@ export class OllamaService {
 
   getTimeoutMs(): number {
     return Number(this.config.get<string>('OLLAMA_TIMEOUT_MS', '20000'));
+  }
+
+  getWarmupTimeoutMs(): number {
+    return Number(
+      this.config.get<string>('OLLAMA_WARMUP_TIMEOUT_MS', '120000'),
+    );
+  }
+
+  /**
+   * Pre-load model vào RAM/GPU khi backend khởi động — tránh cold-start timeout
+   * trên câu chat đầu tiên (qwen2.5:3b có thể mất >20s lần đầu).
+   */
+  async warmupModel(): Promise<boolean> {
+    if (!this.isEnabled()) return false;
+
+    const reachable = await this.ping();
+    if (!reachable) {
+      this.logger.warn(
+        'Ollama warmup skipped — API not reachable at ' + this.getBaseUrl(),
+      );
+      return false;
+    }
+
+    const model = this.getModel();
+    const timeoutMs = this.getWarmupTimeoutMs();
+    this.logger.log(
+      `Ollama warmup started (model=${model}, timeout=${timeoutMs}ms)...`,
+    );
+
+    const text = await this.generate({
+      prompt: 'ok',
+      system: 'Reply with exactly: ok',
+      timeoutMs,
+      forWarmup: true,
+      options: { num_predict: 2, temperature: 0 },
+    });
+
+    if (text) {
+      this.logger.log('Ollama warmup OK — model ready.');
+      return true;
+    }
+
+    this.logger.warn(
+      'Ollama warmup failed — first chat may be slow or use rule-based fallback.',
+    );
+    return false;
   }
 
   /**
@@ -605,20 +662,20 @@ export class OllamaService {
         this.logger.warn(
           `Ollama returned HTTP ${res.status}; falling back to rule-based.`,
         );
-        this.recordFailure();
+        if (!opts.forWarmup) this.recordFailure();
         return null;
       }
 
       const data = (await res.json()) as OllamaGenerateResponse;
       if (data.error) {
         this.logger.warn(`Ollama error: ${data.error}`);
-        this.recordFailure();
+        if (!opts.forWarmup) this.recordFailure();
         return null;
       }
       const text = data.response?.trim();
       if (!text) {
         this.logger.warn('Ollama returned empty response.');
-        this.recordFailure();
+        if (!opts.forWarmup) this.recordFailure();
         return null;
       }
       this.recordSuccess();
@@ -634,7 +691,7 @@ export class OllamaService {
           `Ollama call failed (${e.message}); falling back to rule-based.`,
         );
       }
-      this.recordFailure();
+      if (!opts.forWarmup) this.recordFailure();
       return null;
     } finally {
       clearTimeout(timer);

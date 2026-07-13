@@ -1,3 +1,4 @@
+// @file: Defines Hanoi-only data scope helpers used across search and recommendations.
 /** Đồ án chỉ hỗ trợ trường đại học tại Hà Nội. */
 export const DATA_SCOPE_LOCATION = 'Hà Nội';
 

@@ -1,3 +1,4 @@
+// @file: NestJS module that registers local Ollama LLM client for chatbot NLU and rewrite controllers, services, and entities.
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { OllamaService } from './ollama.service';

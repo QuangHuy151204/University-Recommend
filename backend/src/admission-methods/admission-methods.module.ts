@@ -1,3 +1,4 @@
+// @file: NestJS module that registers admission method catalog (THPT, HOC_BA, DGNL, etc.) controllers, services, and entities.
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdmissionMethod } from './admission-method.entity';

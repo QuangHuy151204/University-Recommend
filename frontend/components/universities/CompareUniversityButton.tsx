@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Adds or removes a university from the compare list.
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Scale } from 'lucide-react';

@@ -1,3 +1,4 @@
+// @file: Business logic for admission method catalog (THPT, HOC_BA, DGNL, etc.).
 import {
   Injectable,
   NotFoundException,

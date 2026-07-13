@@ -1,3 +1,4 @@
+// @file: Safe parsing of unknown JSON/Excel scalar values to strings and numbers.
 /** Chuyển giá trị scalar sang string an toàn (tránh `[object Object]`). */
 export function scalarToString(v: unknown): string {
   if (typeof v === 'string') return v.trim();

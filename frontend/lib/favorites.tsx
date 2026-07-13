@@ -1,5 +1,5 @@
 'use client';
-
+// @file: React context for loading and mutating the user's favorites list.
 import {
     createContext,
     useCallback,

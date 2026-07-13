@@ -1,3 +1,4 @@
+// @file: Frontend helper module for major groups.
 /** Chuẩn hóa slug nhóm ngành — gộp dấu gạch ngang liên tiếp (vd. hoa-hoc---sinh-hoc). */
 const GROUP_SLUG_ALIASES: Record<string, string> = {
     'cong-nghe': 'cong-nghe-thong-tin',

@@ -1,3 +1,4 @@
+// @file: Database migration: UserEmailVerification.
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class UserEmailVerification1749000000000 implements MigrationInterface {

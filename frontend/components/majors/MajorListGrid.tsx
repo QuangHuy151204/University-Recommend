@@ -1,3 +1,4 @@
+// @file: React UI component: major list grid.
 import Link from 'next/link';
 import type { Major } from '@/types';
 

@@ -1,3 +1,4 @@
+// @file: TypeORM entity mapping the student profile table in PostgreSQL.
 import {
   Entity,
   PrimaryGeneratedColumn,

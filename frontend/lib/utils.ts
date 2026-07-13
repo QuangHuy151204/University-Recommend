@@ -1,3 +1,4 @@
+// @file: Frontend helper module for utils.
 export function cn(...classes: (string | false | null | undefined)[]) {
     return classes.filter(Boolean).join(' ');
 }

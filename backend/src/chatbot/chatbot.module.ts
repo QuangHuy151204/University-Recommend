@@ -1,3 +1,4 @@
+// @file: NestJS module that registers chatbot sessions, intents, and database-grounded answers controllers, services, and entities.
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChatbotController } from './chatbot.controller';

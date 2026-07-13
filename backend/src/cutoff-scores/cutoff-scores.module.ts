@@ -1,3 +1,4 @@
+// @file: Registers cutoff score controllers, services, and TypeORM repositories.
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CutoffScoresController } from './cutoff-scores.controller';

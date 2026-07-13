@@ -1,29 +1,9 @@
-/**
- * Layer 0 pre-classification guards.
- *
- * These run BEFORE normal intent classification and handler logic.
- * If a guard matches, the chatbot returns a safe response immediately
- * without entering any intent handler (recommendation, cutoff, compare, etc.).
- *
- * Guards covered:
- * 1. scope_info — user asks if system covers outside Hanoi
- * 2. out_of_scope_location — user requests data for non-Hanoi city
- * 3. adversarial_or_invent — user asks bot to fabricate data
- * 4. foreign_university_factual — user asks cutoff/tuition for foreign school
- */
+// @file: Early replies for out-of-scope or Hanoi-only boundary questions.
+/** Pre-classification guards — return safe answers before intent handlers run. */
 import { containsText } from './chatbot-intent-rules';
 import { CHAT_SCOPE_HANOI } from './chatbot-copy';
 
 // ─── Scope Info ────────────────────────────────────────────────────────────────
-
-const SCOPE_QUESTION_PATTERNS: string[][] = [
-  ['ngoai ha noi', 'ngoài hà nội'],
-  ['ngoai hn', 'ngoài hn'],
-  ['co ho tro', 'có hỗ trợ'],
-  ['ho tro vung', 'hỗ trợ vùng'],
-  ['ho tro mien', 'hỗ trợ miền'],
-  ['pham vi', 'phạm vi'],
-];
 
 function isScopeInfoQuestion(msg: string): boolean {
   if (
@@ -73,12 +53,7 @@ function isScopeInfoQuestion(msg: string): boolean {
   }
   if (
     containsText(msg, ['ho tro mien', 'hỗ trợ miền']) &&
-    containsText(msg, [
-      'nam',
-      'trung',
-      'khac',
-      'khác',
-    ])
+    containsText(msg, ['nam', 'trung', 'khac', 'khác'])
   ) {
     return true;
   }
@@ -189,7 +164,10 @@ const ADVERSARIAL_COMBO_PATTERNS: Array<{
 function isAdversarialRequest(msg: string): boolean {
   if (containsText(msg, ADVERSARIAL_PATTERNS)) return true;
   for (const combo of ADVERSARIAL_COMBO_PATTERNS) {
-    if (containsText(msg, combo.primary) && containsText(msg, combo.secondary)) {
+    if (
+      containsText(msg, combo.primary) &&
+      containsText(msg, combo.secondary)
+    ) {
       return true;
     }
   }
@@ -229,7 +207,9 @@ const FACTUAL_QUERY_CUES = [
 function isForeignUniversityFactualQuery(msg: string): boolean {
   if (!containsText(msg, FOREIGN_UNIVERSITIES)) return false;
   if (containsText(msg, FACTUAL_QUERY_CUES)) return true;
-  if (containsText(msg, ['recommend', 'goi y', 'gợi ý', 'nen hoc', 'nên học'])) {
+  if (
+    containsText(msg, ['recommend', 'goi y', 'gợi ý', 'nen hoc', 'nên học'])
+  ) {
     return true;
   }
   return false;
@@ -272,7 +252,9 @@ export type PreGuardResult = {
  * Run Layer 0 pre-classification guards.
  * Returns a safe response if a guard fires, or null to continue normal processing.
  */
-export function runPreClassificationGuards(normalizedMsg: string): PreGuardResult {
+export function runPreClassificationGuards(
+  normalizedMsg: string,
+): PreGuardResult {
   if (isScopeInfoQuestion(normalizedMsg)) {
     return { answer: SCOPE_INFO_RESPONSE, guardType: 'scope_info' };
   }
@@ -282,11 +264,17 @@ export function runPreClassificationGuards(normalizedMsg: string): PreGuardResul
   }
 
   if (isForeignUniversityFactualQuery(normalizedMsg)) {
-    return { answer: FOREIGN_UNIVERSITY_RESPONSE, guardType: 'foreign_university' };
+    return {
+      answer: FOREIGN_UNIVERSITY_RESPONSE,
+      guardType: 'foreign_university',
+    };
   }
 
   if (hasOutOfScopeLocation(normalizedMsg)) {
-    return { answer: OUT_OF_SCOPE_RESPONSE, guardType: 'out_of_scope_location' };
+    return {
+      answer: OUT_OF_SCOPE_RESPONSE,
+      guardType: 'out_of_scope_location',
+    };
   }
 
   return null;

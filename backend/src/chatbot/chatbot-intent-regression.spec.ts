@@ -1,3 +1,4 @@
+// @file: Automated tests for chatbot intent regression.
 import { classifyIntentRuleOnly } from './chatbot-intent-rules';
 import { parseCorpusContextNote } from './chat-session-context';
 import { CORPUS_ROW_COUNT, INTENT_EXAMPLES } from './intent-corpus.generated';

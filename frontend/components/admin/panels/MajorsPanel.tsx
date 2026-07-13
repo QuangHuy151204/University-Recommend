@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Admin CRUD UI for majors and field groups.
 /* eslint-disable react-hooks/set-state-in-effect -- admin tables fetch on filter change */
 import { useCallback, useEffect, useState } from 'react';
 import { listMajors } from '@/services/majors';

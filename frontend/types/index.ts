@@ -1,3 +1,4 @@
+// @file: Shared frontend TypeScript types aligned with NestJS API JSON shapes.
 // Shared TypeScript types matching backend NestJS DTOs/entities.
 // Keep field names in snake_case to mirror the JSON returned by /api.
 

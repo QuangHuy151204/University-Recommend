@@ -1,3 +1,4 @@
+// @file: REST API endpoints exposing user registration, login, JWT cookies, and password reset.
 import {
   Body,
   Controller,

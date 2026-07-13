@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Toggle favorite state for a specific university–major program.
 import { useState } from 'react';
 import { Heart } from 'lucide-react';
 import { useRouter } from 'next/navigation';

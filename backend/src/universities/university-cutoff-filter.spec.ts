@@ -1,3 +1,4 @@
+// @file: Automated tests for university cutoff filter.
 import {
   latestCutoffYearSql,
   referenceYearForScoreFilter,

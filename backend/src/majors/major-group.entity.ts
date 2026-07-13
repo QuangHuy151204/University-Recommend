@@ -1,3 +1,4 @@
+// @file: TypeORM entity mapping the major group table in PostgreSQL.
 import {
   Entity,
   PrimaryColumn,

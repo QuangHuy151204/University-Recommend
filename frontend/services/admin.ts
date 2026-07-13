@@ -1,3 +1,4 @@
+// @file: API client for admin CRUD operations on master data.
 import { api } from '@/lib/api';
 import type {
     AdmissionMethod,

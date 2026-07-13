@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Next.js page route for /admin/login.
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import { adminLogin } from '@/services/auth';

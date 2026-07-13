@@ -1,3 +1,4 @@
+// @file: Validated request/response DTOs for admission method catalog (THPT, HOC_BA, DGNL, etc.).
 import { IsOptional, IsString } from 'class-validator';
 
 export class CreateAdmissionMethodDto {

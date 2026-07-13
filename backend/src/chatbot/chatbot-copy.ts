@@ -1,3 +1,4 @@
+// @file: Static disclaimer and scope copy shown in chatbot replies.
 /**
  * Văn phong chatbot — chỉ chuỗi hiển thị, không chứa logic nghiệp vụ.
  * Giọng: thân thiện, ngắn gọn, hội thoại; không lộ thuật ngữ kỹ thuật.

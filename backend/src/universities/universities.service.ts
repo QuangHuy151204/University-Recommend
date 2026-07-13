@@ -1,3 +1,4 @@
+// @file: Business logic for university catalog, search, and filters.
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';

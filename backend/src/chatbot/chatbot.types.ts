@@ -1,3 +1,4 @@
+// @file: Shared TypeScript types for chatbot sessions, intents, and database-grounded answers.
 /** Shared chatbot types (used by service + generated corpus). */
 export const CHAT_INTENTS = [
   'recommendation_by_score',
@@ -49,6 +50,6 @@ export interface IntentHandlerConfig {
   needsEntities: boolean;
   /** Always skip Ollama rewrite for this intent (static / deeplink answers). */
   skipOllamaRewrite: boolean;
-  /** Skip rewrite when rule answer looks like DB-backed lists or numeric facts. */
+  /** Skip rewrite when rule answer looks like DB-backed lists or numeric facts (opt-in per intent). */
   skipRewriteWhenStructured: boolean;
 }

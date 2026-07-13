@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Hydrates compare page URL from localStorage on first load.
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {

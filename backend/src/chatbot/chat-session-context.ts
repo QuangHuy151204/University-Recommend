@@ -1,3 +1,4 @@
+// @file: Builds session context hints from prior chat turns for follow-up questions.
 import {
   containsText,
   extractExplicitUniversityFromMessage,

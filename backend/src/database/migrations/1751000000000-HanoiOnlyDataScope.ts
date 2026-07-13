@@ -1,3 +1,4 @@
+// @file: Database migration: HanoiOnlyDataScope.
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**

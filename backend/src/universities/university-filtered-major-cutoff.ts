@@ -1,3 +1,4 @@
+// @file: Builds per-major cutoff summaries for a university detail view.
 import { CUTOFF_FILTER_YEARS } from '../common/subject-combination';
 import {
   referenceYearForScoreFilter,

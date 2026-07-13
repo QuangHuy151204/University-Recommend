@@ -1,3 +1,4 @@
+// @file: NestJS module that registers weighted university-major recommendation engine controllers, services, and entities.
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RecommendationsController } from './recommendations.controller';

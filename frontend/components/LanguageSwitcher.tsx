@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Toggles UI language between Vietnamese and English.
 import { cn } from '@/lib/utils';
 import { useLocale } from '@/lib/i18n/locale';
 import type { Locale } from '@/lib/i18n/translations';

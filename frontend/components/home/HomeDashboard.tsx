@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Logged-in home hub with shortcuts to search, recommend, and chatbot.
 import Link from 'next/link';
 import {
     BarChart3,

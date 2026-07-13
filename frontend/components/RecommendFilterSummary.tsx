@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Shows which filters were applied to recommendation results.
 import { useLocale } from '@/lib/i18n/locale';
 
 export interface RecommendFilterSummaryData {

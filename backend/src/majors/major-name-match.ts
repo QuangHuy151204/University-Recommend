@@ -1,3 +1,4 @@
+// @file: Fuzzy matching helpers for major name search.
 import { canonicalMajorName } from './major-normalization';
 
 /**

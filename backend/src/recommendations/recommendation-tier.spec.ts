@@ -1,3 +1,4 @@
+// @file: Automated tests for recommendation tier.
 import {
   applyUniversityDiversityCap,
   classifyAdmissionTier,

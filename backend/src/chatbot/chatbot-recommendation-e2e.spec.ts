@@ -1,3 +1,4 @@
+// @file: Automated tests for chatbot recommendation e2e.
 import { CHATBOT_RECOMMENDATION_E2E_CASES } from './chatbot-recommendation-e2e-cases';
 import { classifyIntentRuleOnly } from './chatbot-intent-rules';
 import { pickMajorInterestPhrase } from './major-search';

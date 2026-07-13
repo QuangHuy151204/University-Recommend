@@ -1,3 +1,4 @@
+// @file: Queries and admin-updates cutoff scores by university, major, year, subject combination, and admission method.
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';

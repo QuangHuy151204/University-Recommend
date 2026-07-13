@@ -1,3 +1,4 @@
+// @file: Resolves major names and interest phrases from free-text chat messages.
 /** Viết tắt / tên rút gọn → chuỗi tra ILIKE majors.name */
 export const MAJOR_SEARCH_ALIASES: Record<string, string> = {
   cntt: 'Công nghệ thông tin',
@@ -73,9 +74,9 @@ function isKnownMajorAlias(fragment: string): boolean {
 function aliasMatchesInText(normAlias: string, normalized: string): boolean {
   if (normAlias.length <= 3) {
     const escaped = normAlias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    return new RegExp(
-      `(?:^|[\\s,.;:!?()])${escaped}(?:$|[\\s,.;:!?()])`,
-    ).test(` ${normalized} `);
+    return new RegExp(`(?:^|[\\s,.;:!?()])${escaped}(?:$|[\\s,.;:!?()])`).test(
+      ` ${normalized} `,
+    );
   }
   return normalized.includes(normAlias);
 }

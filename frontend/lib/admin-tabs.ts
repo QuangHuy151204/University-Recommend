@@ -1,3 +1,4 @@
+// @file: Frontend helper module for admin tabs.
 export const ADMIN_TABS = [
     { id: 'dashboard', label: 'Tổng quan', title: 'Tổng quan hệ thống' },
     { id: 'universities', label: 'Trường', title: 'Quản lý trường đại học' },

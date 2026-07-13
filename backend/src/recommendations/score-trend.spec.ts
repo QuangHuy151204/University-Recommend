@@ -1,3 +1,4 @@
+// @file: Automated tests for score trend.
 import type { CutoffScore } from '../cutoff-scores/cutoff-score.entity';
 import { analyzeCutoffTrend, formatScoreTrendReason } from './score-trend';
 

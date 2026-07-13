@@ -1,3 +1,4 @@
+// @file: TypeORM entity mapping the auth token table in PostgreSQL.
 import {
   Entity,
   PrimaryGeneratedColumn,

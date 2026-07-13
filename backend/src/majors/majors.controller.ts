@@ -1,3 +1,4 @@
+// @file: REST API endpoints exposing major catalog, groups, and university-program links.
 import {
   Controller,
   Get,

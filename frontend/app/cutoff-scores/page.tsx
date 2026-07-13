@@ -1,3 +1,4 @@
+// @file: Cutoff score explorer: filter schools and majors by year and admission method.
 import { listAdmissionMethods } from '@/services/admission-methods';
 import { getUniversity, listUniversities } from '@/services/universities';
 import { CutoffScoresExplorer } from '@/components/cutoff-scores/CutoffScoresExplorer';

@@ -1,3 +1,4 @@
+// @file: TypeORM entity mapping the university major table in PostgreSQL.
 import {
   Entity,
   PrimaryGeneratedColumn,

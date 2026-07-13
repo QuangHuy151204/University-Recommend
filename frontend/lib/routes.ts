@@ -1,3 +1,4 @@
+// @file: Frontend helper module for routes.
 /** Routes accessible without signing in. */
 export const PUBLIC_PATH_PREFIXES = [
     '/login',

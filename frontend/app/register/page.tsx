@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Student registration form that creates an account and triggers email verification.
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';

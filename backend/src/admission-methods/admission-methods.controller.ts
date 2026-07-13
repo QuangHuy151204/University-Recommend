@@ -1,3 +1,4 @@
+// @file: REST API endpoints exposing admission method catalog (THPT, HOC_BA, DGNL, etc.).
 import {
   Controller,
   Get,

@@ -1,3 +1,4 @@
+// @file: Authenticated student dashboard with quick links and featured major groups.
 import { listUniversities } from '@/services/universities';
 import { HomeDashboard } from '@/components/home/HomeDashboard';
 

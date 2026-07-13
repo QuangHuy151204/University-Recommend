@@ -1,6 +1,7 @@
+// @file: Route guard that enforces access rules for user registration, login, JWT cookies, and password reset.
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Observable, isObservable, lastValueFrom } from 'rxjs';
+import { isObservable, lastValueFrom } from 'rxjs';
 
 /**
  * Gắn `req.user` khi có JWT hợp lệ (cookie hoặc Bearer); không chặn request nếu thiếu token.

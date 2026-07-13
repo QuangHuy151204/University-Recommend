@@ -1,3 +1,4 @@
+// @file: Client-side storage and URL helpers for the university compare feature.
 import type {
     AdmissionMethod,
     CutoffScore,

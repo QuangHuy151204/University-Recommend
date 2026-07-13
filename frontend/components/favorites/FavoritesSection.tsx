@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Profile section listing saved universities and programs.
 import Link from 'next/link';
 import { useState } from 'react';
 import { BookOpen, Heart, MapPin, School } from 'lucide-react';

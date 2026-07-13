@@ -1,3 +1,4 @@
+// @file: Normalizes and validates THPT subject combination codes (A00, D01, …).
 /** Chuẩn hoá mã tổ hợp môn (A00, D01, …). */
 export function normalizeSubjectCombination(code: string): string {
   return code.trim().toUpperCase();

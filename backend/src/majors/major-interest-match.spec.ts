@@ -1,3 +1,4 @@
+// @file: Automated tests for major interest match.
 import { majorMatchesInterestTerms } from './major-interest-match';
 
 describe('majorMatchesInterestTerms', () => {

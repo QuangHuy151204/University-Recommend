@@ -1,3 +1,4 @@
+// @file: Visual step indicator for multi-step flows.
 import { cn } from '@/lib/utils';
 
 interface Step {

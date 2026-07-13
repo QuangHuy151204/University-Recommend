@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Multi-step form that collects preferences and calls the recommendation API.
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { Sparkles } from 'lucide-react';

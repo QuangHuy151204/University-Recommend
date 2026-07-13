@@ -1,3 +1,4 @@
+// @file: Validated request/response DTOs for user accounts and student profiles.
 import {
   IsOptional,
   IsNumber,

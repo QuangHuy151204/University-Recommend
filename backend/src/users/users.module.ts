@@ -1,3 +1,4 @@
+// @file: NestJS module that registers user accounts and student profiles controllers, services, and entities.
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersController } from './users.controller';

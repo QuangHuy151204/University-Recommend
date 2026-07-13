@@ -1,5 +1,5 @@
 'use client';
-
+// @file: React auth context: login state, token cookie, and protected-route helpers.
 import {
     createContext,
     useCallback,

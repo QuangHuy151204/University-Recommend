@@ -1,3 +1,4 @@
+// @file: Automated tests for chat session context.
 import {
   buildSessionContextHint,
   emptySessionContext,

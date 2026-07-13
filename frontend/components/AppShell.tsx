@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Shared page chrome wrapping navbar, footer, and auth gate.
 import { usePathname } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';

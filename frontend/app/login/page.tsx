@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Login page with email/password form and post-auth redirect.
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, Suspense } from 'react';

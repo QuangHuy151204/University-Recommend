@@ -1,3 +1,4 @@
+// @file: API client for the admission method catalog.
 import { api } from '@/lib/api';
 import type { AdmissionMethod } from '@/types';
 

@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Site footer with project links and attribution.
 import Link from 'next/link';
 import { useLocale } from '@/lib/i18n/locale';
 

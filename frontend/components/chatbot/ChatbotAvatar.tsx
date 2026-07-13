@@ -1,3 +1,4 @@
+// @file: Chatbot character avatar shown in the chat header.
 import { cn } from '@/lib/utils';
 
 const CHATBOT_AVATAR_SRC = '/chatbot-avatar.png';

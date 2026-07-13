@@ -1,3 +1,4 @@
+// @file: REST API endpoints exposing user accounts and student profiles.
 import {
   Controller,
   Get,

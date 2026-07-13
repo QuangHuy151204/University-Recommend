@@ -1,3 +1,4 @@
+// @file: University search and filter page for logged-in students.
 import { listUniversities } from '@/services/universities';
 import { getMajor } from '@/services/majors';
 import { ApiClientError } from '@/lib/api';

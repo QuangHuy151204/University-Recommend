@@ -1,3 +1,4 @@
+// @file: API client for cutoff score queries and subject-combination options.
 import { api } from '@/lib/api';
 
 export interface SubjectCombinationOption {

@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Next.js layout wrapper shared by pages under /admin.
 import { usePathname } from 'next/navigation';
 import { AdminGate } from '@/components/admin/AdminGate';
 import { AdminShell } from '@/components/admin/AdminShell';

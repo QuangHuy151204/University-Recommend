@@ -1,3 +1,4 @@
+// @file: REST endpoints for students to browse cutoffs and admins to manage cutoff rows.
 import {
   Controller,
   Get,

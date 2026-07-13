@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Sortable table header used in admin panels.
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import type { TableSortState } from '@/lib/admin-table-sort';
 import { cn } from '@/lib/utils';

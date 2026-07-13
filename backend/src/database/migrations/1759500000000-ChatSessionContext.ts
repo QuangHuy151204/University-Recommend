@@ -1,3 +1,4 @@
+// @file: Database migration: ChatSessionContext.
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /** Lưu last_university / last_major / last_intent cho follow-up trong chatbot. */

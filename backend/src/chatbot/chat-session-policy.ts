@@ -1,3 +1,4 @@
+// @file: Session lifecycle rules: create, reuse, and expire chat sessions.
 import { ForbiddenException } from '@nestjs/common';
 import type { ChatSession } from './chat-session.entity';
 

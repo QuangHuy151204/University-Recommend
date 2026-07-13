@@ -1,5 +1,12 @@
+// @file: Rule-based intent classification and keyword guards before handlers run.
 import type { ChatSessionContext } from './chat-session-context';
 import type { ChatIntent } from './chatbot.types';
+import { resolveMajorSearchTerm } from './major-search';
+import {
+  collectUniversityTokensFromMessage,
+  extractPrimaryUniversityToken,
+  normalizeUniversitySearchToken,
+} from './university-aliases';
 
 function normalizeMatchText(input: string): string {
   return input
@@ -40,41 +47,8 @@ export function extractScoreFromMessage(msg: string): number | null {
 /** Viết tắt trong ngoặc: "(USTH)", "(HUST)". */
 export function extractParentheticalAcronym(msg: string): string | null {
   const m = msg.match(/\(([A-Za-z][A-Za-z0-9.-]{1,20})\)/);
-  return m ? m[1].trim().toUpperCase() : null;
+  return m ? normalizeUniversitySearchToken(m[1].trim()) : null;
 }
-
-/** Mã trường xuất hiện trực tiếp trong câu (không cần ngoặc) — ưu tiên hơn session carry-over. */
-const MESSAGE_UNIVERSITY_ACRONYMS = [
-  'USTH',
-  'HUST',
-  'NEU',
-  'FTU',
-  'PTIT',
-  'HAUI',
-  'FPT',
-  'HNUE',
-  'VNU',
-  'HMU',
-  'HUSTECH',
-  'UET',
-] as const;
-
-/** Tên / biệt danh trường trong câu (không phải mã viết tắt) — dài trước để tránh match cụt. */
-const MESSAGE_UNIVERSITY_NICKNAMES = [
-  'Bách Khoa Hà Nội',
-  'Bách Khoa',
-  'Kinh tế Quốc dân',
-  'Ngoại thương',
-  'Học viện Bưu chính',
-  'Học viện Ngân hàng',
-  'Thương mại',
-  'Thăng Long',
-  'Phenikaa',
-  'Ngân hàng',
-  'Luật Hà Nội',
-  'Y Hà Nội',
-  'Y dược',
-] as const;
 
 export function extractYearFromMessage(msg: string): number | null {
   const m = msg.match(/\b(20[2-3]\d)\b/);
@@ -89,25 +63,7 @@ export function extractExplicitUniversityFromMessage(
   const paren = extractParentheticalAcronym(msg);
   if (paren) return paren;
 
-  const upper = msg.toUpperCase();
-  let best: string | null = null;
-  for (const code of MESSAGE_UNIVERSITY_ACRONYMS) {
-    const re = new RegExp(
-      `\\b${code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`,
-      'i',
-    );
-    if (re.test(upper)) {
-      if (!best || code.length > best.length) best = code;
-    }
-  }
-  if (best) return best;
-
-  const normalized = normalizeMatchText(msg);
-  for (const nick of MESSAGE_UNIVERSITY_NICKNAMES) {
-    const key = normalizeMatchText(nick);
-    if (normalized.includes(key)) return nick;
-  }
-  return null;
+  return extractPrimaryUniversityToken(msg);
 }
 
 /** Follow-up: hỏi ngành/chương trình của trường đang thảo luận (không lặp tên trường). */
@@ -154,6 +110,19 @@ export function asksUniversityPrograms(msg: string): boolean {
   ) {
     return false;
   }
+  if (
+    containsText(msg, ['nen hoc', 'nên học', 'nen chon', 'nên chọn']) &&
+    !containsText(msg, [
+      'truong',
+      'trường',
+      'dai hoc',
+      'đại học',
+      'hoc vien',
+      'học viện',
+    ])
+  ) {
+    return false;
+  }
   return containsText(msg, [
     'chương trình',
     'chuong trinh',
@@ -181,6 +150,10 @@ export function asksUniversityPrograms(msg: string): boolean {
     'chuong trinh gi',
     'chương trình nào',
     'chuong trinh nao',
+    'bao nhieu nganh',
+    'bao nhiêu ngành',
+    'co bao nhieu nganh',
+    'có bao nhiêu ngành',
   ]);
 }
 
@@ -313,6 +286,12 @@ const MAJOR_FIELD_CUES = [
 
 /** Hỏi trường nào đào tạo một ngành — khác hỏi ngành của một trường. */
 export function asksWhichSchoolsTeachMajor(msg: string): boolean {
+  if (looksLikeLowestCutoffWithMajorQuery(msg)) {
+    return false;
+  }
+  if (asksUniversityMajorCount(msg)) {
+    return false;
+  }
   if (looksLikeOutOfScopeLocationQuery(msg)) {
     return false;
   }
@@ -996,7 +975,9 @@ export function looksLikeScoreRecommendation(msg: string): boolean {
   const hasNumericScore = extractScoreFromMessage(msg) !== null;
   const hasScorePhrase =
     /(?:được|đạt|em|mình|tôi|cho em).{0,40}\d+(?:[.,]\d+)?\s*điểm/i.test(msg) ||
-    /\d+(?:[.,]\d+)?\s*điểm/i.test(msg);
+    /\d+(?:[.,]\d+)?\s*điểm/i.test(msg) ||
+    /\b(?:scored?|got|have|with)\s+\d+(?:[.,]\d+)?\b/i.test(msg) ||
+    /\b\d+(?:[.,]\d+)?\s+(?:points?|score)\b/i.test(msg);
 
   const wantsAdvice = containsText(msg, [
     'nên chọn',
@@ -1053,6 +1034,19 @@ export function looksLikeScoreRecommendation(msg: string): boolean {
     'không đủ hust',
     'con truong nao',
     'còn trường nào',
+    'which universit',
+    'which school',
+    'which college',
+    'should i consider',
+    'should i choose',
+    'should i apply',
+    'recommend',
+    'suggest',
+    'want to study',
+    'wanna study',
+    'interested in studying',
+    'good fit',
+    'suitable school',
   ]);
 
   if (
@@ -1064,7 +1058,25 @@ export function looksLikeScoreRecommendation(msg: string): boolean {
       'trường nào',
       'truong cong lap',
       'trường công lập',
+      'which universit',
+      'which school',
+      'which college',
     ])
+  ) {
+    return true;
+  }
+
+  if (
+    hasNumericScore &&
+    containsText(msg, [
+      'block a',
+      'block b',
+      'block c',
+      'block d',
+      'subject group',
+      'combination',
+    ]) &&
+    wantsAdvice
   ) {
     return true;
   }
@@ -1263,9 +1275,77 @@ export function looksLikeAdversarialFabrication(msg: string): boolean {
     return true;
   }
   if (
-    containsText(msg, ['tu nghi', 'tự nghĩ', 'tu bia', 'tự bịa', 'tu tao', 'tự tạo']) &&
-    containsText(msg, ['diem', 'điểm', 'truong', 'trường', 'hoc phi', 'học phí', 'du lieu', 'dữ liệu'])
+    containsText(msg, [
+      'tu nghi',
+      'tự nghĩ',
+      'tu bia',
+      'tự bịa',
+      'tu tao',
+      'tự tạo',
+    ]) &&
+    containsText(msg, [
+      'diem',
+      'điểm',
+      'truong',
+      'trường',
+      'hoc phi',
+      'học phí',
+      'du lieu',
+      'dữ liệu',
+    ])
   ) {
+    return true;
+  }
+  return false;
+}
+
+/** Ngoài phạm vi / bảo mật / SQL injection / ngôn ngữ không hỗ trợ. */
+export function looksLikeOffTopicOrSecurityQuery(msg: string): boolean {
+  if (looksLikeAdversarialFabrication(msg)) return true;
+  if (
+    containsText(msg, [
+      'password',
+      'mat khau',
+      'mật khẩu',
+      'database password',
+      'postgres',
+      'secret key',
+      'api key',
+      'credentials',
+    ])
+  ) {
+    return true;
+  }
+  if (/\bdrop\s+table\b/i.test(msg) || /\bdelete\s+from\b/i.test(msg)) {
+    return true;
+  }
+  if (
+    containsText(msg, [
+      'tinh yeu',
+      'tình yêu',
+      'dan ba',
+      'dẫn bã',
+      'hen ho',
+      'hẹn hò',
+    ])
+  ) {
+    return true;
+  }
+  if (
+    containsText(msg, [
+      'gia vo',
+      'giả vờ',
+      'gia su ban',
+      'giả sử bạn',
+      'act as google',
+      'pretend you are',
+      'ban la google',
+      'bạn là google',
+    ])
+  ) {
+    return true;
+  }
+  if (/[\u4e00-\u9fff\u3040-\u30ff\uac00-\ud7af]/.test(msg)) {
     return true;
   }
   return false;
@@ -1336,6 +1416,8 @@ export function looksLikeOutOfScopeLocationQuery(msg: string): boolean {
 /** Hỏi danh sách trường theo khu vực — khác tra một trường cụ thể. */
 export function looksLikeLocationListQuery(msg: string): boolean {
   if (looksLikeOutOfScopeLocationQuery(msg)) return false;
+  if (looksLikeTuitionRankingQuery(msg)) return false;
+  if (looksLikeSubjectiveTuitionQuery(msg)) return false;
   if (looksLikeFacilitiesQuery(msg)) {
     return false;
   }
@@ -1458,8 +1540,6 @@ export function looksLikeLocationListQuery(msg: string): boolean {
     'thuộc bộ',
     'gan san bay',
     'gần sân bay',
-    'hoc phi thap',
-    'học phí thấp',
     'gan nha',
     'gần nhà',
     'chua biet hoc nganh',
@@ -1597,7 +1677,14 @@ export function looksLikeScopeQuestion(msg: string): boolean {
   }
   if (
     containsText(msg, ['pham vi', 'phạm vi']) &&
-    containsText(msg, ['he thong', 'hệ thống', 'du lieu', 'dữ liệu', 'ho tro', 'hỗ trợ'])
+    containsText(msg, [
+      'he thong',
+      'hệ thống',
+      'du lieu',
+      'dữ liệu',
+      'ho tro',
+      'hỗ trợ',
+    ])
   ) {
     return true;
   }
@@ -1657,8 +1744,14 @@ export function looksLikeHelpQuery(msg: string): boolean {
 }
 
 export function looksLikeCompareUniversities(msg: string): boolean {
+  if (looksLikeUniversityAliasQuestion(msg)) {
+    return false;
+  }
   if (looksLikeTuitionBillingQuery(msg)) {
     return false;
+  }
+  if (looksLikeUniversityVersusQuery(msg)) {
+    return true;
   }
   if (
     looksLikeCareerQuery(msg) &&
@@ -1799,7 +1892,74 @@ export function looksLikeCompareUniversities(msg: string): boolean {
   return hasVersus && hasChoose;
 }
 
-/** Học bổng toàn phần — không có dữ liệu DB → unknown. */
+/** Hai trường trở lên + "hay"/"hoặc" — so sánh hoặc chọn lựa (vd. HUST hay PTIT). */
+export function looksLikeUniversityVersusQuery(msg: string): boolean {
+  if (looksLikeUniversityAliasQuestion(msg)) {
+    return false;
+  }
+  if (!containsText(msg, [' hay ', ' hoac ', ' hoặc ', ' hay?', ' hay!'])) {
+    return false;
+  }
+  return collectUniversityTokensFromMessage(msg).length >= 2;
+}
+
+/** Hỏi các tên viết tắt có cùng một trường không (vd. HUST hay BKA). */
+export function looksLikeUniversityAliasQuestion(msg: string): boolean {
+  if (!containsText(msg, ['hay'])) return false;
+  const aliasHits = [
+    containsText(msg, ['hust']),
+    containsText(msg, ['bka']),
+    containsText(msg, ['bach khoa', 'bách khoa', 'bkhn']),
+  ].filter(Boolean).length;
+  return aliasHits >= 2;
+}
+
+/** Mã trường + hỏi vị trí (vd. FTU ở đâu?). */
+export function looksLikeUniversityLocationQuery(msg: string): boolean {
+  if (!extractExplicitUniversityFromMessage(msg)) return false;
+  return containsText(msg, [
+    'ở đâu',
+    'o dau',
+    'ở chỗ nào',
+    'o cho nao',
+    'ở đâu?',
+    'nam o',
+    'nằm ở',
+    'dia chi',
+    'địa chỉ',
+    'co so chinh',
+    'cơ sở chính',
+  ]);
+}
+
+/** Giới thiệu / tìm hiểu một trường cụ thể (vd. Cho tôi biết về HUST). */
+export function looksLikeUniversityInfoQuery(msg: string): boolean {
+  if (!extractExplicitUniversityFromMessage(msg)) return false;
+  return containsText(msg, [
+    'cho toi biet',
+    'cho tôi biết',
+    'cho em biet',
+    'cho em biết',
+    'tim hieu ve',
+    'tìm hiểu về',
+    'biet ve',
+    'biết về',
+    'noi ve',
+    'nói về',
+  ]);
+}
+
+/** Gợi ý trường khi chưa có điểm (vd. Gợi ý trường cho em). */
+export function looksLikeSuggestSchoolQuery(msg: string): boolean {
+  if (extractScoreFromMessage(msg) !== null) return false;
+  if (looksLikeCutoffScoreQuery(msg)) return false;
+  return (
+    containsText(msg, ['goi y truong', 'gợi ý trường']) ||
+    (containsText(msg, ['goi y', 'gợi ý']) &&
+      containsText(msg, ['truong', 'trường', 'cho em', 'cho tôi', 'cho toi']))
+  );
+}
+
 export function looksLikeUnknownFullScholarshipQuery(msg: string): boolean {
   return (
     containsText(msg, ['hoc bong', 'học bổng']) &&
@@ -1920,11 +2080,247 @@ export function looksLikeRecommendationWithoutScore(msg: string): boolean {
   return wantsSchoolAdvice && hasMajorOrInterest;
 }
 
+/** Câu có ký tự lặp quá mức — khó phân loại chắc chắn (vd. trường nàooo tốt nhấttt). */
+export function looksLikeGarbledQuery(msg: string): boolean {
+  const trimmed = msg.trim();
+  if (!trimmed) return false;
+  if (/(.)\1{2,}/u.test(trimmed)) return true;
+  if (/[?!]{4,}/.test(trimmed)) return true;
+  return false;
+}
+
+export function isSingleTokenMessage(msg: string): boolean {
+  const trimmed = msg.trim().replace(/[?!.,]+$/g, '');
+  if (!trimmed) return false;
+  return !/\s/.test(trimmed);
+}
+
+/** Một token: ưu tiên alias trường → alias ngành. */
+export function resolveSingleTokenIntent(msg: string): ChatIntent | null {
+  if (!isSingleTokenMessage(msg)) return null;
+  const token = msg.trim().replace(/[?!.,]+$/g, '');
+  if (extractPrimaryUniversityToken(token)) {
+    return 'search_university';
+  }
+  if (resolveMajorSearchTerm(token)) {
+    return 'search_major';
+  }
+  return null;
+}
+
+/** Hỏi trường chủ quan (tốt, đáng học…) khi chưa có tiêu chí đo lường. */
+export function looksLikeSubjectiveSchoolQuery(msg: string): boolean {
+  if (looksLikeGarbledQuery(msg)) return false;
+  if (extractScoreFromMessage(msg) !== null) return false;
+  if (looksLikeCutoffScoreQuery(msg)) return false;
+  return (
+    containsText(msg, ['truong nao', 'trường nào', 'truong gi', 'trường gì']) &&
+    containsText(msg, [
+      'tot',
+      'tốt',
+      'tot nhat',
+      'tốt nhất',
+      'dang hoc',
+      'đáng học',
+      'uy tin',
+      'uy tín',
+      'noi tieng',
+      'nổi tiếng',
+      'manh',
+      'mạnh',
+      'best',
+      'good',
+      'worth',
+    ])
+  );
+}
+
+/** Tư vấn chọn ngành theo sở thích — chưa đủ điểm/tổ hợp. */
+export function looksLikeMajorChoiceQuery(msg: string): boolean {
+  if (extractScoreFromMessage(msg) !== null) return false;
+  if (looksLikeCutoffScoreQuery(msg)) return false;
+  if (looksLikeRecommendationWithoutScore(msg)) return false;
+  if (
+    containsText(msg, ['nen hoc', 'nên học']) &&
+    containsText(msg, [
+      'gi',
+      'gì',
+      'nganh gi',
+      'ngành gì',
+      'nganh nao',
+      'ngành nào',
+    ])
+  ) {
+    return true;
+  }
+  return (
+    containsText(msg, ['thich', 'thích', 'yeu thich', 'yêu thích']) &&
+    containsText(msg, [
+      'lap trinh',
+      'lập trình',
+      'code',
+      'coding',
+      'lap trinh vien',
+      'lập trình viên',
+    ]) &&
+    containsText(msg, [
+      'nen hoc',
+      'nên học',
+      'hoc nganh',
+      'học ngành',
+      'nganh gi',
+      'ngành gì',
+      'nganh nao',
+      'ngành nào',
+    ])
+  );
+}
+
+/** Tìm trường gần user — cần hỏi khu vực tham chiếu. */
+export function looksLikeNearbyQuery(msg: string): boolean {
+  return containsText(msg, [
+    'gan day',
+    'gần đây',
+    'gan nha',
+    'gần nhà',
+    'gan cho',
+    'gần chỗ',
+    'gan toi',
+    'gần tôi',
+    'gan em',
+    'gần em',
+    'near me',
+    'nearby',
+    'close to me',
+    'close by',
+  ]);
+}
+
+/** Muốn học tại một khu vực (vd. Hà Nội) — liệt kê hoặc hỏi thêm. */
+export function looksLikeStudyInLocationQuery(msg: string): boolean {
+  if (extractScoreFromMessage(msg) !== null) return false;
+  return (
+    containsText(msg, [
+      'muon hoc',
+      'muốn học',
+      'hoc o',
+      'học ở',
+      'study in',
+      'want to study',
+      'want to go to',
+    ]) && containsText(msg, ['ha noi', 'hà nội', 'hanoi'])
+  );
+}
+
+/** English: list universities in Hanoi. */
+export function looksLikeEnglishLocationListQuery(msg: string): boolean {
+  const englishList =
+    /\b(what|which)\s+universit/i.test(msg) ||
+    /\buniversit(?:y|ies)\s+in\b/i.test(msg) ||
+    /\bcolleges?\s+in\b/i.test(msg);
+  return (
+    englishList &&
+    containsText(msg, ['hanoi', 'ha noi', 'hà nội', 'vietnam', 'viet nam'])
+  );
+}
+
+/** Xếp hạng/lọc học phí (thấp nhất, dưới X triệu…). */
+export function looksLikeTuitionRankingQuery(msg: string): boolean {
+  if (looksLikeSubjectiveTuitionQuery(msg)) return false;
+  if (looksLikeScoreRecommendation(msg)) return false;
+  const hasTuition = containsText(msg, [
+    'hoc phi',
+    'học phí',
+    'tuition',
+    'tuition fee',
+    'chi phi hoc',
+    'chi phí học',
+  ]);
+  const hasRank = containsText(msg, [
+    'thap nhat',
+    'thấp nhất',
+    're nhat',
+    'rẻ nhất',
+    'lowest',
+    'cheapest',
+    'thap hon',
+    'thấp hơn',
+    'duoi ',
+    'dưới ',
+    'under ',
+    'below ',
+  ]);
+  const hasSchool = containsText(msg, [
+    'truong',
+    'trường',
+    'universit',
+    'school',
+    'college',
+  ]);
+  if (hasTuition && hasRank && hasSchool) return true;
+  return (
+    containsText(msg, ['truong nao', 'trường nào']) &&
+    hasTuition &&
+    containsText(msg, ['thap', 'thấp', 're', 'rẻ', 'low', 'cheap'])
+  );
+}
+
+/** Học phí thấp + tiêu chí chủ quan "tốt" — cần hỏi cách đánh giá. */
+export function looksLikeSubjectiveTuitionQuery(msg: string): boolean {
+  return (
+    containsText(msg, ['hoc phi', 'học phí', 'tuition']) &&
+    containsText(msg, ['thap', 'thấp', 're', 'rẻ', 'low', 'cheap']) &&
+    containsText(msg, ['tot', 'tốt', 'good', 'best', 'uy tin', 'uy tín'])
+  );
+}
+
+/** Trường có điểm chuẩn thấp nhất cho một ngành — lọc DB, không chỉ liệt kê ngành. */
+export function looksLikeLowestCutoffWithMajorQuery(msg: string): boolean {
+  if (looksLikeCutoffScoreQuery(msg)) return false;
+  const hasSchoolQuestion = containsText(msg, [
+    'truong nao',
+    'trường nào',
+    'co truong nao',
+    'có trường nào',
+  ]);
+  const hasLowScore = containsText(msg, [
+    'diem thap',
+    'điểm thấp',
+    'thap nhat',
+    'thấp nhất',
+    're nhat',
+    'rẻ nhất',
+    'lowest',
+    'thap ma',
+    'thấp mà',
+  ]);
+  const hasMajor = containsText(msg, MAJOR_FIELD_CUES);
+  return hasSchoolQuestion && hasLowScore && hasMajor;
+}
+
+/** Đếm số ngành của một trường cụ thể (vd. NEU có bao nhiêu ngành?). */
+export function asksUniversityMajorCount(msg: string): boolean {
+  if (!extractExplicitUniversityFromMessage(msg)) return false;
+  return (
+    containsText(msg, [
+      'bao nhieu nganh',
+      'bao nhiêu ngành',
+      'co bao nhieu nganh',
+      'có bao nhiêu ngành',
+    ]) ||
+    (containsText(msg, ['bao nhieu', 'bao nhiêu']) &&
+      containsText(msg, ['nganh', 'ngành']))
+  );
+}
+
 /**
  * Ưu tiên: greeting/help → so sánh → cutoff → gợi ý → khu vực → trường/ngành.
  */
 export function ruleBasedClassify(msg: string): ChatIntent {
   const lower = msg.toLowerCase();
+  if (looksLikeOffTopicOrSecurityQuery(lower)) {
+    return 'unknown';
+  }
   if (looksLikeGreeting(lower)) {
     return 'greeting';
   }
@@ -1949,6 +2345,15 @@ export function ruleBasedClassify(msg: string): ChatIntent {
   if (looksLikeTuitionBillingQuery(lower)) {
     return 'ask_tuition_fee';
   }
+  if (looksLikeSubjectiveTuitionQuery(lower)) {
+    return 'recommendation_by_score';
+  }
+  if (looksLikeTuitionRankingQuery(lower)) {
+    return 'ask_tuition_fee';
+  }
+  if (looksLikeUniversityAliasQuestion(lower)) {
+    return 'search_university';
+  }
   if (
     looksLikeCompareUniversities(lower) ||
     (containsText(lower, [
@@ -1969,11 +2374,42 @@ export function ruleBasedClassify(msg: string): ChatIntent {
   if (looksLikeAdmissionMethod(lower)) {
     return 'ask_admission_method';
   }
+  if (looksLikeLowestCutoffWithMajorQuery(lower)) {
+    return 'recommendation_by_score';
+  }
   if (looksLikeScoreRecommendation(lower)) {
+    return 'recommendation_by_score';
+  }
+  if (looksLikeSuggestSchoolQuery(lower)) {
     return 'recommendation_by_score';
   }
   if (looksLikeRecommendationWithoutScore(lower)) {
     return 'recommendation_by_score';
+  }
+  if (looksLikeMajorChoiceQuery(lower)) {
+    return 'recommendation_by_score';
+  }
+  if (looksLikeSubjectiveSchoolQuery(lower)) {
+    return 'recommendation_by_score';
+  }
+  if (looksLikeUniversityAliasQuestion(lower)) {
+    return 'search_university';
+  }
+  if (looksLikeUniversityInfoQuery(lower)) {
+    return 'search_university';
+  }
+  if (looksLikeUniversityLocationQuery(lower)) {
+    return 'search_university';
+  }
+  if (
+    looksLikeNearbyQuery(lower) ||
+    looksLikeStudyInLocationQuery(lower) ||
+    looksLikeEnglishLocationListQuery(lower)
+  ) {
+    return 'ask_location';
+  }
+  if (asksUniversityMajorCount(lower)) {
+    return 'search_university';
   }
   if (looksLikeLocationListQuery(lower)) {
     return 'ask_location';
@@ -2036,7 +2472,10 @@ export function ruleBasedClassify(msg: string): ChatIntent {
   if (
     containsText(lower, ['trường', 'truong', 'đại học', 'dai hoc']) &&
     !asksWhichSchoolsTeachMajor(lower) &&
-    !looksLikeLocationListQuery(lower)
+    !looksLikeLocationListQuery(lower) &&
+    !looksLikeSubjectiveSchoolQuery(lower) &&
+    !looksLikeNearbyQuery(lower) &&
+    !looksLikeGarbledQuery(lower)
   ) {
     return 'search_university';
   }
@@ -2074,6 +2513,16 @@ export function ruleBasedClassify(msg: string): ChatIntent {
   if (containsText(lower, ['giúp', 'hỗ trợ', 'làm gì', 'có thể'])) {
     return 'help';
   }
+  if (
+    looksLikeGarbledQuery(lower) &&
+    containsText(lower, ['truong', 'trường'])
+  ) {
+    return 'unknown';
+  }
+  const singleTokenIntent = resolveSingleTokenIntent(lower);
+  if (singleTokenIntent) {
+    return singleTokenIntent;
+  }
   return 'unknown';
 }
 
@@ -2083,6 +2532,9 @@ export function ruleBasedClassify(msg: string): ChatIntent {
  */
 export function correctRuleIntent(intent: ChatIntent, msg: string): ChatIntent {
   const lower = msg.toLowerCase();
+  if (looksLikeOffTopicOrSecurityQuery(lower)) {
+    return 'unknown';
+  }
   if (looksLikeAdversarialFabrication(lower)) {
     return 'unknown';
   }
@@ -2127,6 +2579,90 @@ export function correctRuleIntent(intent: ChatIntent, msg: string): ChatIntent {
       return 'ask_scholarship';
     }
     return intent;
+  }
+  if (looksLikeCompareUniversities(lower)) {
+    if (
+      intent === 'search_major' ||
+      intent === 'search_university' ||
+      intent === 'recommendation_by_score' ||
+      intent === 'unknown'
+    ) {
+      return 'compare_universities';
+    }
+    return intent;
+  }
+  if (looksLikeLowestCutoffWithMajorQuery(lower)) {
+    if (
+      intent === 'search_major' ||
+      intent === 'search_university' ||
+      intent === 'unknown'
+    ) {
+      return 'recommendation_by_score';
+    }
+    return intent;
+  }
+  if (asksUniversityMajorCount(lower)) {
+    if (intent === 'search_major' || intent === 'unknown') {
+      return 'search_university';
+    }
+    return intent;
+  }
+  if (
+    looksLikeNearbyQuery(lower) ||
+    looksLikeStudyInLocationQuery(lower) ||
+    looksLikeEnglishLocationListQuery(lower)
+  ) {
+    if (intent === 'search_university' || intent === 'unknown') {
+      return 'ask_location';
+    }
+    return intent;
+  }
+  if (
+    looksLikeTuitionRankingQuery(lower) ||
+    looksLikeSubjectiveTuitionQuery(lower)
+  ) {
+    if (looksLikeSubjectiveTuitionQuery(lower)) {
+      if (
+        intent === 'ask_location' ||
+        intent === 'search_university' ||
+        intent === 'search_major' ||
+        intent === 'unknown'
+      ) {
+        return 'recommendation_by_score';
+      }
+      return intent;
+    }
+    if (
+      intent === 'ask_location' ||
+      intent === 'search_university' ||
+      intent === 'unknown'
+    ) {
+      return 'ask_tuition_fee';
+    }
+    return intent;
+  }
+  if (
+    looksLikeMajorChoiceQuery(lower) ||
+    looksLikeSubjectiveSchoolQuery(lower)
+  ) {
+    if (
+      intent === 'search_university' ||
+      intent === 'search_major' ||
+      intent === 'unknown'
+    ) {
+      return 'recommendation_by_score';
+    }
+    return intent;
+  }
+  if (
+    looksLikeGarbledQuery(lower) &&
+    containsText(lower, ['truong', 'trường'])
+  ) {
+    return 'unknown';
+  }
+  const singleToken = resolveSingleTokenIntent(lower);
+  if (singleToken && intent === 'unknown') {
+    return singleToken;
   }
   if (asksWhichSchoolsTeachMajor(lower)) {
     if (
@@ -2184,14 +2720,26 @@ export function correctRuleIntent(intent: ChatIntent, msg: string): ChatIntent {
     }
     return intent;
   }
-  if (looksLikeCompareUniversities(lower)) {
+  if (looksLikeSuggestSchoolQuery(lower)) {
     if (
       intent === 'search_university' ||
       intent === 'search_major' ||
-      intent === 'recommendation_by_score' ||
       intent === 'unknown'
     ) {
-      return 'compare_universities';
+      return 'recommendation_by_score';
+    }
+    return intent;
+  }
+  if (
+    looksLikeUniversityInfoQuery(lower) ||
+    looksLikeUniversityLocationQuery(lower)
+  ) {
+    if (
+      intent === 'unknown' ||
+      intent === 'ask_location' ||
+      intent === 'search_major'
+    ) {
+      return 'search_university';
     }
     return intent;
   }

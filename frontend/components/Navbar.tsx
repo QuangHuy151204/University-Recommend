@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Top navigation with auth state, language switcher, and main links.
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Search } from 'lucide-react';

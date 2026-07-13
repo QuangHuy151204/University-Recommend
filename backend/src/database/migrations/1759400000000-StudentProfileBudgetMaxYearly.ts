@@ -1,3 +1,4 @@
+// @file: Database migration: StudentProfileBudgetMaxYearly.
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class StudentProfileBudgetMaxYearly1759400000000 implements MigrationInterface {

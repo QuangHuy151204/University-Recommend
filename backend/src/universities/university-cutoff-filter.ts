@@ -1,3 +1,4 @@
+// @file: Filters university majors by latest cutoff relative to a student score.
 import {
   CUTOFF_FILTER_YEARS,
   cutoffMatchesSubjectCombination,

@@ -1,3 +1,4 @@
+// @file: Automated tests for major normalization.
 import {
   canonicalFieldGroup,
   canonicalMajorName,

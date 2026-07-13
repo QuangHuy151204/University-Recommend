@@ -1,3 +1,4 @@
+// @file: Merges Ollama intent scores with rule-based intent resolution.
 import {
   classifyIntentRuleOnly,
   correctRuleIntent,

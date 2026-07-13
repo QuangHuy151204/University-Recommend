@@ -1,3 +1,4 @@
+// @file: Major catalog page with search and major group navigation.
 import { listMajorGroups, listMajors } from '@/services/majors';
 import { ApiClientError } from '@/lib/api';
 import type { Major, MajorGroupSummary, Paginated } from '@/types';

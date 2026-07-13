@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Dropdown for THPT subject combination codes.
 import { useEffect, useId, useRef, useState } from 'react';
 import { ChevronDown, X } from 'lucide-react';
 import { listSubjectCombinations } from '@/services/cutoff-scores';

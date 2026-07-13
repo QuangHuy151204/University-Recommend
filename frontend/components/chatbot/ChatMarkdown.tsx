@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Renders assistant chat messages as Markdown with GFM tables.
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { cn } from '@/lib/utils';

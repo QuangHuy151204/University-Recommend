@@ -1,3 +1,4 @@
+// @file: Validated request/response DTOs for user registration, login, JWT cookies, and password reset.
 import {
   IsEmail,
   IsString,

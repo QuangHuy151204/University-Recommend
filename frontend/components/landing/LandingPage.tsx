@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Marketing-style landing content for anonymous visitors.
 import Link from 'next/link';
 import {
     BarChart3,

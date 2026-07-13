@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Chat UI: message list, session sidebar, suggested prompts, and compare cards.
 import { useEffect, useRef, useState, Suspense } from 'react';
 import {
     Check,

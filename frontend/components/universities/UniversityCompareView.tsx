@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Renders the comparison table for multiple universities.
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';

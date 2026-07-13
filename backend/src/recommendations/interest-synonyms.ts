@@ -1,3 +1,4 @@
+// @file: Expands student interest keywords to match major names and tags.
 /** Đồng nghĩa sở thích → cụm tra khớp tên ngành / field_group (lowercase). */
 const INTEREST_SYNONYM_MAP: Record<string, string[]> = {
   'lap trinh': [

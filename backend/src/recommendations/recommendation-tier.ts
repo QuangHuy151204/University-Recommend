@@ -1,3 +1,4 @@
+// @file: Maps score gaps to Reach/Match/Safety tiers and caps result diversity.
 import type { AdmissionTier } from './recommendation.response';
 
 /** Phân tầng Reach / Match / Safety theo chênh lệch điểm dự kiến − điểm chuẩn. */

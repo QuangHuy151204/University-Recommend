@@ -1,3 +1,4 @@
+// @file: Follow-up chat regression cases that depend on session context.
 import type { ChatEntities, ChatIntent } from './chatbot.types';
 
 /** Turn 2 trong kịch bản multi-turn — session từ turn 1 qua context_note. */

@@ -1,3 +1,4 @@
+// @file: API client for major list, detail, and major group endpoints.
 import { api } from '@/lib/api';
 
 import type {

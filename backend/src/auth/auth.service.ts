@@ -1,3 +1,4 @@
+// @file: Business logic for user registration, login, JWT cookies, and password reset.
 import {
   Injectable,
   ConflictException,

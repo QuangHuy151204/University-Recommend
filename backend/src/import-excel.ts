@@ -1,3 +1,4 @@
+// @file: Loads master Excel data (universities, majors, cutoffs) into PostgreSQL.
 /**
  * Import toàn bộ dữ liệu từ mau_du_lieu_truong_dai_hoc_5_sheets_bo_sung_phuong.xlsx vào PostgreSQL.
  *
@@ -10,7 +11,6 @@
 
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
-import * as fs from 'fs';
 import * as path from 'path';
 import * as XLSX from 'xlsx';
 import { DATA_SCOPE_LOCATION, isHanoiLocation } from './common/data-scope';
@@ -40,7 +40,9 @@ const SHEET_DTN = 'cutoff_scores(ĐTN)';
 const SHEET_DGNL = 'cutoff_scores(ĐGNL)';
 
 function isMergeMode(): boolean {
-  return process.argv.includes('--merge') || process.env.IMPORT_MERGE === 'true';
+  return (
+    process.argv.includes('--merge') || process.env.IMPORT_MERGE === 'true'
+  );
 }
 
 function cleanStr(v: unknown): string | null {

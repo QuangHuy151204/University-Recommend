@@ -1,3 +1,5 @@
+// @file: Intent examples and handler metadata used by the chatbot classifier.
+import { isCutoffMissingAnswer } from './chatbot-guardrails';
 import { DB_MAJOR_LIST_PREFIX } from './chatbot-copy';
 import {
   CHAT_INTENTS,
@@ -69,43 +71,43 @@ export const COMBINED_EXAMPLES = COMBINED_EXAMPLES_FULL as Array<{
   context_note: string | null;
 }>;
 
-/** Intent → handler + Ollama rewrite policy (Step 1 matrix). */
+/** Intent → handler + Ollama rewrite policy. */
 export const INTENT_HANDLER_MATRIX: Record<ChatIntent, IntentHandlerConfig> = {
   recommendation_by_score: {
     handler: 'handleScoreQuery',
     needsEntities: true,
     skipOllamaRewrite: false,
-    skipRewriteWhenStructured: true,
+    skipRewriteWhenStructured: false,
   },
   ask_cutoff_score: {
     handler: 'handleCutoffQuery',
     needsEntities: true,
     skipOllamaRewrite: false,
-    skipRewriteWhenStructured: true,
+    skipRewriteWhenStructured: false,
   },
   search_university: {
     handler: 'handleUniversityQuery',
     needsEntities: true,
     skipOllamaRewrite: false,
-    skipRewriteWhenStructured: true,
+    skipRewriteWhenStructured: false,
   },
   search_major: {
     handler: 'handleMajorQuery',
     needsEntities: true,
     skipOllamaRewrite: false,
-    skipRewriteWhenStructured: true,
+    skipRewriteWhenStructured: false,
   },
   ask_tuition_fee: {
     handler: 'handleTuitionQuery',
     needsEntities: true,
     skipOllamaRewrite: false,
-    skipRewriteWhenStructured: true,
+    skipRewriteWhenStructured: false,
   },
   ask_location: {
     handler: 'handleLocationQuery',
     needsEntities: true,
     skipOllamaRewrite: false,
-    skipRewriteWhenStructured: true,
+    skipRewriteWhenStructured: false,
   },
   compare_universities: {
     handler: 'handleCompareQuery',
@@ -123,7 +125,7 @@ export const INTENT_HANDLER_MATRIX: Record<ChatIntent, IntentHandlerConfig> = {
     handler: 'handleAdmissionMethodQuery',
     needsEntities: true,
     skipOllamaRewrite: false,
-    skipRewriteWhenStructured: true,
+    skipRewriteWhenStructured: false,
   },
   ask_scholarship: {
     handler: 'handleScholarshipQuery',
@@ -135,7 +137,7 @@ export const INTENT_HANDLER_MATRIX: Record<ChatIntent, IntentHandlerConfig> = {
     handler: 'handleFacilitiesQuery',
     needsEntities: true,
     skipOllamaRewrite: false,
-    skipRewriteWhenStructured: true,
+    skipRewriteWhenStructured: false,
   },
   greeting: {
     handler: 'getGreeting',
@@ -173,7 +175,7 @@ const STRUCTURED_DB_MARKERS = [
   'chưa có điểm chuẩn',
 ];
 
-/** Rule answer chứa số/list từ PostgreSQL → không rewrite bằng Ollama. */
+/** Rule answer chứa số/list từ PostgreSQL — dùng cho prompt rewrite (giữ nguyên block số liệu). */
 export function isStructuredDbAnswer(ruleAnswer: string): boolean {
   if (!ruleAnswer?.trim()) return false;
   if (STRUCTURED_DB_MARKERS.some((m) => ruleAnswer.includes(m))) return true;
@@ -192,6 +194,7 @@ export function shouldSkipOllamaRewrite(
   if (cfg.skipRewriteWhenStructured && isStructuredDbAnswer(ruleAnswer)) {
     return true;
   }
+  if (isCutoffMissingAnswer(ruleAnswer)) return true;
   if (isRefusalOrScopeAnswer(ruleAnswer)) return true;
   return false;
 }

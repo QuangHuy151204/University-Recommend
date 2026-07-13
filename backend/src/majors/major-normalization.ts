@@ -1,3 +1,4 @@
+// @file: Source file for major catalog, groups, and university-program links: major normalization.
 import { classifyMajor } from './major-classification';
 import { KHAC_GROUP_NAME, MAJOR_GROUPS } from './major-groups-catalog';
 

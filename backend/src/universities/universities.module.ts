@@ -1,3 +1,4 @@
+// @file: NestJS module that registers university catalog, search, and filters controllers, services, and entities.
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UniversitiesController } from './universities.controller';

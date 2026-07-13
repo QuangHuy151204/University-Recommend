@@ -1,3 +1,4 @@
+// @file: Automated tests for major name match.
 import {
   filterMajorIdsBySelectionName,
   majorNameMatchesSelection,

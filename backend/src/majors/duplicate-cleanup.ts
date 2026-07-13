@@ -1,3 +1,4 @@
+// @file: Detects and merges duplicate major records during import.
 import { canonicalMajorName } from './major-normalization';
 
 export type MajorCleanupRow = {

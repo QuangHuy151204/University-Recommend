@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Suggested question chips shown above the chat input.
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Lightbulb, X } from 'lucide-react';

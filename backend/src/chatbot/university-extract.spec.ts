@@ -1,3 +1,4 @@
+// @file: Automated tests for university extract.
 import {
   collectUniversityNames,
   extractUniversitiesFromMessage,

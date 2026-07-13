@@ -1,3 +1,4 @@
+// @file: Business logic for admin dashboard and system statistics.
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 

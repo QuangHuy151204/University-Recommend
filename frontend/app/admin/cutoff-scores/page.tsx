@@ -1,3 +1,4 @@
+// @file: Next.js page route for /admin/cutoff-scores.
 import { redirect } from 'next/navigation';
 
 export default function AdminCutoffScoresRedirect() {

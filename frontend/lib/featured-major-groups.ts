@@ -1,3 +1,4 @@
+// @file: Frontend helper module for featured major groups.
 export interface FeaturedMajorGroupCopy {
     title: string;
     majors: string;

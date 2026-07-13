@@ -1,3 +1,4 @@
+// @file: Automated tests for university filtered major cutoff.
 import {
   buildFilteredMajorCutoffMap,
   pickFilteredMajorCutoffScore,

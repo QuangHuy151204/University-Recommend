@@ -1,3 +1,4 @@
+// @file: Canonical list of major groups used during import and browsing.
 /** Nhóm ngành chuẩn — chỉ dùng cho UI/filter, không dùng làm logic phân loại AI. */
 export type MajorGroupDef = {
   group_id: string;

@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Autocomplete picker for Hanoi ward filters.
 import { useEffect, useState } from 'react';
 import { listWards } from '@/services/universities';
 import { useLocale } from '@/lib/i18n/locale';

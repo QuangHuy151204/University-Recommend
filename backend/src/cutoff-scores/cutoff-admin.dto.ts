@@ -1,3 +1,4 @@
+// @file: Validated DTOs for admin create/update of cutoff score records.
 import { IsInt, IsOptional, IsString, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 

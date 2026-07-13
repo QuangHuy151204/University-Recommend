@@ -1,3 +1,4 @@
+// @file: Business logic for major catalog, groups, and university-program links.
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';

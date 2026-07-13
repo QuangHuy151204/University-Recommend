@@ -1,3 +1,4 @@
+// @file: Automated tests for major search.
 import {
   pickMajorInterestPhrase,
   resolveMajorSearchTerm,
@@ -32,9 +33,9 @@ describe('major-search', () => {
   });
 
   it('resolveMajorSearchTerm does not map ai inside đại học', () => {
-    expect(
-      resolveMajorSearchTerm('điểm chuẩn đại học USTH ngành Dược'),
-    ).toBe('Dược');
+    expect(resolveMajorSearchTerm('điểm chuẩn đại học USTH ngành Dược')).toBe(
+      'Dược',
+    );
   });
 
   it('resolveMajorSearchTerm still maps standalone AI alias', () => {
@@ -56,7 +57,9 @@ describe('major-search', () => {
 
   it('resolveMajorSearchTerm maps unaccented CNTT fragment', () => {
     expect(
-      resolveMajorSearchTerm('diem chuan nganh cong nghe thong tin truong USTH'),
+      resolveMajorSearchTerm(
+        'diem chuan nganh cong nghe thong tin truong USTH',
+      ),
     ).toBe('Công nghệ thông tin');
   });
 

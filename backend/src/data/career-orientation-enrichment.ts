@@ -1,3 +1,4 @@
+// @file: Rules that fill career_orientation text for IT, economics, and medical majors.
 import { canonicalFieldGroup } from '../majors/major-normalization';
 
 /** Nhóm ngành ưu tiên bổ sung career_orientation (theo yêu cầu đồ án). */
@@ -24,7 +25,10 @@ function normalizeText(input: string): string {
 export function stripProgramSuffix(name: string): string {
   return name
     .replace(/\s*[\(\-–—].*$/, '')
-    .replace(/\s+(CLC|clc|chất lượng cao|tiên tiến|quốc tế|POHE|pohe)\b.*$/i, '')
+    .replace(
+      /\s+(CLC|clc|chất lượng cao|tiên tiến|quốc tế|POHE|pohe)\b.*$/i,
+      '',
+    )
     .trim();
 }
 
@@ -85,7 +89,8 @@ export const MAJOR_CAREER_PATTERN_RULES: PatternRule[] = [
   {
     id: 'bac-si',
     group: 'Y dược - Sức khỏe',
-    test: (n) => n.includes('bac si') || n.includes('y khoa') || n.includes('y hoc'),
+    test: (n) =>
+      n.includes('bac si') || n.includes('y khoa') || n.includes('y hoc'),
     text: 'Bác sĩ đa khoa/chuyên khoa (sau đào tạo chuyên sâu); bác sĩ nội trú; cán bộ y tế cơ sở; nghiên cứu lâm sàng',
   },
   {
@@ -166,7 +171,10 @@ function isEnrichTargetGroup(group: string): group is EnrichFieldGroup {
   return (ENRICH_FIELD_GROUPS as readonly string[]).includes(group);
 }
 
-function matchPattern(norm: string, group: EnrichFieldGroup): PatternRule | null {
+function matchPattern(
+  norm: string,
+  group: EnrichFieldGroup,
+): PatternRule | null {
   for (const rule of MAJOR_CAREER_PATTERN_RULES) {
     if (rule.group && rule.group !== group) continue;
     if (rule.test(norm)) return rule;

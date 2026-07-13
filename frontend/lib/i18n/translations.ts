@@ -1,3 +1,4 @@
+// @file: Vietnamese/English UI string catalog for the frontend.
 export type Locale = 'vi' | 'en';
 
 export const LOCALE_STORAGE_KEY = 'uniguide-locale';

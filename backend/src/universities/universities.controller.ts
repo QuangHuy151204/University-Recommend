@@ -1,3 +1,4 @@
+// @file: REST API endpoints exposing university catalog, search, and filters.
 import {
   Controller,
   Get,

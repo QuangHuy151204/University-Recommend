@@ -1,3 +1,4 @@
+// @file: NestJS module that registers major catalog, groups, and university-program links controllers, services, and entities.
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MajorsController } from './majors.controller';

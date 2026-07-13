@@ -1,3 +1,4 @@
+// @file: Business logic for university–major program links.
 import {
   Injectable,
   NotFoundException,

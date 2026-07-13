@@ -1,3 +1,4 @@
+// @file: Database migration: CutoffScoreFilterIndexes.
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /** Speed up university browse filters (latest-year cutoff join). */

@@ -1,3 +1,4 @@
+// @file: NestJS module that registers student favorite universities and programs controllers, services, and entities.
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FavoritesController } from './favorites.controller';

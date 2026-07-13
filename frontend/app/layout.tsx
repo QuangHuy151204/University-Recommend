@@ -1,3 +1,4 @@
+// @file: Next.js layout wrapper shared by pages under /.
 import type { Metadata } from 'next';
 import { Hanken_Grotesk, Inter } from 'next/font/google';
 import './globals.css';

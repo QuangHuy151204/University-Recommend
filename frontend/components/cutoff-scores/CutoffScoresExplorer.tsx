@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Student UI to browse and filter cutoff scores across schools.
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';

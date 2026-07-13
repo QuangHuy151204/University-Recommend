@@ -1,3 +1,4 @@
+// @file: Assigns majors to field groups and tags from classification rules.
 import {
   KHAC_GROUP_ID,
   KHAC_GROUP_NAME,

@@ -49,6 +49,17 @@ _scrape_log.json
 # ─── Local docs / diagrams (not for repo) ───────────────────
 docs/
 
+# ─── Cursor / IDE (local AI rules) ───────────────────────────
+.cursor/
+
+# ─── Backup / temp data ───────────────────────────────────────
+*.bak
+*.bak-*
+
+# ─── QA run artifacts (regenerable) ───────────────────────────
+backend/scripts/qa-results.json
+backend/scripts/qa-full-results.json
+
 # ─── Misc ───────────────────────────────────────────────────
 .vercel
 *.pem

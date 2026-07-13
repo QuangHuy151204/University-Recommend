@@ -1,3 +1,4 @@
+// @file: CLI that enriches major career_orientation fields in Excel and optionally imports them.
 /**
  * Bổ sung career_orientation vào sheet `majors` của file Excel master.
  *

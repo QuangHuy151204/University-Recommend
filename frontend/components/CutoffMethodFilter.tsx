@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Filter control for admission method when viewing cutoffs.
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import type { AdmissionMethod, CutoffScore } from '@/types';

@@ -1,3 +1,4 @@
+// @file: Database migration: StudentProfilePreferredMethod.
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class StudentProfilePreferredMethod1760000000001 implements MigrationInterface {

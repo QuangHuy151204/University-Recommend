@@ -1,3 +1,4 @@
+// @file: CLI entry point that runs the Excel-to-PostgreSQL import.
 /**
  * Import Excel master → PostgreSQL.
  *

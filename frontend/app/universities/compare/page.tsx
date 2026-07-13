@@ -1,3 +1,4 @@
+// @file: Next.js page route for /universities/compare.
 import Link from 'next/link';
 import { getUniversitiesByIds } from '@/services/universities';
 import { listAdmissionMethods } from '@/services/admission-methods';

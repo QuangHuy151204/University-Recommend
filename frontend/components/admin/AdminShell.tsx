@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Admin layout with sidebar tabs and content area.
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';

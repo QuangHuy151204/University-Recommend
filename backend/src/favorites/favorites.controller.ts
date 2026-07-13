@@ -1,3 +1,4 @@
+// @file: REST API endpoints exposing student favorite universities and programs.
 import {
   Body,
   Controller,

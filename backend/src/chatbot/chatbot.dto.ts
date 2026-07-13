@@ -1,3 +1,4 @@
+// @file: Validated request/response DTOs for chatbot sessions, intents, and database-grounded answers.
 import { IsOptional, IsString, MinLength } from 'class-validator';
 
 export class ChatMessageDto {

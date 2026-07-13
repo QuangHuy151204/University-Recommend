@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Lists programs offering a major at various universities.
 import { useMemo, useState } from 'react';
 import { SearchField } from '@/components/ui/SearchField';
 import { MajorProgramCard } from '@/components/majors/MajorProgramCard';

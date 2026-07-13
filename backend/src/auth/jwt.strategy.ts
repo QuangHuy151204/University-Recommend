@@ -1,3 +1,4 @@
+// @file: Passport strategy that validates JWT tokens for authenticated routes.
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';

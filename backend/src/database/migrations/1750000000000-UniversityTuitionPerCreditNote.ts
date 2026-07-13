@@ -1,3 +1,4 @@
+// @file: Database migration: UniversityTuitionPerCreditNote.
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class UniversityTuitionPerCreditNote1750000000000 implements MigrationInterface {

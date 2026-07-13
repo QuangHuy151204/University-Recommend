@@ -1,3 +1,4 @@
+// @file: API client for listing and updating user favorites.
 import { api } from '@/lib/api';
 
 import type { Major, University } from '@/types';

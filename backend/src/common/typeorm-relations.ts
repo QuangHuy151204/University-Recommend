@@ -1,3 +1,4 @@
+// @file: Helpers for loading TypeORM relation graphs consistently.
 /** Stub quan hệ TypeORM khi chỉ cần foreign key id. */
 export function relationById<T extends { id: number }>(
   id: number,

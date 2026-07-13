@@ -1,3 +1,4 @@
+// @file: Evaluates whether a university matches search filters (tuition, ward, type).
 import { DATA_SCOPE_LOCATION } from '../common/data-scope';
 import { CUTOFF_FILTER_YEARS } from '../common/subject-combination';
 import { filterMajorIdsBySelectionName } from '../majors/major-name-match';

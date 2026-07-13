@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Card showing one university program for a major.
 
 
 import Link from 'next/link';

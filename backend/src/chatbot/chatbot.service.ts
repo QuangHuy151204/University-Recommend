@@ -1,3 +1,4 @@
+// @file: Orchestrates chat turns: intent routing, DB queries, Ollama rewrite, and session history.
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
@@ -29,16 +30,22 @@ import {
   tierLabelChat,
 } from './chatbot-copy';
 import {
+  bullet,
+  bulletList,
+  formatAnswerMarkdown,
+  formatCutoffBullet,
+} from './chatbot-format';
+import {
   INTENT_CLASSIFY_DESCRIPTIONS,
   INTENT_HANDLER_MATRIX,
   corpusEntitiesToChatEntities,
+  isStructuredDbAnswer,
   selectPromptExamples,
   shouldSkipOllamaRewrite,
 } from './intent-corpus';
 import { isOllamaRewriteFaithful } from './chatbot-guardrails';
 import {
   asksUniversityOrPrograms,
-  asksUniversityPrograms,
   asksWhichSchoolsTeachMajor,
   classifyIntentRuleOnly,
   correctRuleIntent,
@@ -51,10 +58,16 @@ import {
   looksLikeScoreRecommendation,
   resolveFollowUpIntent,
   looksLikeCompareTuitionFollowUp,
+  looksLikeMajorChoiceQuery,
+  looksLikeNearbyQuery,
+  looksLikeOffTopicOrSecurityQuery,
+  looksLikeSubjectiveSchoolQuery,
+  looksLikeSubjectiveTuitionQuery,
 } from './chatbot-intent-rules';
 import {
   shouldPreferRuleOverOllamaIntent,
   validateEntitiesAgainstDb,
+  SUBJECT_WORD_TOKENS,
 } from './chatbot-guardrails';
 import {
   extractMajorFragment,
@@ -62,6 +75,7 @@ import {
   resolveMajorSearchTerm,
 } from './major-search';
 import { collectUniversityNames } from './university-extract';
+import { normalizeUniversitySearchToken } from './university-aliases';
 import {
   buildSessionContextHint,
   mergeEntitiesWithSession,
@@ -184,6 +198,7 @@ export type { ChatEntities } from './chatbot.types';
 export class ChatbotService {
   private readonly logger = new Logger(ChatbotService.name);
   private allowedMethodCodes: Set<string> | null = null;
+  private universityShortNames: string[] | null = null;
 
   constructor(
     @InjectRepository(ChatSession)
@@ -217,7 +232,6 @@ export class ChatbotService {
     const session = await this.resolveChatSession(userId, sessionId);
     const sessionContext = parseSessionContext(session.session_context);
 
-    // Step 4: load 5 turn gần nhất + session carry-over (last_university/major/intent).
     const conversationContext = await this.loadConversationContext(
       userId,
       sessionId,
@@ -245,10 +259,12 @@ export class ChatbotService {
     let finalAnswer = ruleAnswer;
     let engine: 'ollama' | 'rule' = 'rule';
 
-    const skipRewrite = shouldSkipOllamaRewrite(ruleAnswer, intent);
+    const skipRewrite =
+      shouldSkipOllamaRewrite(ruleAnswer, intent) ||
+      looksLikeOffTopicOrSecurityQuery(normalizedMsg);
     if (skipRewrite) {
       this.logger.debug(
-        `Skip Ollama rewrite — intent=${intent} (${INTENT_HANDLER_MATRIX[intent].handler}), structured DB answer.`,
+        `Skip Ollama rewrite — intent=${intent} (${INTENT_HANDLER_MATRIX[intent].handler}).`,
       );
     }
 
@@ -444,16 +460,21 @@ export class ChatbotService {
       .join('\n');
   }
 
-  /**
-   * Prompt cho Ollama: yêu cầu diễn đạt lại CHỈ DỰA TRÊN context lấy từ DB.
-   * Không cho phép tự bịa thêm thông tin. Conversation context (nếu có) chỉ để
-   * LLM biết tone/sự liên tục — TUYỆT ĐỐI không lấy số liệu từ đó.
-   */
+  /** Ollama rewrite prompt — facts must come only from dbAnswer, not conversation history. */
   private buildOllamaPrompt(
     userMessage: string,
     dbAnswer: string,
     context = '',
   ): string {
+    const structured = isStructuredDbAnswer(dbAnswer);
+    const structuredHints = structured
+      ? [
+          '- Dữ liệu tham chiếu có danh sách hoặc số liệu cụ thể: chỉ làm mềm câu mở đầu/kết.',
+          '- Copy nguyên văn mọi dòng bullet (•), dòng đánh số, điểm chuẩn, học phí, tên trường/ngành.',
+          '- Không gộp, rút gọn hay đổi thứ tự các mục trong danh sách.',
+        ]
+      : [];
+
     return [
       context
         ? `Lịch sử hội thoại (chỉ tham khảo tone, KHÔNG được lấy số liệu từ đây):\n"""\n${context}\n"""\n`
@@ -471,9 +492,10 @@ export class ChatbotService {
       '- TUYỆT ĐỐI không thêm tên trường, điểm chuẩn, học phí, ngành hay phương thức xét tuyển ngoài dữ liệu tham chiếu.',
       '- Nếu thiếu dữ liệu hoặc không có danh sách ngành, nói thẳng là chưa có — không tự bịa danh sách.',
       '- Giữ nguyên mọi con số và từng tên ngành/chương trình đúng như trong dữ liệu.',
-      '- Không rút gọn danh sách có sẵn; không dùng markdown ( hoặc `).',
+      '- Không rút gọn danh sách có sẵn; không dùng markdown (**, `).',
       '- Không nhắc backend, database, PostgreSQL, API hay "dữ liệu hệ thống".',
       '- Tối đa 1–2 emoji nhẹ (tùy chọn); không disclaimer dài trừ khi đã có trong dữ liệu.',
+      ...structuredHints,
     ]
       .filter(Boolean)
       .join('\n');
@@ -495,9 +517,13 @@ export class ChatbotService {
       this.logger.debug(
         `Pre-classification guard fired: ${preGuard.guardType}`,
       );
+      const guardIntent: ChatIntent =
+        preGuard.guardType === 'foreign_university'
+          ? 'ask_cutoff_score'
+          : 'unknown';
       return {
         answer: preGuard.answer,
-        intent: 'unknown',
+        intent: guardIntent,
         entities: EMPTY_ENTITIES,
         comparedUniversities: null,
         compareUniversityIds: null,
@@ -521,6 +547,7 @@ export class ChatbotService {
     );
 
     let answer: string;
+    let effectiveIntent = intent;
     switch (intent) {
       case 'ask_cutoff_score':
         answer = await this.handleCutoffQuery(entities, msg);
@@ -535,7 +562,7 @@ export class ChatbotService {
         answer = await this.handleTuitionQuery(entities, msg, sessionContext);
         break;
       case 'ask_location':
-        answer = await this.handleLocationQuery(entities);
+        answer = await this.handleLocationQuery(entities, msg);
         break;
       case 'recommendation_by_score':
         answer = await this.handleScoreQuery(entities, msg);
@@ -570,6 +597,10 @@ export class ChatbotService {
           answer = `${CHAT_SCOPE_HANOI} Hiện tại mình chưa có dữ liệu trường/ngành ngoài khu vực Hà Nội. Bạn có thể hỏi về các trường đại học ở Hà Nội nhé!`;
         } else if (looksLikeScoreRecommendation(msg)) {
           answer = await this.handleScoreQuery(entities, msg);
+        } else if (await this.detectShortNameInMessage(msg)) {
+          // Câu ngắn/sửa lại chỉ nêu mã trường (vd. "UTC cơ mà") → coi là hỏi trường.
+          effectiveIntent = 'search_university';
+          answer = await this.handleUniversityQuery(entities, msg);
         } else {
           answer = this.getDefaultAnswer();
         }
@@ -592,7 +623,7 @@ export class ChatbotService {
 
     return {
       answer,
-      intent,
+      intent: effectiveIntent,
       entities,
       comparedUniversities,
       compareUniversityIds,
@@ -735,13 +766,7 @@ export class ChatbotService {
     };
   }
 
-  /**
-   * Ưu tiên Ollama classify; nếu Ollama disabled / lỗi / confidence thấp
-   * → fallback rule-based để bot vẫn chạy được khi LLM down.
-   *
-   * `context` (Step 4) giúp LLM xử lý câu follow-up
-   * (vd "còn ngành CNTT thì sao?" sau câu hỏi về điểm chuẩn BKHN).
-   */
+  /** Ollama classify with rule fallback when disabled, low confidence, or conflict. */
   private async classifyIntent(
     msg: string,
     context = '',
@@ -810,7 +835,7 @@ export class ChatbotService {
   private async resolveUniversityByNameToken(
     token: string,
   ): Promise<University | null> {
-    const name = token.trim();
+    const name = normalizeUniversitySearchToken(token.trim());
     if (name.length < 2) return null;
 
     const byShort = await this.univRepo.findOne({
@@ -818,9 +843,44 @@ export class ChatbotService {
     });
     if (byShort) return byShort;
 
+    if (name.includes('-')) {
+      return null;
+    }
+
     return this.univRepo.findOne({
       where: [{ name: ILike(`%${name}%`) }, { short_name: ILike(`%${name}%`) }],
     });
+  }
+
+  /** Cache short_name của mọi trường trong DB (không hard-code — tránh sót UTC/UTT/HOU…). */
+  private async getUniversityShortNames(): Promise<string[]> {
+    if (!this.universityShortNames) {
+      const rows = await this.univRepo.find({ select: ['short_name'] });
+      this.universityShortNames = rows
+        .map((r) => r.short_name?.trim())
+        .filter((s): s is string => !!s && s.length >= 2);
+    }
+    return this.universityShortNames;
+  }
+
+  /**
+   * Tìm mã trường (short_name có trong DB) xuất hiện nguyên chữ trong câu.
+   * DB-backed nên nhận diện đủ mọi trường; bỏ qua token trùng tên môn (ANH…).
+   * Ưu tiên mã dài nhất để "VNU-UET" không bị "UET" cắt mất.
+   */
+  private async detectShortNameInMessage(msg: string): Promise<string | null> {
+    const haystack = ` ${msg.toUpperCase().replace(/[^A-Z0-9-]+/g, ' ')} `;
+    const names = [...(await this.getUniversityShortNames())].sort(
+      (a, b) => b.length - a.length,
+    );
+    for (const sn of names) {
+      const token = sn.toUpperCase();
+      if (SUBJECT_WORD_TOKENS.has(token)) continue;
+      const escaped = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const re = new RegExp(`(?:^| )${escaped}(?: |$)`);
+      if (re.test(haystack)) return sn;
+    }
+    return null;
   }
 
   private async findUniversityByEntities(
@@ -828,6 +888,15 @@ export class ChatbotService {
     msg: string,
   ): Promise<University | null> {
     const msgLower = msg.toLowerCase();
+
+    // Ưu tiên mã trường nêu thẳng trong CÂU HIỆN TẠI hơn entity mang từ session
+    // (tránh giữ trường cũ khi người dùng đổi sang UTC/UTT… — vốn không có trong
+    // danh sách viết tắt hard-code).
+    const inMsgShort = await this.detectShortNameInMessage(msg);
+    if (inMsgShort) {
+      const byMsg = await this.resolveUniversityByNameToken(inMsgShort);
+      if (byMsg) return byMsg;
+    }
 
     if (entities.university_name) {
       const tokens = entities.university_name
@@ -959,9 +1028,9 @@ export class ChatbotService {
     // Filter theo year/major nếu entity có; nếu không, lấy 6 cutoff gần nhất.
     const qb = this.cutoffRepo
       .createQueryBuilder('cs')
-      .innerJoin('cs.universityMajor', 'um')
+      .innerJoinAndSelect('cs.universityMajor', 'um')
+      .innerJoinAndSelect('um.major', 'm')
       .innerJoin('um.university', 'u')
-      .innerJoin('um.major', 'm')
       .where('u.id = :id', { id: mentioned.id });
 
     if (entities.year) {
@@ -991,9 +1060,9 @@ export class ChatbotService {
     if (cutoffs.length === 0 && entities.year) {
       const qbAnyYear = this.cutoffRepo
         .createQueryBuilder('cs')
-        .innerJoin('cs.universityMajor', 'um')
+        .innerJoinAndSelect('cs.universityMajor', 'um')
+        .innerJoinAndSelect('um.major', 'm')
         .innerJoin('um.university', 'u')
-        .innerJoin('um.major', 'm')
         .where('u.id = :id', { id: mentioned.id });
       if (majorFilter) {
         qbAnyYear.andWhere(majorTagSearchWhere('m'), {
@@ -1016,10 +1085,7 @@ export class ChatbotService {
         .getMany();
       if (fallbackCutoffs.length > 0) {
         const lines = fallbackCutoffs
-          .map(
-            (c) =>
-              `• Năm ${c.year} — tổ hợp ${c.subject_combination || 'chưa rõ'}: ${c.score} điểm (${c.admission_method || 'THPT Quốc gia'})`,
-          )
+          .map((c) => formatCutoffBullet(c))
           .join('\n');
         return `Không có điểm chuẩn năm ${entities.year} cho ${mentioned.name}${majorFilter ? ` — ngành ${majorFilter}` : ''} trong dữ liệu hiện tại. Các năm có sẵn:\n${lines}\n\n${CHAT_DISCLAIMER_CUTOFF}`;
       }
@@ -1039,12 +1105,7 @@ export class ChatbotService {
       return `Mình chưa có điểm chuẩn cho ${mentioned.name}${filter ? ` (${filter})` : ''} trong dữ liệu hiện tại. Bạn nên xem thêm trên website trường: ${mentioned.website || 'chưa có link'}.`;
     }
 
-    const lines = cutoffs
-      .map(
-        (c) =>
-          `• Năm ${c.year} — tổ hợp ${c.subject_combination || 'chưa rõ'}: ${c.score} điểm (${c.admission_method || 'THPT Quốc gia'})`,
-      )
-      .join('\n');
+    const lines = cutoffs.map((c) => formatCutoffBullet(c)).join('\n');
     const methodLabel = entities.method_code
       ? await this.admissionMethods.resolveLabel(entities.method_code)
       : null;
@@ -1120,7 +1181,12 @@ export class ChatbotService {
           ? `${(mentioned.tuition_fee_min / 1_000_000).toFixed(0)}-${(mentioned.tuition_fee_max / 1_000_000).toFixed(0)} triệu/năm`
           : 'Chưa cập nhật';
 
-      return `${mentioned.name} (${mentioned.short_name})\n• Địa điểm: ${mentioned.location}\n• Loại hình: ${this.translateType(mentioned.type)}\n• Học phí tham khảo: ${budgetText}\n• Website: ${mentioned.website || 'chưa có'}\n\n${mentioned.description || 'Mô tả chi tiết đang được cập nhật.'}\n\nBạn có thể mở trang chi tiết trường để xem đủ ngành đào tạo và bảng điểm chuẩn.`;
+      return `${mentioned.name} (${mentioned.short_name})\n${bulletList([
+        `Địa điểm: ${mentioned.location}`,
+        `Loại hình: ${this.translateType(mentioned.type)}`,
+        `Học phí tham khảo: ${budgetText}`,
+        `Website: ${mentioned.website || 'chưa có'}`,
+      ])}\n\n${mentioned.description || 'Mô tả chi tiết đang được cập nhật.'}\n\nBạn có thể mở trang chi tiết trường để xem đủ ngành đào tạo và bảng điểm chuẩn.`;
     }
 
     // Không có tên trường cụ thể → lọc theo location nếu có, không thì top 5
@@ -1188,7 +1254,12 @@ export class ChatbotService {
         }
       }
 
-      return `${mentioned.name}${mentioned.code ? ` (mã ${mentioned.code})` : ''}\n${this.formatMajorClassification(mentioned)}\n\n${mentioned.description || 'Chưa có mô tả chi tiết.'}\n\nCơ hội nghề nghiệp: ${mentioned.career_orientation || 'đang cập nhật'}\nKỹ năng gợi ý: ${mentioned.required_skills || 'đang cập nhật'}\n\nBạn hỏi tiếp: "Ngành ${mentioned.name} có những trường nào ở Hà Nội?" để xem danh sách trường.`;
+      return `${mentioned.name}${mentioned.code ? ` (mã ${mentioned.code})` : ''}\n${this.formatMajorClassification(mentioned)}\n\n${mentioned.description || 'Chưa có mô tả chi tiết.'}\n\n${bulletList(
+        [
+          `Cơ hội nghề nghiệp: ${mentioned.career_orientation || 'đang cập nhật'}`,
+          `Kỹ năng gợi ý: ${mentioned.required_skills || 'đang cập nhật'}`,
+        ],
+      )}\n\nBạn hỏi tiếp: "Ngành ${mentioned.name} có những trường nào ở Hà Nội?" để xem danh sách trường.`;
     }
 
     const majors = await this.majorRepo.find({
@@ -1278,7 +1349,7 @@ export class ChatbotService {
         u.tuition_fee_max,
       );
       const fee = programFee ?? rangeFee;
-      blocks.push(`${u.short_name || u.name}: ${fee}`);
+      blocks.push(bullet(`${u.short_name || u.name}: ${fee}`));
       const minVal = u.tuition_fee_min ?? Number.POSITIVE_INFINITY;
       if (minVal < cheapestMin) {
         cheapestMin = minVal;
@@ -1363,7 +1434,16 @@ export class ChatbotService {
     return `${title}:\n${list}\n\n${CHAT_DISCLAIMER_TUITION}`;
   }
 
-  private async handleLocationQuery(entities: ChatEntities): Promise<string> {
+  private async handleLocationQuery(
+    entities: ChatEntities,
+    msg = '',
+  ): Promise<string> {
+    if (!entities.location && looksLikeNearbyQuery(msg)) {
+      return (
+        'Bạn muốn tìm trường gần khu vực, quận hoặc địa điểm nào? ' +
+        'Ví dụ: "Trường nào ở Cầu Giấy?" hoặc "Trường gần Bạch Mai".'
+      );
+    }
     // Đồ án scope: chỉ dữ liệu Hà Nội. validLocation đã chuẩn hoá city khác → null.
     if (!entities.location) {
       return `${CHAT_SCOPE_HANOI} Bạn muốn xem danh sách trường, tra ngành hay điểm chuẩn?`;
@@ -1381,13 +1461,7 @@ export class ChatbotService {
     return `Các trường tại ${entities.location}:\n${list}\n\nBạn muốn xem thêm thông tin trường nào?`;
   }
 
-  /**
-   * Ưu tiên Ollama extract (1 lượt cho 6 field); fallback ghép từ regex/keyword cũ.
-   * Field nào Ollama trả null thì lấp bằng kết quả regex (an toàn 2 lớp).
-   *
-   * `context` (Step 4) cho phép LLM kế thừa entity từ turn trước:
-   * câu "còn ngành CNTT thì sao" sẽ giữ university_name + year từ context.
-   */
+  /** Ollama entity extract with regex fallback for null fields. */
   private async buildEntityFallback(msg: string): Promise<ChatEntities> {
     const acronym = extractParentheticalAcronym(msg);
     const majorFromInterest = acronym
@@ -1587,10 +1661,7 @@ export class ChatbotService {
     return n >= 2020 && n <= 2030 ? n : null;
   }
 
-  /**
-   * Gợi ý theo điểm số — KHÔNG hard-code danh sách trường.
-   * Entities đã được trích ở `processMessage()` (Step 3), chỉ cần consume.
-   */
+  /** Score-based recommendations via RecommendationsService (no hard-coded school lists). */
   private async handleScoreQuery(
     entities: ChatEntities,
     msg: string,
@@ -1600,6 +1671,35 @@ export class ChatbotService {
     }
     const score = entities.score;
     if (score === null) {
+      if (looksLikeSubjectiveTuitionQuery(msg)) {
+        return (
+          'Mình hiểu bạn muốn tìm trường học phí thấp. ' +
+          'Bạn muốn đánh giá "tốt" theo tiêu chí nào — điểm chuẩn, ngành học, hay cơ hội việc làm? ' +
+          'Nếu có điểm dự kiến và tổ hợp, bạn cũng có thể gửi kèm (ví dụ: 24 điểm A00).'
+        );
+      }
+      if (looksLikeSubjectiveSchoolQuery(msg)) {
+        return (
+          'Câu hỏi "trường nào tốt" khá chủ quan. ' +
+          'Bạn muốn đánh giá theo ngành học, điểm chuẩn, học phí, vị trí hay cơ hội việc làm? ' +
+          'Nếu bạn có điểm dự kiến và tổ hợp, mình có thể gợi ý cụ thể hơn.'
+        );
+      }
+      if (looksLikeMajorChoiceQuery(msg)) {
+        const interestHint = this.contains(msg, [
+          'lap trinh',
+          'lập trình',
+          'code',
+          'coding',
+        ])
+          ? 'Với sở thích lập trình, bạn có thể cân nhắc các nhóm ngành: Công nghệ thông tin, Khoa học máy tính, Kỹ thuật phần mềm, Hệ thống thông tin, An toàn thông tin.\n\n'
+          : '';
+        return (
+          `${interestHint}` +
+          'Bạn có thể cho mình biết môn học hoặc lĩnh vực bạn thích, mục tiêu nghề nghiệp, ' +
+          'và (nếu cần gợi ý trường) điểm dự kiến cùng tổ hợp xét tuyển không?'
+        );
+      }
       return 'Bạn cho mình biết điểm dự kiến (thang 30) để mình gợi ý trường và ngành phù hợp hơn nhé. Ví dụ: "Em được 24 điểm khối A00 muốn học CNTT".';
     }
     if (score < 0 || score > 30) {
@@ -1725,7 +1825,17 @@ export class ChatbotService {
    * Mọi city khác → null (không trong dataset).
    */
   private extractLocation(msg: string): string | null {
-    if (this.contains(msg, ['hà nội', 'ha noi', 'thủ đô', 'miền bắc']))
+    if (
+      this.contains(msg, [
+        'hà nội',
+        'ha noi',
+        'hanoi',
+        'thủ đô',
+        'thu do',
+        'miền bắc',
+        'mien bac',
+      ])
+    )
       return 'Hà Nội';
     return null;
   }
@@ -1901,8 +2011,8 @@ export class ChatbotService {
 
     const qb = this.cutoffRepo
       .createQueryBuilder('cs')
-      .innerJoin('cs.universityMajor', 'um')
-      .innerJoin('um.major', 'm')
+      .innerJoinAndSelect('cs.universityMajor', 'um')
+      .innerJoinAndSelect('um.major', 'm')
       .where('um.university_id = :uid', { uid: u.id });
     if (majorFilter) {
       qb.andWhere(majorTagSearchWhere('m'), {
@@ -1944,10 +2054,11 @@ export class ChatbotService {
         .filter(Boolean)
         .join(', ');
       const cutoffLines = cutoffs
-        .map(
-          (c) =>
-            `  – ${c.year}: ${c.score} (${c.subject_combination || '—'}, ${c.admission_method || '—'})`,
-        )
+        .map((c) => {
+          const majorName = c.universityMajor?.major?.name?.trim();
+          const label = majorName ? `${majorName}, ` : '';
+          return `  – ${label}${c.year}: ${c.score} (${c.subject_combination || '—'}, ${c.admission_method || '—'})`;
+        })
         .join('\n');
       block += `\n• Điểm chuẩn${filterNote ? ` (${filterNote})` : ''}${rangeNote}:\n${cutoffLines}`;
     } else if (majorFilter || entities.year || subjectGroup || methodCode) {
@@ -2122,7 +2233,10 @@ export class ChatbotService {
     const mentioned = await this.findMajorByEntities(entities, msg);
 
     if (mentioned && mentioned.career_orientation) {
-      return `Cơ hội nghề nghiệp — ngành ${mentioned.name}:\n${mentioned.career_orientation}\n\nKỹ năng nên trang bị: ${mentioned.required_skills || 'đang cập nhật'}\n\n${CHAT_DISCLAIMER_GENERAL}`;
+      return `Cơ hội nghề nghiệp — ngành ${mentioned.name}:\n${bulletList([
+        mentioned.career_orientation || 'đang cập nhật',
+        `Kỹ năng nên trang bị: ${mentioned.required_skills || 'đang cập nhật'}`,
+      ])}\n\n${CHAT_DISCLAIMER_GENERAL}`;
     }
     if (mentioned) {
       return `Mình chưa có mô tả nghề nghiệp chi tiết cho ngành ${mentioned.name}. Bạn xem các trường đào tạo ngành này ở trang Tra cứu ngành.`;
@@ -2149,7 +2263,7 @@ export class ChatbotService {
    * - tránh lộ nguồn kỹ thuật (backend/DB/PostgreSQL)
    */
   private humanizeAnswer(raw: string): string {
-    return raw
+    const cleaned = raw
       .replace(/\*\*/g, '')
       .replace(/`/g, '')
       .replace(/dataset/gi, 'dữ liệu')
@@ -2165,6 +2279,7 @@ export class ChatbotService {
       .replace(/backend|postgresql|database nội bộ|api nội bộ/gi, '')
       .replace(/\n{3,}/g, '\n\n')
       .trim();
+    return formatAnswerMarkdown(cleaned);
   }
 
   /** Danh sách tối đa 5 cuộc hội thoại của user (mới nhất trước). */

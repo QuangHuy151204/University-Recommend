@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Admin UI for university–major program links and program tuition.
 /* eslint-disable react-hooks/set-state-in-effect -- admin tables fetch on filter change */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { listUniversities } from '@/services/universities';

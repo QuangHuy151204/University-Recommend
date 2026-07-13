@@ -68,9 +68,12 @@ Thứ tự chạy: PostgreSQL → backend (`:3001`) → frontend (`:3000`).
 
 Chỉ khi `OLLAMA_ENABLED=true` trong `backend/.env`:
 
-```bash
+
+# Cài Ollama: https://ollama.com — đảm bảo service đang chạy (port 11434)
 ollama pull qwen2.5:3b
-```
+
+
+Khi backend khởi động, `OllamaService` tự **warmup** model (mặc định `OLLAMA_WARMUP_ENABLED=true`, timeout 120s) để tránh cold-start timeout trên câu chat đầu tiên. Nếu Ollama không chạy, chatbot vẫn hoạt động rule-based; đặt `OLLAMA_ENABLED=false` để bỏ độ trễ chờ timeout.
 
 ## Lệnh quan trọng
 

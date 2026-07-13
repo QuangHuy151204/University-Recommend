@@ -1,3 +1,4 @@
+// @file: Matches student interest phrases against major names, tags, and careers.
 /** SQL fragment — tra cứu ngành theo tên hoặc tags (không dùng field_group). */
 
 export function majorTagSearchWhere(alias = 'm'): string {

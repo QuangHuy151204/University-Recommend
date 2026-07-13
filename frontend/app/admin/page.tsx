@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Admin dashboard shell with tabbed management panels.
 import { Suspense, type ComponentType } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { resolveAdminTab, type AdminTabId } from '@/lib/admin-tabs';

@@ -1,3 +1,4 @@
+// @file: Automated tests for chat session policy.
 import { ForbiddenException } from '@nestjs/common';
 import { assertSessionAccess, sessionUserId } from './chat-session-policy';
 import type { ChatSession } from './chat-session.entity';

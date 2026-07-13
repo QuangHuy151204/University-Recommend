@@ -1,3 +1,4 @@
+// @file: Automated tests for duplicate cleanup.
 import { canonicalMajorName } from './major-normalization';
 import {
   countCutoffDuplicates,

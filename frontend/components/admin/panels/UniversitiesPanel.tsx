@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Admin CRUD UI for university records including tuition and ward.
 /* eslint-disable react-hooks/set-state-in-effect -- admin tables fetch on filter change */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { listUniversities } from '@/services/universities';

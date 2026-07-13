@@ -1,3 +1,4 @@
+// @file: API client that posts recommendation requests to the backend.
 import { api } from '@/lib/api';
 import type { RecommendRequest, RecommendResponse } from '@/types';
 

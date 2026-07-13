@@ -1,3 +1,4 @@
+// @file: Automated tests for university display order.
 import {
   isPreferredUniversity,
   pinPreferredUniversityFirst,

@@ -1,3 +1,4 @@
+// @file: Frontend helper module for subject combinations.
 /** Nhãn môn cho các khối THPT phổ biến (hiển thị UI). */
 import type { Locale } from '@/lib/i18n/translations';
 

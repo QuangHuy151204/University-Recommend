@@ -1,3 +1,4 @@
+// @file: Anti-hallucination checks: prefer rules over bad LLM intents and validate entities.
 import type { ChatIntent } from './chatbot.types';
 import type { ChatEntities } from './chatbot.types';
 import { normalizeMajorMatchText } from '../majors/major-interest-match';
@@ -10,9 +11,14 @@ import {
   looksLikeFacilitiesQuery,
   looksLikeGreeting,
   looksLikeLocationListQuery,
+  looksLikeOffTopicOrSecurityQuery,
   looksLikeScholarshipQuery,
   looksLikeScoreRecommendation,
+  looksLikeSubjectiveTuitionQuery,
   looksLikeTuitionBillingQuery,
+  looksLikeUniversityAliasQuestion,
+  looksLikeUniversityInfoQuery,
+  looksLikeCareerQuery,
   looksLikeUnknownFullScholarshipQuery,
   asksWhichSchoolsTeachMajor,
 } from './chatbot-intent-rules';
@@ -32,7 +38,7 @@ function looksLikeTuitionFeeQuery(msg: string): boolean {
 }
 
 /** Từ môn học hay bị Ollama nhầm thành university_name (vd. "Anh" trong khối A01). */
-const SUBJECT_WORD_TOKENS = new Set([
+export const SUBJECT_WORD_TOKENS = new Set([
   'ANH',
   'LY',
   'HOA',
@@ -61,9 +67,17 @@ type RuleSignal = {
 /** Rule có tín hiệu rõ → ưu tiên hơn Ollama khi hai bên mâu thuẫn. */
 const RULE_DECISIVE_SIGNALS: RuleSignal[] = [
   { intent: 'greeting', test: looksLikeGreeting },
+  { intent: 'unknown', test: looksLikeOffTopicOrSecurityQuery },
   { intent: 'ask_cutoff_score', test: looksLikeCutoffScoreQuery },
   { intent: 'recommendation_by_score', test: looksLikeScoreRecommendation },
+  {
+    intent: 'recommendation_by_score',
+    test: looksLikeSubjectiveTuitionQuery,
+  },
   { intent: 'search_university', test: asksUniversityOrPrograms },
+  { intent: 'search_university', test: looksLikeUniversityAliasQuestion },
+  { intent: 'search_university', test: looksLikeUniversityInfoQuery },
+  { intent: 'ask_career', test: looksLikeCareerQuery },
   { intent: 'ask_tuition_fee', test: looksLikeTuitionFeeQuery },
   { intent: 'compare_universities', test: looksLikeCompareUniversities },
   { intent: 'ask_admission_method', test: looksLikeAdmissionMethod },
@@ -173,19 +187,34 @@ export async function validateEntitiesAgainstDb(
  * Out-of-scope city/location names that MUST NOT appear in Ollama rewrites.
  */
 const REWRITE_BANNED_LOCATIONS = [
-  'TP.HCM', 'TP HCM', 'TPHCM',
-  'Sài Gòn', 'Saigon', 'Sai Gon',
-  'Hồ Chí Minh', 'Ho Chi Minh',
-  'Đà Nẵng', 'Da Nang',
-  'Cần Thơ', 'Can Tho',
+  'TP.HCM',
+  'TP HCM',
+  'TPHCM',
+  'Sài Gòn',
+  'Saigon',
+  'Sai Gon',
+  'Hồ Chí Minh',
+  'Ho Chi Minh',
+  'Đà Nẵng',
+  'Da Nang',
+  'Cần Thơ',
+  'Can Tho',
   'Huế',
-  'Hải Phòng', 'Hai Phong',
+  'Hải Phòng',
+  'Hai Phong',
 ];
 
 const REWRITE_BANNED_FOREIGN_UNIS = [
-  'Harvard', 'MIT', 'Stanford', 'Oxford',
-  'Cambridge', 'Yale', 'Princeton', 'Columbia',
-  'Berkeley', 'Caltech',
+  'Harvard',
+  'MIT',
+  'Stanford',
+  'Oxford',
+  'Cambridge',
+  'Yale',
+  'Princeton',
+  'Columbia',
+  'Berkeley',
+  'Caltech',
 ];
 
 /**
@@ -231,7 +260,9 @@ export function isOllamaRewriteFaithful(
     ...new Set(
       (rule.match(/\d+(?:[.,]\d+)?/g) ?? []).filter((n) => {
         const v = parseFloat(n.replace(',', '.'));
-        return Number.isFinite(v) && (v >= 10 || n.includes('.') || n.includes(','));
+        return (
+          Number.isFinite(v) && (v >= 10 || n.includes('.') || n.includes(','))
+        );
       }),
     ),
   ];

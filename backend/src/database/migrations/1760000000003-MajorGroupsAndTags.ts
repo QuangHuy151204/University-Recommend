@@ -1,3 +1,4 @@
+// @file: Database migration: MajorGroupsAndTags.
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 const MAJOR_GROUPS_SEED: Array<{

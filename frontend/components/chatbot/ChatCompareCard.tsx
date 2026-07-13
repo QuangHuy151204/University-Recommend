@@ -1,5 +1,5 @@
 'use client';
-
+// @file: Inline university comparison card rendered inside chat replies.
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { ExternalLink, Loader2 } from 'lucide-react';

@@ -1,3 +1,4 @@
+// @file: Business logic for email verification and password-reset delivery.
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';

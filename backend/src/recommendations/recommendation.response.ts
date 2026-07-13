@@ -1,3 +1,4 @@
+// @file: Source file for weighted university-major recommendation engine: recommendation.response.
 import type { CutoffScore } from '../cutoff-scores/cutoff-score.entity';
 
 /** Mức độ khả năng trúng tuyển so với điểm chuẩn gần nhất. */

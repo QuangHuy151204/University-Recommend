@@ -1,3 +1,4 @@
+// @file: Frontend helper module for university display order.
 /** Trường ưu tiên hiển thị đầu danh sách (đồ án USTH). */
 export const PREFERRED_UNIVERSITY_SHORT_NAME = 'USTH';
 

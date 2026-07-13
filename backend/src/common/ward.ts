@@ -1,3 +1,4 @@
+// @file: Ward (phường) normalization for Hanoi location filters.
 /** Chuẩn hoá tên phường để so khớp (không phân biệt hoa thường, bỏ tiền tố "Phường"). */
 export function normalizeWardName(value: string | null | undefined): string {
   if (!value) return '';

@@ -1,3 +1,4 @@
+// @file: Database migration: ChatSessionsAndMessages.
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**

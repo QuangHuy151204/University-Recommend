@@ -1,3 +1,4 @@
+// @file: API client for university search, detail, and compare data.
 import { api } from '@/lib/api';
 import { pinPreferredUniversityFirst } from '@/lib/university-display-order';
 import { COMPARE_MAX } from '@/lib/university-compare';

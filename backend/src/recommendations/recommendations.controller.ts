@@ -1,3 +1,4 @@
+// @file: REST API endpoints exposing weighted university-major recommendation engine.
 import { Controller, Post, Get, Body, UseGuards, Req } from '@nestjs/common';
 import { RecommendationsService } from './recommendations.service';
 import { RecommendRequestDto } from './recommendation.dto';

@@ -1,3 +1,4 @@
+// @file: Automated tests for university filter evaluator.
 import {
   evaluateUniversityFilter,
   type FilterDataset,
