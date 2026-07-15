@@ -9,6 +9,8 @@ describe('university-aliases', () => {
     expect(normalizeUniversitySearchToken('UET')).toBe('VNU-UET');
     expect(normalizeUniversitySearchToken('VNU-UET')).toBe('VNU-UET');
     expect(normalizeUniversitySearchToken('BKA')).toBe('HUST');
+    expect(normalizeUniversitySearchToken('KMA')).toBe('VACT');
+    expect(normalizeUniversitySearchToken('VACT')).toBe('VACT');
   });
 
   it('collectUniversityTokensFromMessage finds compound before simple codes', () => {

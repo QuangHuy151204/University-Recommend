@@ -494,7 +494,7 @@ export class ChatbotService {
       '- Giữ nguyên mọi con số và từng tên ngành/chương trình đúng như trong dữ liệu.',
       '- Không rút gọn danh sách có sẵn; không dùng markdown (**, `).',
       '- Không nhắc backend, database, PostgreSQL, API hay "dữ liệu hệ thống".',
-      '- Tối đa 1–2 emoji nhẹ (tùy chọn); không disclaimer dài trừ khi đã có trong dữ liệu.',
+      '- Không dùng emoji; không disclaimer dài trừ khi đã có trong dữ liệu.',
       ...structuredHints,
     ]
       .filter(Boolean)
@@ -539,6 +539,14 @@ export class ChatbotService {
     } = await this.resolveIntentAndEntities(msg, context, sessionContext);
     const merged = mergeEntitiesWithSession(rawEntities, sessionContext, msg);
     const entities = await this.validateAndSanitizeEntities(merged, msg);
+    // validate có thể xóa university_name rác — khôi phục session nếu câu không nêu trường mới.
+    if (
+      !entities.university_name &&
+      sessionContext.last_university &&
+      !extractExplicitUniversityFromMessage(msg)
+    ) {
+      entities.university_name = sessionContext.last_university;
+    }
     this.logger.debug(
       `intent=${intent} handler=${INTENT_HANDLER_MATRIX[intent].handler}` +
         ` intentSource=${intentSource}` +
@@ -641,13 +649,7 @@ export class ChatbotService {
   ): Promise<ChatEntities> {
     return validateEntitiesAgainstDb(entities, msg, {
       universityExists: async (name) => {
-        const found = await this.univRepo.findOne({
-          where: [
-            { name: ILike(`%${name}%`) },
-            { short_name: ILike(`%${name}%`) },
-          ],
-        });
-        return !!found;
+        return !!(await this.resolveUniversityByNameToken(name));
       },
       majorExists: async (term) => {
         const found = await this.majorRepo
@@ -833,6 +835,29 @@ export class ChatbotService {
    */
   /** Một token trường (NEU, FTU, …) — ưu tiên khớp chính xác short_name. */
   private async resolveUniversityByNameToken(
+    token: string,
+  ): Promise<University | null> {
+    const trimmed = token.trim();
+    if (trimmed.length < 2) return null;
+
+    // Entity kiểu "Học viện … (VACT)" — thử mã trong ngoặc trước (ILIKE full string hay fail).
+    const paren = extractParentheticalAcronym(trimmed);
+    if (paren) {
+      const byParen = await this.lookupUniversityByNormalizedName(paren);
+      if (byParen) return byParen;
+    }
+
+    const withoutParen = trimmed.replace(/\s*\([^)]*\)\s*$/u, '').trim();
+    if (withoutParen.length >= 2 && withoutParen !== trimmed) {
+      const byStripped =
+        await this.lookupUniversityByNormalizedName(withoutParen);
+      if (byStripped) return byStripped;
+    }
+
+    return this.lookupUniversityByNormalizedName(trimmed);
+  }
+
+  private async lookupUniversityByNormalizedName(
     token: string,
   ): Promise<University | null> {
     const name = normalizeUniversitySearchToken(token.trim());
@@ -2314,7 +2339,10 @@ export class ChatbotService {
     return summaries;
   }
 
-  /** Mỗi phần tử = 1 lượt (question + answer) trong một session thuộc user. */
+  /**
+   * Mỗi phần tử = 1 lượt (question + answer) trong một session thuộc user.
+   * Trả về theo thời gian tăng dần (cũ → mới) để UI chat không bị đảo khi reload.
+   */
   async getChatHistory(userId: number, sessionId: string) {
     const session = await this.sessionRepo.findOne({
       where: { session_key: sessionId, user: { id: userId } },
@@ -2342,6 +2370,7 @@ export class ChatbotService {
       compare_university_ids: number[] | null;
     }> = [];
 
+    // DB lấy mới nhất trước → đảo về cũ→mới để ghép cặp user/assistant.
     const byTimeAsc = [...messages].reverse();
     let pendingUser: ChatMessage | null = null;
 
@@ -2368,7 +2397,8 @@ export class ChatbotService {
       }
     }
 
-    return turns.reverse().slice(0, 50);
+    // Giữ tối đa 50 lượt gần nhất, vẫn theo thứ tự cũ → mới (không reverse lần nữa).
+    return turns.slice(-50);
   }
 
   /**

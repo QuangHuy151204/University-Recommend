@@ -117,15 +117,14 @@ function patchMasterUniversities(
   updates: Map<string, UniTuitionUpdate>,
 ): number {
   if (!fs.existsSync(MASTER_EXCEL)) {
-    console.warn(`  [WARN] Không tìm thấy master Excel: ${MASTER_EXCEL}`);
+    console.warn(`[WARN] Không tìm thấy master Excel: ${MASTER_EXCEL}`);
     return 0;
   }
 
   const wb = XLSX.readFile(MASTER_EXCEL);
   const sheet = wb.Sheets[SHEET_MASTER_UNI];
   if (!sheet) {
-    console.warn(
-      `  [WARN] Sheet "${SHEET_MASTER_UNI}" không có trong master Excel`,
+    console.warn(`[WARN] Sheet "${SHEET_MASTER_UNI}" không có trong master Excel`,
     );
     return 0;
   }
@@ -155,9 +154,9 @@ function patchMasterUniversities(
 }
 
 async function main() {
-  console.log('📂 File học phí:', tuitionFile);
+  console.log('File học phí:', tuitionFile);
   const rows = readTuitionRows(tuitionFile);
-  console.log(`   ${rows.length} dòng trên sheet "${SHEET_TUITION}"`);
+  console.log(`  ${rows.length} dòng trên sheet "${SHEET_TUITION}"`);
 
   const updates = new Map<string, UniTuitionUpdate>();
   const skipped: Array<{ short: string; reason: string }> = [];
@@ -197,19 +196,19 @@ async function main() {
     (u) => u.perCreditNote,
   ).length;
   console.log(
-    `   Sẵn sàng cập nhật: ${updates.size} trường (${withYearly} có phí/năm, ${withPerCredit} có ghi chú tín chỉ)`,
+    `  Sẵn sàng cập nhật: ${updates.size} trường (${withYearly} có phí/năm, ${withPerCredit} có ghi chú tín chỉ)`,
   );
   if (skipped.length) {
-    console.log(`   Bỏ qua: ${skipped.length}`);
+    console.log(`  Bỏ qua: ${skipped.length}`);
     for (const s of skipped) {
-      console.log(`     - ${s.short}: ${s.reason}`);
+      console.log(`    - ${s.short}: ${s.reason}`);
     }
   }
 
   if (patchMaster) {
     const n = patchMasterUniversities(updates);
     console.log(
-      `✅ Master Excel (${SHEET_MASTER_UNI}): ${n} dòng đã ghi học phí`,
+      `Master Excel (${SHEET_MASTER_UNI}): ${n} dòng đã ghi học phí`,
     );
   }
 
@@ -225,7 +224,7 @@ async function main() {
   });
 
   await dataSource.initialize();
-  console.log('✅ Kết nối PostgreSQL');
+  console.log('Kết nối PostgreSQL');
 
   const qr = dataSource.createQueryRunner();
   await qr.connect();
@@ -281,15 +280,15 @@ async function main() {
 
     await qr.commitTransaction();
 
-    console.log(`✅ PostgreSQL: ${updated} trường đã cập nhật học phí`);
+    console.log(`PostgreSQL: ${updated} trường đã cập nhật học phí`);
     if (notFound) {
       console.log(
-        `   ⚠ ${notFound} short_name không khớp DB (chạy import:excel trước?)`,
+        `${notFound} short_name không khớp DB (chạy import:excel trước?)`,
       );
     }
-    console.log(`   Trường có học phí min/max trong DB: ${countRows ?? '?'}`);
+    console.log(`  Trường có học phí min/max trong DB: ${countRows ?? '?'}`);
     console.log(
-      `   Trường có ghi chú học phí/tín chỉ: ${perCreditCount ?? '?'}`,
+      `  Trường có ghi chú học phí/tín chỉ: ${perCreditCount ?? '?'}`,
     );
   } catch (err) {
     await qr.rollbackTransaction();
@@ -299,15 +298,15 @@ async function main() {
     await dataSource.destroy();
   }
 
-  console.log('\n🎉 Import học phí hoàn tất!');
+  console.log('\nImport học phí hoàn tất!');
   if (!patchMaster) {
     console.log(
-      '   Gợi ý: chạy lại với --patch-master để ghi vào mau_du_lieu_truong_dai_hoc_5_sheets_bo_sung_phuong.xlsx',
+     '   Gợi ý: chạy lại với --patch-master để ghi vào mau_du_lieu_truong_dai_hoc_5_sheets_bo_sung_phuong.xlsx',
     );
   }
 }
 
 main().catch((err) => {
-  console.error('❌ Lỗi import học phí:', err);
+  console.error('Lỗi import học phí:', err);
   process.exit(1);
 });

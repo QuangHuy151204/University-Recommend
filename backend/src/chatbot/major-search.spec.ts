@@ -5,6 +5,14 @@ import {
 } from './major-search';
 
 describe('major-search', () => {
+  it('resolveMajorSearchTerm keeps full major before bao nhiêu', () => {
+    expect(
+      resolveMajorSearchTerm(
+        'điểm chuẩn ngành an toàn thông tin là bao nhiêu ?',
+      ),
+    ).toBe('An toàn thông tin');
+  });
+
   it('resolveMajorSearchTerm maps common aliases', () => {
     expect(resolveMajorSearchTerm('ngành marketing trường nào')).toBe(
       'Marketing',

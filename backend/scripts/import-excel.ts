@@ -13,6 +13,6 @@
 import { runExcelImport } from '../src/import-excel';
 
 runExcelImport().catch((err) => {
-  console.error('❌ Lỗi import:', err);
+  console.error('Lỗi import:', err);
   process.exit(1);
 });

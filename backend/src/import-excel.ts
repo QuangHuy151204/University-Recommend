@@ -75,7 +75,7 @@ function readWard(row: Record<string, unknown>): string | null {
 function readSheet(wb: XLSX.WorkBook, name: string): Record<string, unknown>[] {
   const sheet = wb.Sheets[name];
   if (!sheet) {
-    console.warn(`  [WARN] Không tìm thấy sheet: ${name}`);
+    console.warn(`[WARN] Không tìm thấy sheet: ${name}`);
     return [];
   }
   return XLSX.utils.sheet_to_json(sheet, { defval: null });
@@ -121,13 +121,13 @@ async function upsertCutoff(
 
 export async function runExcelImport(): Promise<void> {
   const mergeMode = isMergeMode();
-  console.log('📂 Đọc file:', EXCEL_PATH);
+  console.log('Đọc file:', EXCEL_PATH);
   if (mergeMode) {
     console.log(
-      '🔄 Chế độ MERGE — giữ users/chat/recommendations, upsert master data',
+      'Chế độ MERGE — giữ users/chat/recommendations, upsert master data',
     );
   } else {
-    console.log('🗑️  Chế độ mặc định — TRUNCATE master tables rồi nạp lại');
+    console.log('Chế độ mặc định — TRUNCATE master tables rồi nạp lại');
   }
 
   const wb = XLSX.readFile(EXCEL_PATH);
@@ -146,7 +146,7 @@ export async function runExcelImport(): Promise<void> {
   });
 
   await dataSource.initialize();
-  console.log('✅ Kết nối PostgreSQL thành công');
+  console.log('Kết nối PostgreSQL thành công');
 
   const qr = dataSource.createQueryRunner();
   await qr.connect();
@@ -154,7 +154,7 @@ export async function runExcelImport(): Promise<void> {
 
   try {
     if (!mergeMode) {
-      console.log('🗑️  Xóa dữ liệu cũ (giữ users, chat, recommendations)...');
+      console.log('Xóa dữ liệu cũ (giữ users, chat, recommendations)...');
       await qr.query(
         `TRUNCATE TABLE cutoff_scores, university_majors, majors, admission_methods, universities RESTART IDENTITY CASCADE`,
       );
@@ -191,7 +191,7 @@ export async function runExcelImport(): Promise<void> {
         methodNameByCode.set(r.method_code, r.method_name);
       }
       console.log(
-        `  Đã nạp cache: ${uniIdByShort.size} trường, ${majorIdByName.size} ngành, ${umIdByKey.size} liên kết`,
+       `  Đã nạp cache: ${uniIdByShort.size} trường, ${majorIdByName.size} ngành, ${umIdByKey.size} liên kết`,
       );
     }
 
@@ -205,7 +205,7 @@ export async function runExcelImport(): Promise<void> {
       const rawLocation = cleanStr(row['location']) || DATA_SCOPE_LOCATION;
       if (!isHanoiLocation(rawLocation)) {
         console.warn(
-          `  ⏭️  Bỏ qua ${short}: location "${rawLocation}" ngoài phạm vi Hà Nội`,
+          `Bỏ qua ${short}: location "${rawLocation}" ngoài phạm vi Hà Nội`,
         );
         continue;
       }
@@ -241,7 +241,7 @@ export async function runExcelImport(): Promise<void> {
         uniIdByShort.set(short, result[0].id);
       }
     }
-    console.log(`✅ universities: ${uniIdByShort.size} trường`);
+    console.log(`universities: ${uniIdByShort.size} trường`);
 
     // ── 2. Admission methods ────────────────────────────────────
     const methodRows = readSheet(wb, SHEET_METHODS);
@@ -268,7 +268,7 @@ export async function runExcelImport(): Promise<void> {
         );
       }
     }
-    console.log(`✅ admission_methods: ${methodNameByCode.size} phương thức`);
+    console.log(`admission_methods: ${methodNameByCode.size} phương thức`);
 
     // ── 3. Majors ───────────────────────────────────────────────
     const majorRows = readSheet(wb, SHEET_MAJORS);
@@ -311,7 +311,7 @@ export async function runExcelImport(): Promise<void> {
       majorIdByName.set(name, result[0].id);
       majorIdByCanonicalName.set(canonicalName, result[0].id);
     }
-    console.log(`✅ majors (sheet): ${majorIdByName.size} ngành`);
+    console.log(`majors (sheet): ${majorIdByName.size} ngành`);
 
     async function getOrCreateUniversityMajor(
       uniShort: string,
@@ -397,7 +397,7 @@ export async function runExcelImport(): Promise<void> {
         admissionNotes: cleanStr(row['admission_notes']),
       });
     }
-    console.log(`✅ university_majors (sheet): ${umIdByKey.size} liên kết`);
+    console.log(`university_majors (sheet): ${umIdByKey.size} liên kết`);
 
     // ── 4.1 Backfill tuition range cho universities từ university_majors ──
     // Sheet universities_hanoi hiện có thể để trống tuition_fee_min/max.
@@ -433,7 +433,7 @@ export async function runExcelImport(): Promise<void> {
       tuitionBackfilled++;
     }
     console.log(
-      `✅ universities tuition backfill: ${tuitionBackfilled} trường (từ university_majors)`,
+      `universities tuition backfill: ${tuitionBackfilled} trường (từ university_majors)`,
     );
 
     // ── 5. Cutoff scores (ĐTN + ĐGNL) ─────────────────────────
@@ -481,14 +481,14 @@ export async function runExcelImport(): Promise<void> {
     }
 
     console.log(
-      `✅ cutoff_scores: +${cutoffInserted} mới` +
+      `cutoff_scores: +${cutoffInserted} mới` +
         (mergeMode ? `, ${cutoffUpdated} cập nhật` : '') +
         ` (bỏ qua ${cutoffSkipped})`,
     );
-    console.log(`✅ majors (tổng sau import): ${majorIdByName.size}`);
-    console.log(`✅ university_majors (tổng): ${umIdByKey.size}`);
+    console.log(`majors (tổng sau import): ${majorIdByName.size}`);
+    console.log(`university_majors (tổng): ${umIdByKey.size}`);
 
-    console.log('🔄 Đồng bộ nhóm ngành + tags...');
+    console.log('Đồng bộ nhóm ngành + tags...');
     const allMajors = await qr.query(
       'SELECT id, name, field_group FROM majors ORDER BY id',
     );
@@ -517,10 +517,10 @@ export async function runExcelImport(): Promise<void> {
         );
       }
     }
-    console.log(`✅ Phân loại: ${allMajors.length} ngành`);
+    console.log(`Phân loại: ${allMajors.length} ngành`);
 
     await qr.commitTransaction();
-    console.log('\n🎉 Import Excel vào PostgreSQL hoàn tất!');
+    console.log('\nImport Excel vào PostgreSQL hoàn tất!');
   } catch (err) {
     await qr.rollbackTransaction();
     throw err;
@@ -532,7 +532,7 @@ export async function runExcelImport(): Promise<void> {
 
 if (require.main === module) {
   runExcelImport().catch((err) => {
-    console.error('❌ Lỗi import:', err);
+    console.error('Lỗi import:', err);
     process.exit(1);
   });
 }

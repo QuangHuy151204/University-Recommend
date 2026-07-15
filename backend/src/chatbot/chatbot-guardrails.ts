@@ -160,7 +160,8 @@ export async function validateEntitiesAgainstDb(
 
   if (university_name) {
     const ok = await db.universityExists(university_name);
-    if (!ok && university_name.length < 6) {
+    // Bỏ tên không resolve được (kể cả chuỗi dài) — tránh override session bằng rác Ollama.
+    if (!ok) {
       university_name = null;
     }
   }

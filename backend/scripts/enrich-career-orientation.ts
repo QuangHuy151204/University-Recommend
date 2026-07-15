@@ -54,7 +54,7 @@ function cleanStr(v: unknown): string | null {
 }
 
 async function main() {
-  console.log('📂 File Excel:', excelPath);
+  console.log('File Excel:', excelPath);
   if (!fs.existsSync(excelPath)) {
     throw new Error(`Không tìm thấy file Excel: ${excelPath}`);
   }
@@ -116,38 +116,38 @@ async function main() {
       (stats.by_source[result.source] ?? 0) + 1;
   }
 
-  console.log(`\n📊 Kết quả (nhóm: ${ENRICH_FIELD_GROUPS.join(', ')})`);
+  console.log(`\nKết quả (nhóm: ${ENRICH_FIELD_GROUPS.join(', ')})`);
   console.log(`   Đã bổ sung: ${stats.patched}`);
   console.log(`   Giữ nguyên (đã có): ${stats.skipped_existing}`);
   console.log(`   Bỏ qua (ngoài 3 nhóm): ${stats.skipped_other_group}`);
   console.log(`   Theo nguồn:`, stats.by_source);
 
   if (dryRun) {
-    console.log('\n🔍 --dry-run: không ghi file Excel.');
+    console.log('\n--dry-run: không ghi file Excel.');
     return;
   }
 
   const backupPath = `${excelPath}.bak-${new Date().toISOString().slice(0, 10)}`;
   if (!fs.existsSync(backupPath)) {
     fs.copyFileSync(excelPath, backupPath);
-    console.log(`\n💾 Backup: ${backupPath}`);
+    console.log(`\nBackup: ${backupPath}`);
   }
 
   const newSheet = XLSX.utils.json_to_sheet(rows);
   wb.Sheets[sheetName] = newSheet;
   XLSX.writeFile(wb, excelPath);
-  console.log(`\n✅ Đã ghi career_orientation vào sheet majors (${excelPath})`);
+  console.log(`\nĐã ghi career_orientation vào sheet majors (${excelPath})`);
 
   if (mergeImport) {
-    console.log('\n🔄 Chạy import:excel:merge...');
+    console.log('\nChạy import:excel:merge...');
     process.env.IMPORT_MERGE = 'true';
     await runExcelImport();
   } else {
-    console.log('\n👉 Chạy tiếp: npm run import:excel:merge');
+    console.log('\nChạy tiếp: npm run import:excel:merge');
   }
 }
 
 main().catch((err) => {
-  console.error('❌ Lỗi enrich career_orientation:', err);
+  console.error('Lỗi enrich career_orientation:', err);
   process.exit(1);
 });

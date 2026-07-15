@@ -170,8 +170,11 @@ export function LandingPage() {
                                     ] as const
                                 ).map((key) => (
                                     <li key={key} className="flex gap-3">
-                                        <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
-                                            ✓
+                                        <span
+                                            className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-white"
+                                            aria-hidden
+                                        >
+                                            *
                                         </span>
                                         {t(key)}
                                     </li>

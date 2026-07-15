@@ -21,6 +21,7 @@ export const SIMPLE_UNIVERSITY_ACRONYMS = [
   'PTIT',
   'HAUI',
   'PHENA',
+  'VACT',
   'USSH',
   'ULIS',
   'BKHN',
@@ -36,6 +37,7 @@ export const SIMPLE_UNIVERSITY_ACRONYMS = [
   'UEB',
   'VJU',
   'BKA',
+  'KMA',
   'VNU',
 ] as const;
 
@@ -54,6 +56,7 @@ export const UNIVERSITY_SHORT_NAME_ALIASES: Record<string, string> = {
   BKHN: 'HUST',
   BK: 'HUST',
   PHENIKAA: 'PHENA',
+  KMA: 'VACT',
 };
 
 export const MESSAGE_UNIVERSITY_NICKNAMES = [
@@ -72,6 +75,10 @@ export const MESSAGE_UNIVERSITY_NICKNAMES = [
   'Y dược',
   'Đại học Công nghệ',
   'Dai hoc Cong nghe',
+  'Học viện Kỹ thuật mật mã',
+  'Học viện Kỹ thuật Mật mã',
+  'Học viện Mật mã',
+  'Mat ma',
 ] as const;
 
 function normalizeMatchText(input: string): string {

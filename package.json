@@ -1,0 +1,19 @@
+{
+  "name": "university-recommend-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Root workspace scripts for University Recommend (UniPath). Backend and frontend have their own package.json.",
+  "scripts": {
+    "qa:post-deployment": "node test/post-deployment/run-all.mjs",
+    "qa:smoke": "node test/post-deployment/functional/smoke.mjs",
+    "qa:api": "node test/post-deployment/functional/api.mjs",
+    "qa:recommendation": "node test/post-deployment/functional/recommendation.mjs",
+    "qa:chatbot": "node test/post-deployment/functional/chatbot.mjs",
+    "qa:e2e": "node test/post-deployment/e2e/landing.mjs",
+    "qa:latency": "node test/post-deployment/performance/api-latency.mjs",
+    "qa:load": "node test/post-deployment/performance/load-staged.mjs",
+    "qa:ollama": "node test/post-deployment/performance/ollama-perf.mjs",
+    "qa:lighthouse-summary": "node test/post-deployment/performance/lighthouse-summary.mjs",
+    "qa:aggregate": "node test/post-deployment/aggregate.mjs"
+  }
+}

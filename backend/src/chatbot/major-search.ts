@@ -45,8 +45,9 @@ function normalizeMatchText(input: string): string {
 
 /** Trích cụm sau "ngành …" — giữ dấu tiếng Việt để ILIKE khớp DB (PostgreSQL không bỏ dấu). */
 export function extractMajorFragment(msg: string): string | null {
+  // Không dừng ở "bao" đơn lẻ (cắt sai "… thông tin là bao nhiêu").
   const match = msg.match(
-    /(?:ngành|nganh|chuyên ngành|chuyen nganh)\s+(.+?)(?:\s+(?:trường|truong|cua|cu|ủa|ở|o|tại|tai|năm|nam|lấy|lay|bao|theo|thì|thi|à|a|ạ|\?)|$)/iu,
+    /(?:ngành|nganh|chuyên ngành|chuyen nganh)\s+(.+?)(?:\s+(?:trường|truong|cua|cu|ủa|ở|o|tại|tai|năm|nam|lấy|lay|bao nhiêu|theo|thì|thi|à|a|ạ|\?)|$)/iu,
   );
   if (!match) return null;
   const fragment = match[1]
